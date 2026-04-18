@@ -255,17 +255,26 @@ function checkAdmin() {
 async function showVisitorList() {
     const overlay = document.getElementById('visitor-list-overlay');
     const content = document.getElementById('visitor-list-content');
+    if (!overlay || !content) return;
+
     overlay.classList.remove('hidden');
     overlay.style.opacity = '1';
     
-    // 1. Show local history IMMEDIATELY
-    const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
-    renderVisitorList(localLog, true);
+    // Show loading state
+    content.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted small">Fetching logs...</p>
+        </div>
+    `;
 
-    // 2. Try to fetch global log with a strict timeout
     try {
+        const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
+        
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         const response = await fetch('https://gmrit-calc-default-rtdb.firebaseio.com/visitors.json', {
             signal: controller.signal
@@ -274,44 +283,70 @@ async function showVisitorList() {
         clearTimeout(timeoutId);
         const data = await response.json();
 
+        let globalLog = [];
         if (data) {
-            // Convert Firebase object to array and sort by date desc
-            const globalLog = Object.values(data).reverse();
-            renderVisitorList(globalLog, false);
+            globalLog = Object.values(data).reverse();
         }
+
+        renderVisitorList(globalLog, localLog);
     } catch (e) {
-        console.log("Global log fetch timed out or failed. Showing local history.");
-        if (localLog.length === 0) {
-            content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
-        }
+        console.error("Visitor list fetch failed:", e);
+        const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
+        renderVisitorList([], localLog);
     }
 }
 
-function renderVisitorList(logs, isLocal) {
+function renderVisitorList(globalLogs, localLogs) {
     const content = document.getElementById('visitor-list-content');
-    if (logs.length === 0) {
-        if (!isLocal) content.innerHTML = '<p class="text-center text-muted py-5">No global visitors found yet.</p>';
+    if (!content) return;
+
+    if (globalLogs.length === 0 && localLogs.length === 0) {
+        content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
         return;
     }
 
-    let html = `
-        <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px;">
-            ${isLocal ? 'Recent on this device' : 'Global Log'}
-        </div>
-        <div class="list-group list-group-flush">
-    `;
-    
-    logs.forEach(item => {
+    let html = '';
+
+    if (globalLogs.length > 0) {
         html += `
-            <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="fw-bold text-white">${item.name}</div>
-                    <div class="text-muted small" style="font-size: 0.65rem;">${item.date}</div>
-                </div>
+            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
+                Global Log (${globalLogs.length})
             </div>
+            <div class="list-group list-group-flush mb-4">
         `;
-    });
-    html += '</div>';
+        globalLogs.slice(0, 50).forEach(item => {
+            html += `
+                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="fw-bold text-white">${item.name || 'Anonymous'}</div>
+                        <div class="text-muted small" style="font-size: 0.65rem;">${item.date || 'Unknown'}</div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+
+    if (localLogs.length > 0) {
+        html += `
+            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px;">
+                Device History
+            </div>
+            <div class="list-group list-group-flush">
+        `;
+        localLogs.slice(0, 10).forEach(item => {
+            html += `
+                <div class="list-group-item bg-transparent border-white border-opacity-10 py-3 px-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="fw-bold text-muted">${item.name || 'Anonymous'}</div>
+                        <div class="text-muted small" style="font-size: 0.65rem;">${item.date || 'Unknown'}</div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+
     content.innerHTML = html;
 }
 
