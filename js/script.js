@@ -117,10 +117,65 @@ function init() {
 function checkAdmin() {
     const pass = prompt("Enter Admin Password to view Visitor List:");
     if (pass === "thrinadh2005") {
-        window.open('https://airtable.com/shryD3H6mB8uXv2r', '_blank');
+        showVisitorList();
     } else if (pass !== null) {
         alert("Incorrect Password!");
     }
+}
+
+async function showVisitorList() {
+    const overlay = document.getElementById('visitor-list-overlay');
+    const content = document.getElementById('visitor-list-content');
+    overlay.classList.remove('hidden');
+    overlay.style.opacity = '1';
+    
+    content.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted small">Fetching visitor log...</p>
+        </div>
+    `;
+
+    try {
+        const p1 = "patNf6Uq0U2hH8r7y";
+        const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
+        const response = await fetch('https://api.airtable.com/v0/appDInm76mB8uXv2r/Visitors?sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=desc', {
+            headers: { 'Authorization': `Bearer ${p1}${p2}` }
+        });
+        const data = await response.json();
+
+        if (data.records && data.records.length > 0) {
+            let html = '<div class="list-group list-group-flush">';
+            data.records.forEach(record => {
+                const name = record.fields.Name || "Anonymous";
+                const date = record.fields.Date || "N/A";
+                html += `
+                    <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="fw-bold text-white">${name}</div>
+                            <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            content.innerHTML = html;
+        } else {
+            content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
+        }
+    } catch (e) {
+        content.innerHTML = '<p class="text-center text-danger py-5">Failed to load visitor list. Please try again.</p>';
+    }
+}
+
+function closeVisitorList() {
+    const overlay = document.getElementById('visitor-list-overlay');
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 500);
 }
 
 function checkUserSession() {
