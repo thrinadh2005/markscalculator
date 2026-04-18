@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMRIT Academic Calculator | AR23</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="dark">
+    <!-- Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <nav class="navbar navbar-expand-lg border-bottom no-print mb-3">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+                <i data-lucide="calculator" style="color: var(--primary);"></i>
+                <span>GMRIT AR23</span>
+            </a>
+            <button class="btn btn-link text-muted p-0" onclick="toggleTheme()">
+                <i data-lucide="sun" id="theme-icon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <ul class="nav nav-pills gap-2 mb-4 no-print justify-content-center">
+            <li class="nav-item">
+                <button class="nav-link active" onclick="showTab('internal')">Internal Predictor</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" onclick="showTab('sgpa')">SGPA Calculator</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" onclick="showTab('cgpa')">CGPA Calculator</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" onclick="showTab('results')">Results Portal</button>
+            </li>
+        </ul>
+
+        <!-- Internal Marks -->
+        <div id="internal-tab" class="tab-content">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-7">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0 fw-bold">Internal Predictor</h4>
+                            <button class="btn btn-sm btn-light d-flex align-items-center gap-1" onclick="resetInternal()">
+                                <i data-lucide="rotate-ccw" style="width: 14px;"></i> Reset
+                            </button>
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Course Classification</label>
+                                <select id="course-type" class="form-select" onchange="toggleInternalFields()">
+                                    <option value="theory">Theory (30M)</option>
+                                    <option value="lab">Lab (30M)</option>
+                                    <option value="integrated">Integrated (40M)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="internal-inputs">
+                            <div id="theory-fields" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Mid-I (40)</label>
+                                    <input type="number" id="mid1" class="form-control" max="40" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Mid-II (40)</label>
+                                    <input type="number" id="mid2" class="form-control" max="40" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label id="ass-label" class="form-label small fw-bold text-muted text-uppercase">Assignment (30)</label>
+                                    <input type="number" id="assignment" class="form-control" max="30" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                            </div>
+
+                            <div id="lab-fields" class="row g-3 hidden">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Continuous Eval (15)</label>
+                                    <input type="number" id="lab-record" class="form-control" max="15" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Internal Test (15)</label>
+                                    <input type="number" id="lab-test" class="form-control" max="15" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                            </div>
+
+                            <div id="integrated-fields" class="row g-3 hidden mt-1">
+                                <div class="col-12"><p class="small fw-bold mb-1 text-uppercase" style="color: var(--primary);">Lab Component (Internal + External)</p></div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Record (5)</label>
+                                    <input type="number" id="int-lab-record" class="form-control" max="5" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Internal Test (5)</label>
+                                    <input type="number" id="int-lab-test" class="form-control" max="5" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Lab External (20)</label>
+                                    <input type="number" id="lab-external" class="form-control" max="20" placeholder="0" oninput="calculateInternal()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="formula-note" class="mt-4 p-3 rounded-3 bg-primary bg-opacity-10 small border border-primary border-opacity-10" style="color: var(--primary);">
+                            <i data-lucide="info" class="me-2" style="width: 14px; color: var(--primary);"></i>
+                            <strong>Formula:</strong> (0.8 * Better + 0.2 * Other) / 40 * 20 + Assignment (30→10)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="summary-box mb-4">
+                        <p class="small text-uppercase fw-bold mb-1 opacity-75">Internal Score</p>
+                        <div class="summary-value mb-2" id="internal-result">0</div>
+                        <p class="small fw-bold mb-3" id="internal-max-label">Out of 30</p>
+                        <button class="btn btn-sm btn-light no-print w-100 fw-bold rounded-3 py-2" onclick="window.print()">
+                            <i data-lucide="printer" style="width: 16px;"></i> Print Report
+                        </button>
+                    </div>
+
+                    <div id="grade-predictor" class="glass-card p-4 hidden">
+                        <h6 class="fw-bold mb-3 text-uppercase letter-spacing-1" style="color: var(--primary);">Grade Prediction</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Grade</th>
+                                        <th>SEE REQ.</th>
+                                        <th>TOTAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grade-predictor-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SGPA Calculator -->
+        <div id="sgpa-tab" class="tab-content hidden">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-9">
+                    <div class="glass-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                            <h4 class="mb-0 fw-bold">SGPA Calculator</h4>
+                            <div class="d-flex gap-2 align-items-center">
+                                <div id="career-path-container" class="hidden">
+                                    <select id="career-path-select" class="form-select w-auto" onchange="loadSemesterSubjects()">
+                                        <option value="AI&ML">AI & ML</option>
+                                        <option value="FullStack">Full Stack</option>
+                                        <option value="CyberSecurity">Cyber Security</option>
+                                        <option value="CloudComputing">Cloud Computing</option>
+                                    </select>
+                                </div>
+                                <select id="semester-select" class="form-select w-auto" onchange="loadSemesterSubjects()">
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                    <option value="3">Semester 3</option>
+                                    <option value="4">Semester 4</option>
+                                    <option value="5">Semester 5</option>
+                                    <option value="6">Semester 6</option>
+                                    <option value="7">Semester 7</option>
+                                    <option value="8">Semester 8</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th class="text-center">Credits</th>
+                                        <th>Grade</th>
+                                        <th class="text-center">GP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sgpa-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="summary-box">
+                        <p class="small text-uppercase fw-bold mb-1 opacity-75">Semester SGPA</p>
+                        <div class="summary-value mb-3" id="sgpa-result">0.00</div>
+                        <button class="btn btn-sm btn-light no-print w-100 fw-bold rounded-3 py-2" onclick="window.print()">
+                            <i data-lucide="printer" style="width: 16px;"></i> Print Result
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CGPA Calculator -->
+        <div id="cgpa-tab" class="tab-content hidden">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-9">
+                    <div class="glass-card p-4">
+                        <h4 class="mb-4 fw-bold">CGPA Calculator</h4>
+                        <div id="cgpa-inputs" class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3"></div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="summary-box">
+                        <p class="small text-uppercase fw-bold mb-1 opacity-75">Cumulative CGPA</p>
+                        <div class="summary-value mb-1" id="cgpa-result-val">0.00</div>
+                        <p id="cgpa-class" class="small fw-bold mb-3 text-uppercase" style="color: var(--primary);"></p>
+                        <button class="btn btn-sm btn-light no-print w-100 fw-bold rounded-3 py-2" onclick="window.print()">
+                            <i data-lucide="printer" style="width: 16px;"></i> Print Result
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Portal -->
+        <div id="results-tab" class="tab-content hidden">
+            <div class="glass-card p-4 overflow-hidden" style="height: 80vh;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 fw-bold">GMRIT Results Portal</h4>
+                    <a href="https://gmrit.campx.in/gmrit/ums/results" target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2">
+                        <i data-lucide="external-link" style="width: 16px;"></i> Open in New Tab
+                    </a>
+                </div>
+                <div class="rounded-3 overflow-hidden border border-primary border-opacity-10 h-100 bg-white">
+                    <iframe src="https://gmrit.campx.in/gmrit/ums/results" style="width: 100%; height: 100%; border: none;" title="GMRIT Results"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Scripts -->
+    <script src="js/script.js"></script>
+</body>
+</html>
