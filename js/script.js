@@ -107,10 +107,46 @@ const gradePoints = {
 
 function init() {
     lucide.createIcons();
+    checkUserSession();
     loadSemesterSubjects();
     generateCgpaInputs();
     setupInputValidation();
     updateVisitorCount();
+}
+
+function checkUserSession() {
+    const userName = localStorage.getItem('calculator_user_name');
+    if (userName) {
+        document.getElementById('login-overlay').classList.add('hidden');
+    }
+}
+
+async function handleLogin() {
+    const nameInput = document.getElementById('user-name-input');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        nameInput.classList.add('is-invalid');
+        return;
+    }
+
+    // Store locally
+    localStorage.setItem('calculator_user_name', name);
+    
+    // Track globally using a custom event/hit on CounterAPI
+    // We'll use a specific namespace for users to "log" them
+    try {
+        await fetch(`https://api.counterapi.dev/v1/thrinadh2005/markscalculator_users/up`);
+    } catch (e) {
+        console.log("Global tracking failed, but user session saved locally.");
+    }
+
+    // Hide overlay with animation
+    const overlay = document.getElementById('login-overlay');
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 500);
 }
 
 async function updateVisitorCount() {
