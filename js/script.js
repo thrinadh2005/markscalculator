@@ -300,26 +300,33 @@ function renderVisitorList(globalLogs, localLogs) {
     const content = document.getElementById('visitor-list-content');
     if (!content) return;
 
-    if (globalLogs.length === 0 && localLogs.length === 0) {
+    // Filter out any null or invalid entries from global logs
+    const validGlobalLogs = globalLogs.filter(item => item !== null && typeof item === 'object');
+
+    if (validGlobalLogs.length === 0 && localLogs.length === 0) {
         content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
         return;
     }
 
     let html = '';
 
-    if (globalLogs.length > 0) {
+    if (validGlobalLogs.length > 0) {
         html += `
             <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
-                Global Log (${globalLogs.length})
+                Global Log (${validGlobalLogs.length})
             </div>
             <div class="list-group list-group-flush mb-4">
         `;
-        globalLogs.slice(0, 50).forEach(item => {
+        validGlobalLogs.slice(0, 50).forEach(item => {
+            // Support multiple possible name keys for robustness
+            const name = item.name || item.userName || item.user || 'Anonymous';
+            const date = item.date || item.timestamp || 'Unknown';
+            
             html += `
                 <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="fw-bold text-white">${item.name || 'Anonymous'}</div>
-                        <div class="text-muted small" style="font-size: 0.65rem;">${item.date || 'Unknown'}</div>
+                        <div class="fw-bold text-white">${name}</div>
+                        <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
                     </div>
                 </div>
             `;
@@ -335,11 +342,14 @@ function renderVisitorList(globalLogs, localLogs) {
             <div class="list-group list-group-flush">
         `;
         localLogs.slice(0, 10).forEach(item => {
+            const name = item.name || item.userName || item.user || 'Anonymous';
+            const date = item.date || item.timestamp || 'Unknown';
+
             html += `
                 <div class="list-group-item bg-transparent border-white border-opacity-10 py-3 px-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="fw-bold text-muted">${item.name || 'Anonymous'}</div>
-                        <div class="text-muted small" style="font-size: 0.65rem;">${item.date || 'Unknown'}</div>
+                        <div class="fw-bold text-muted">${name}</div>
+                        <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
                     </div>
                 </div>
             `;
