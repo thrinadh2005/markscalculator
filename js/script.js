@@ -234,6 +234,9 @@ const gradePoints = {
     "S": 10, "A": 9, "B": 8, "C": 7, "D": 6, "E": 5, "F": 0
 };
 
+let adminClickCount = 0;
+let adminClickTimer = null;
+
 function init() {
     lucide.createIcons();
     checkUserSession();
@@ -244,11 +247,24 @@ function init() {
 }
 
 function checkAdmin() {
-    const pass = prompt("Enter Admin Password to view Visitor List:");
-    if (pass === "thrinadh2005") {
-        showVisitorList();
-    } else if (pass !== null) {
-        alert("Incorrect Password!");
+    // Clear existing timer
+    if (adminClickTimer) clearTimeout(adminClickTimer);
+    
+    adminClickCount++;
+    
+    if (adminClickCount === 5) {
+        adminClickCount = 0;
+        const pass = prompt("Enter Admin Password to view Visitor List:");
+        if (pass === "thrinadh2005") {
+            showVisitorList();
+        } else if (pass !== null) {
+            alert("Incorrect Password!");
+        }
+    } else {
+        // Reset counter after 2 seconds of inactivity
+        adminClickTimer = setTimeout(() => {
+            adminClickCount = 0;
+        }, 2000);
     }
 }
 
