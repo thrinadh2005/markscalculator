@@ -109,6 +109,28 @@ function init() {
     lucide.createIcons();
     loadSemesterSubjects();
     generateCgpaInputs();
+    setupInputValidation();
+}
+
+function setupInputValidation() {
+    // Select all number inputs that have a max attribute
+    const inputs = document.querySelectorAll('input[type="number"][max]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const max = parseFloat(this.getAttribute('max'));
+            const min = parseFloat(this.getAttribute('min')) || 0;
+            let value = parseFloat(this.value);
+
+            if (isNaN(value)) return;
+
+            if (value > max) {
+                this.value = max;
+            } else if (value < min) {
+                this.value = min;
+            }
+        });
+    });
 }
 
 function toggleTheme() {

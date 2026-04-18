@@ -73,26 +73,26 @@
                             <div id="theory-fields" class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Mid-I (40)</label>
-                                    <input type="number" id="mid1" class="form-control" max="40" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="mid1" class="form-control" min="0" max="40" placeholder="0" oninput="calculateInternal()">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Mid-II (40)</label>
-                                    <input type="number" id="mid2" class="form-control" max="40" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="mid2" class="form-control" min="0" max="40" placeholder="0" oninput="calculateInternal()">
                                 </div>
                                 <div class="col-md-4">
                                     <label id="ass-label" class="form-label small fw-bold text-muted text-uppercase">Assignment (30)</label>
-                                    <input type="number" id="assignment" class="form-control" max="30" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="assignment" class="form-control" min="0" max="30" placeholder="0" oninput="calculateInternal()">
                                 </div>
                             </div>
 
                             <div id="lab-fields" class="row g-3 hidden">
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Continuous Eval (15)</label>
-                                    <input type="number" id="lab-record" class="form-control" max="15" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="lab-record" class="form-control" min="0" max="15" placeholder="0" oninput="calculateInternal()">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Internal Test (15)</label>
-                                    <input type="number" id="lab-test" class="form-control" max="15" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="lab-test" class="form-control" min="0" max="15" placeholder="0" oninput="calculateInternal()">
                                 </div>
                             </div>
 
@@ -100,15 +100,15 @@
                                 <div class="col-12"><p class="small fw-bold mb-1 text-uppercase" style="color: var(--primary);">Lab Component (Internal + External)</p></div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Record (5)</label>
-                                    <input type="number" id="int-lab-record" class="form-control" max="5" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="int-lab-record" class="form-control" min="0" max="5" placeholder="0" oninput="calculateInternal()">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Internal Test (5)</label>
-                                    <input type="number" id="int-lab-test" class="form-control" max="5" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="int-lab-test" class="form-control" min="0" max="5" placeholder="0" oninput="calculateInternal()">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold text-muted text-uppercase">Lab External (20)</label>
-                                    <input type="number" id="lab-external" class="form-control" max="20" placeholder="0" oninput="calculateInternal()">
+                                    <input type="number" id="lab-external" class="form-control" min="0" max="20" placeholder="0" oninput="calculateInternal()">
                                 </div>
                             </div>
                         </div>
