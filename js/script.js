@@ -229,65 +229,6 @@ const syllabus = {
         ]
     }
 };
-            {"code": "23IT301", "name": "Python Programming and Applications", "credits": 3.0, "type": "theory"},
-            {"code": "23CS304", "name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
-            {"code": "23CS305", "name": "Discrete Mathematical Structures", "credits": 3.0, "type": "theory"},
-            {"code": "23IT304", "name": "Database Management Systems", "credits": 3.0, "type": "theory"},
-            {"code": "23IT305", "name": "Data Communication Systems", "credits": 3.0, "type": "theory"},
-            {"code": "23IT306", "name": "Object Oriented Programming through Java", "credits": 4.0, "type": "integrated"},
-            {"code": "23IT307", "name": "Python Programming Lab", "credits": 1.5, "type": "lab"},
-            {"code": "23IT308", "name": "DBMS Lab", "credits": 1.5, "type": "lab"},
-            {"code": "23ESX01", "name": "Employability Skills I", "credits": 0.0, "type": "theory"}
-        ],
-        "4": [
-            {"code": "23MA405", "name": "Probability and Statistics", "credits": 3.0, "type": "theory"},
-            {"code": "23CS403", "name": "Computer Organization and Architecture", "credits": 3.0, "type": "theory"},
-            {"code": "23IT403", "name": "Operating Systems", "credits": 3.0, "type": "theory"},
-            {"code": "23CS303", "name": "Design and Analysis of Algorithms", "credits": 3.0, "type": "theory"},
-            {"code": "23IT405", "name": "Web Technologies", "credits": 4.0, "type": "integrated"},
-            {"code": "23CS307", "name": "Design and Analysis of Algorithms Lab", "credits": 1.5, "type": "lab"},
-            {"code": "23IT407", "name": "Operating Systems Lab", "credits": 1.5, "type": "lab"},
-            {"code": "23ESX01", "name": "Employability Skills I", "credits": 2.0, "type": "theory"}
-        ],
-        "5": [
-            {"code": "23IT501", "name": "Computer Networking", "credits": 4.0, "type": "integrated"},
-            {"code": "23IT502", "name": "Artificial Intelligence", "credits": 3.0, "type": "theory"},
-            {"code": "23IT503", "name": "Cloud Computing", "credits": 3.0, "type": "theory"},
-            {"code": "23IT504", "name": "Software Engineering Principles", "credits": 4.0, "type": "integrated"},
-            {"isProfessionalElective": true, "name": "Elective I (Professional Elective)", "credits": 3.0},
-            {"code": "OE-1", "name": "Elective II (Open Elective I)", "credits": 3.0, "type": "theory"},
-            {"code": "23IT507", "name": "Cloud Computing Lab", "credits": 1.5, "type": "lab"},
-            {"code": "23TPX01", "name": "Term Paper", "credits": 1.5, "type": "lab"},
-            {"code": "23ESX02", "name": "Employability Skills II", "credits": 0.0, "type": "theory"},
-            {"code": "23SIX01", "name": "Summer Internship I", "credits": 1.0, "type": "lab"}
-        ],
-        "6": [
-            {"code": "23HSX10", "name": "Engineering Economics & Project Management", "credits": 3.0, "type": "theory"},
-            {"code": "23IT602", "name": "Automata & Compiler Design", "credits": 3.0, "type": "theory"},
-            {"code": "23IT603", "name": "Machine Learning", "credits": 3.0, "type": "theory"},
-            {"isProfessionalElective": true, "name": "Elective III (Professional Elective)", "credits": 4.0},
-            {"code": "OE-2", "name": "Elective IV (Open Elective II)", "credits": 3.0, "type": "theory"},
-            {"code": "23IT606", "name": "Machine Learning Lab using Python", "credits": 1.5, "type": "lab"},
-            {"code": "23MPX01", "name": "Mini Project", "credits": 1.5, "type": "lab"},
-            {"code": "23ESX02", "name": "Employability Skills II", "credits": 2.0, "type": "theory"},
-            {"code": "23ATX01", "name": "Environmental Studies", "credits": 0.0, "type": "theory"},
-            {"code": "23ATX02", "name": "Professional Ethics & Human Values", "credits": 0.0, "type": "theory"},
-            {"code": "Audit", "name": "Audit Course", "credits": 0.0, "type": "theory"}
-        ],
-        "7": [
-            {"isProfessionalElective": true, "name": "Elective V (Professional Elective)", "credits": 3.0},
-            {"isProfessionalElective": true, "name": "Elective VI (Professional Elective)", "credits": 3.0},
-            {"code": "OE-3", "name": "Elective VII (Open Elective III)", "credits": 3.0, "type": "theory"},
-            {"code": "23PWX01", "name": "Project", "credits": 8.0, "type": "lab"},
-            {"code": "23SIX02", "name": "Summer Internship II", "credits": 1.0, "type": "lab"}
-        ],
-        "8": [
-            {"isProfessionalElective": true, "name": "Elective VIII (Professional Elective)", "credits": 3.0},
-            {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"},
-            {"code": "23FIX01", "name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
-        ]
-    }
-};
 
 const gradePoints = {
     "S": 10, "A": 9, "B": 8, "C": 7, "D": 6, "E": 5, "F": 0
@@ -667,7 +608,10 @@ function updateGradePredictor(internalMarks, type) {
 
 // SGPA Calculator
 function loadSemesterSubjects() {
-    const branch = document.getElementById('branch-select').value;
+    const branchSelect = document.getElementById('branch-select');
+    if (!branchSelect) return;
+    
+    const branch = branchSelect.value;
     const sem = document.getElementById('semester-select').value;
     const pathContainer = document.getElementById('career-path-container');
     const pathSelect = document.getElementById('career-path-select');
@@ -763,7 +707,10 @@ function updateSgpa() {
 
 // CGPA Calculator
 function generateCgpaInputs() {
-    const branch = document.getElementById('branch-select').value;
+    const branchSelect = document.getElementById('branch-select');
+    if (!branchSelect) return;
+    
+    const branch = branchSelect.value;
     const container = document.getElementById('cgpa-inputs');
     container.innerHTML = '';
     
