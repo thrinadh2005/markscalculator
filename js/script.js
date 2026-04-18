@@ -129,26 +129,24 @@ async function showVisitorList() {
     overlay.classList.remove('hidden');
     overlay.style.opacity = '1';
     
-    content.innerHTML = `
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-3 text-muted small">Fetching visitor log...</p>
-        </div>
-    `;
-
-    // 1. First, show local history (Instant)
+    // 1. Show local history IMMEDIATELY
     const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
     renderVisitorList(localLog, true);
 
-    // 2. Then, try to fetch global log (Airtable)
+    // 2. Try to fetch global log with a strict timeout
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
         const p1 = "patNf6Uq0U2hH8r7y";
         const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
+        
         const response = await fetch('https://api.airtable.com/v0/appDInm76mB8uXv2r/Visitors?sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=desc', {
-            headers: { 'Authorization': `Bearer ${p1}${p2}` }
+            headers: { 'Authorization': `Bearer ${p1}${p2}` },
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         const data = await response.json();
 
         if (data.records && data.records.length > 0) {
@@ -159,7 +157,10 @@ async function showVisitorList() {
             renderVisitorList(globalLog, false);
         }
     } catch (e) {
-        console.log("Failed to load global log. Showing local history only.");
+        console.log("Global log fetch timed out or failed. Showing local history.");
+        if (localLog.length === 0) {
+            content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
+        }
     }
 }
 
