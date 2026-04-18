@@ -191,6 +191,11 @@
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                             <h4 class="mb-0 fw-bold">SGPA Calculator</h4>
                             <div class="d-flex gap-2 align-items-center">
+                                <select id="branch-select" class="form-select w-auto" onchange="loadSemesterSubjects()">
+                                    <option value="CSE">CSE</option>
+                                    <option value="ECE">ECE</option>
+                                    <option value="IT">IT</option>
+                                </select>
                                 <div id="career-path-container" class="hidden">
                                     <select id="career-path-select" class="form-select w-auto" onchange="loadSemesterSubjects()">
                                         <option value="AI&ML">AI & ML</option>

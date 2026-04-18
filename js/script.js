@@ -21,84 +21,272 @@ const professionalElectives = {
     }
 };
 
+const commonSem1 = [
+    {"code": "23PYX01/23CYX01", "name": "Engineering Physics/Chemistry", "credits": 3.0, "type": "theory"},
+    {"code": "23MAX01/23MAX02", "name": "Linear Algebra & Calculus / Differential Equations", "credits": 3.0, "type": "theory"},
+    {"code": "23BEX01/23BEX02", "name": "Basic Electrical & Electronics / Civil & Mechanical Engineering", "credits": 3.0, "type": "theory"},
+    {"code": "23BEX03", "name": "Introduction to Programming", "credits": 3.0, "type": "theory"},
+    {"code": "23BEX04/23HSX01", "name": "Engineering Graphics/Communicative English", "credits": 3.0, "type": "theory"},
+    {"code": "23PYX02/23CYX03", "name": "Engineering Physics Lab/Chemistry Lab", "credits": 1.0, "type": "lab"},
+    {"code": "23BEX05/23BEX06", "name": "Electrical & Electronics / Engineering Workshop", "credits": 1.5, "type": "lab"},
+    {"code": "23BEX07", "name": "Computer Programming Lab", "credits": 1.5, "type": "lab"},
+    {"code": "23HSX11", "name": "ECA (Yoga / Sports)", "credits": 0.5, "type": "theory"},
+    {"code": "23HSX12", "name": "CCA (NSS/NCC/Community Service)", "credits": 0.5, "type": "theory"}
+];
+
+const commonSem2 = [
+    {"code": "23HSX01/23BEX04", "name": "Communicative English / Engineering Graphics", "credits": 2.0, "type": "theory"},
+    {"code": "23MAX02/23MAX01", "name": "Differential Equations / Linear Algebra & Calculus", "credits": 3.0, "type": "theory"},
+    {"code": "23CYX01/23PYX01", "name": "Chemistry / Engineering Physics", "credits": 3.0, "type": "theory"},
+    {"code": "23BEX02/23BEX01", "name": "Civil & Mechanical / Electrical & Electronics Engineering", "credits": 3.0, "type": "theory"},
+    {"code": "23CS201", "name": "Data Structures", "credits": 3.0, "type": "theory"},
+    {"code": "23CYX03/23PYX02", "name": "Chemistry Lab / Engineering Physics Lab", "credits": 1.0, "type": "lab"},
+    {"code": "23BEX06/23BEX05", "name": "Engineering Workshop / Electrical & Electronics Workshop", "credits": 1.5, "type": "lab"},
+    {"code": "23BEX08", "name": "IT Workshop", "credits": 1.0, "type": "lab"},
+    {"code": "23HSX02", "name": "Communicative English Lab", "credits": 1.0, "type": "lab"},
+    {"code": "23CS202", "name": "Data Structures Lab", "credits": 1.5, "type": "lab"}
+];
+
 const syllabus = {
-    "1": [
-        {"code": "23PYX01/23CYX01", "name": "Engineering Physics/Chemistry", "credits": 3.0, "type": "theory"},
-        {"code": "23MAX01/23MAX02", "name": "Linear Algebra & Calculus / Differential Equations", "credits": 3.0, "type": "theory"},
-        {"code": "23BEX01/23BEX02", "name": "Basic Electrical & Electronics / Civil & Mechanical Engineering", "credits": 3.0, "type": "theory"},
-        {"code": "23BEX03", "name": "Introduction to Programming", "credits": 3.0, "type": "theory"},
-        {"code": "23BEX04/23HSX01", "name": "Engineering Graphics/Communicative English", "credits": 3.0, "type": "theory"},
-        {"code": "23PYX02/23CYX03", "name": "Engineering Physics Lab/Chemistry Lab", "credits": 1.0, "type": "lab"},
-        {"code": "23BEX05/23BEX06", "name": "Electrical & Electronics / Engineering Workshop", "credits": 1.5, "type": "lab"},
-        {"code": "23BEX07", "name": "Computer Programming Lab", "credits": 1.5, "type": "lab"},
-        {"code": "23HSX11", "name": "ECA (Yoga / Sports)", "credits": 0.5, "type": "theory"},
-        {"code": "23HSX12", "name": "CCA (NSS/NCC/Community Service)", "credits": 0.5, "type": "theory"}
-    ],
-    "2": [
-        {"code": "23HSX01/23BEX04", "name": "Communicative English / Engineering Graphics", "credits": 2.0, "type": "theory"},
-        {"code": "23MAX02/23MAX01", "name": "Differential Equations / Linear Algebra & Calculus", "credits": 3.0, "type": "theory"},
-        {"code": "23CYX01/23PYX01", "name": "Chemistry / Engineering Physics", "credits": 3.0, "type": "theory"},
-        {"code": "23BEX02/23BEX01", "name": "Civil & Mechanical / Electrical & Electronics Engineering", "credits": 3.0, "type": "theory"},
-        {"code": "23CS201", "name": "Data Structures", "credits": 3.0, "type": "theory"},
-        {"code": "23CYX03/23PYX02", "name": "Chemistry Lab / Engineering Physics Lab", "credits": 1.0, "type": "lab"},
-        {"code": "23BEX06/23BEX05", "name": "Engineering Workshop / Electrical & Electronics Workshop", "credits": 1.5, "type": "lab"},
-        {"code": "23BEX08", "name": "IT Workshop", "credits": 1.0, "type": "lab"},
-        {"code": "23HSX02", "name": "Communicative English Lab", "credits": 1.0, "type": "lab"},
-        {"code": "23CS202", "name": "Data Structures Lab", "credits": 1.5, "type": "lab"}
-    ],
-    "3": [
-        {"code": "23CS301", "name": "Problem solving using Python", "credits": 4.0, "type": "integrated"},
-        {"code": "23HSX10", "name": "Engineering Economics and Project Management", "credits": 3.0, "type": "theory"},
-        {"code": "23CS303", "name": "Design and Analysis of Algorithms", "credits": 3.0, "type": "theory"},
-        {"code": "23CS304", "name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
-        {"code": "23CS305", "name": "Discrete Mathematical Structures", "credits": 3.0, "type": "theory"},
-        {"code": "23CS306", "name": "Object Oriented Programming with JAVA", "credits": 3.0, "type": "theory"},
-        {"code": "23CS307", "name": "Design and Analysis of Algorithms Lab", "credits": 1.5, "type": "lab"},
-        {"code": "23CS308", "name": "JAVA Lab", "credits": 1.5, "type": "lab"}
-    ],
-    "4": [
-        {"code": "23IT304", "name": "Database Management Systems", "credits": 3.0, "type": "theory"},
-        {"code": "23IT403", "name": "Operating Systems", "credits": 3.0, "type": "theory"},
-        {"code": "23CS403", "name": "Computer Organization and Architecture", "credits": 3.0, "type": "theory"},
-        {"code": "23MA404", "name": "Probability and Statistics using Python", "credits": 4.0, "type": "integrated"},
-        {"code": "23CS405", "name": "Web Coding and Development", "credits": 3.0, "type": "theory"},
-        {"code": "23IT308", "name": "Database Management Systems Lab", "credits": 1.5, "type": "lab"},
-        {"code": "23CS407", "name": "Web Coding and Development Lab", "credits": 1.5, "type": "lab"},
-        {"code": "23ESX01", "name": "Employability Skills I", "credits": 2.0, "type": "theory"}
-    ],
-    "5": [
-        {"code": "23EC502", "name": "Microprocessors and Microcontrollers", "credits": 4.0, "type": "integrated"},
-        {"code": "23CS502", "name": "Artificial Intelligence and Machine Learning", "credits": 3.0, "type": "theory"},
-        {"code": "23CS503", "name": "Computer Networks", "credits": 4.0, "type": "integrated"},
-        {"code": "23CS504", "name": "Theory of Computation", "credits": 3.0, "type": "theory"},
-        {"isProfessionalElective": true},
-        {"code": "OE-1", "name": "Elective II (Open Elective I)", "credits": 3.0, "type": "theory"},
-        {"code": "23CS507", "name": "AI & ML Lab", "credits": 1.5, "type": "lab"},
-        {"code": "23TPX01", "name": "Term Paper", "credits": 1.5, "type": "lab"},
-        {"code": "23SIX01", "name": "Summer Internship I", "credits": 1.0, "type": "lab"}
-    ],
-    "6": [
-        {"code": "23CS601", "name": "Compiler Design", "credits": 3.0, "type": "theory"},
-        {"code": "23CS602", "name": "Cryptography and Network Security", "credits": 3.0, "type": "theory"},
-        {"code": "23CS603", "name": "Software Engineering", "credits": 3.0, "type": "theory"},
-        {"isProfessionalElective": true},
-        {"code": "OE-2", "name": "Elective IV (Open Elective II)", "credits": 3.0, "type": "theory"},
-        {"code": "23CS606", "name": "Case Tools Lab", "credits": 1.5, "type": "lab"},
-        {"code": "23MPX01", "name": "Mini Project", "credits": 1.5, "type": "lab"},
-        {"code": "23ESX02", "name": "Employability Skills II", "credits": 2.0, "type": "theory"}
-    ],
-    "7": [
-        {"isProfessionalElective": true},
-        {"code": "PE-6", "name": "Elective VI (Professional Elective)", "credits": 3.0, "type": "theory"},
-        {"code": "OE-3", "name": "Elective VII (Open Elective III)", "credits": 3.0, "type": "theory"},
-        {"code": "23SIX02", "name": "Summer Internship II", "credits": 1.0, "type": "lab"},
-        {"code": "23PWX01", "name": "Project", "credits": 8.0, "type": "lab"}
-    ],
-    "8": [
-        {"code": "PE-8", "name": "Elective VIII (Professional Elective)", "credits": 3.0, "type": "theory"},
-        {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"},
-        {"code": "23FIX01", "name": "Full Semester Internship (FSI)", "credits": 8.0, "type": "lab"}
-    ]
+    "CSE": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"code": "23CS301", "name": "Problem solving using Python", "credits": 4.0, "type": "integrated"},
+            {"code": "23HSX10", "name": "Engineering Economics and Project Management", "credits": 3.0, "type": "theory"},
+            {"code": "23CS303", "name": "Design and Analysis of Algorithms", "credits": 3.0, "type": "theory"},
+            {"code": "23CS304", "name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS305", "name": "Discrete Mathematical Structures", "credits": 3.0, "type": "theory"},
+            {"code": "23CS306", "name": "Object Oriented Programming with JAVA", "credits": 3.0, "type": "theory"},
+            {"code": "23CS307", "name": "Design and Analysis of Algorithms Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23CS308", "name": "JAVA Lab", "credits": 1.5, "type": "lab"}
+        ],
+        "4": [
+            {"code": "23IT304", "name": "Database Management Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23IT403", "name": "Operating Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23CS403", "name": "Computer Organization and Architecture", "credits": 3.0, "type": "theory"},
+            {"code": "23MA404", "name": "Probability and Statistics using Python", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS405", "name": "Web Coding and Development", "credits": 3.0, "type": "theory"},
+            {"code": "23IT308", "name": "Database Management Systems Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23CS407", "name": "Web Coding and Development Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"code": "23EC502", "name": "Microprocessors and Microcontrollers", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS502", "name": "Artificial Intelligence and Machine Learning", "credits": 3.0, "type": "theory"},
+            {"code": "23CS503", "name": "Computer Networks", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS504", "name": "Theory of Computation", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective I (Professional Elective)"},
+            {"code": "OE-1", "name": "Elective II (Open Elective I)", "credits": 3.0, "type": "theory"},
+            {"code": "23CS507", "name": "AI & ML Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23TPX01", "name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"code": "23SIX01", "name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"code": "23CS601", "name": "Compiler Design", "credits": 3.0, "type": "theory"},
+            {"code": "23CS602", "name": "Cryptography and Network Security", "credits": 3.0, "type": "theory"},
+            {"code": "23CS603", "name": "Software Engineering", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "credits": 4.0, "name": "Elective III (Professional Elective)"},
+            {"code": "OE-2", "name": "Elective IV (Open Elective II)", "credits": 3.0, "type": "theory"},
+            {"code": "23CS606", "name": "Case Tools Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23MPX01", "name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 2.0, "type": "theory"}
+        ],
+        "7": [
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective V (Professional Elective)"},
+            {"code": "PE-6", "name": "Elective VI (Professional Elective)", "credits": 3.0, "type": "theory"},
+            {"code": "OE-3", "name": "Elective VII (Open Elective III)", "credits": 3.0, "type": "theory"},
+            {"code": "23SIX02", "name": "Summer Internship II", "credits": 1.0, "type": "lab"},
+            {"code": "23PWX01", "name": "Project", "credits": 8.0, "type": "lab"}
+        ],
+        "8": [
+            {"code": "PE-8", "name": "Elective VIII (Professional Elective)", "credits": 3.0, "type": "theory"},
+            {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"},
+            {"code": "23FIX01", "name": "Full Semester Internship (FSI)", "credits": 8.0, "type": "lab"}
+        ]
+    },
+    "ECE": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"code": "23MA301", "name": "Complex Variables", "credits": 3.0, "type": "theory"},
+            {"code": "23EC301", "name": "Electronic Devices & Circuits", "credits": 3.0, "type": "theory"},
+            {"code": "23EC302", "name": "Python Programming", "credits": 4.0, "type": "integrated"},
+            {"code": "23EC303", "name": "Logic Circuit Design", "credits": 3.0, "type": "theory"},
+            {"code": "23EC304", "name": "Random Variables & Stochastic Processes", "credits": 3.0, "type": "theory"},
+            {"code": "23EC305", "name": "Signals & Systems", "credits": 4.0, "type": "integrated"},
+            {"code": "23EC306", "name": "Electronic Devices & Circuits Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23EC307", "name": "Logic Circuit Design Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 0.0, "type": "theory"}
+        ],
+        "4": [
+            {"code": "23CSE01", "name": "Object Oriented Programming", "credits": 3.0, "type": "theory"},
+            {"code": "23EC401", "name": "Analog & Digital Communications", "credits": 3.0, "type": "theory"},
+            {"code": "23EC402", "name": "Analog Electronic Circuits", "credits": 4.0, "type": "integrated"},
+            {"code": "23EC403", "name": "Electromagnetic Waves & Transmission Lines", "credits": 3.0, "type": "theory"},
+            {"code": "23EC404", "name": "Linear Control Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23CSE02", "name": "Object Oriented Programming Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23EC405", "name": "Analog & Digital Communications Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"code": "23EC501", "name": "Linear & Digital IC Applications", "credits": 3.0, "type": "theory"},
+            {"code": "23EC502", "name": "Microprocessors & Microcontrollers", "credits": 4.0, "type": "integrated"},
+            {"code": "23EC503", "name": "VLSI Design", "credits": 4.0, "type": "integrated"},
+            {"code": "23EC504", "name": "Antennas & Microwave Engineering", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "name": "Elective I (Professional Elective)", "credits": 3.0},
+            {"code": "OE-1", "name": "Elective II (Open Elective I)", "credits": 3.0, "type": "theory"},
+            {"code": "23EC505", "name": "Linear IC Applications Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23TPX01", "name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 0.0, "type": "theory"},
+            {"code": "23SIX01", "name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"code": "23HSX10", "name": "Engineering Economics & Project Management", "credits": 3.0, "type": "theory"},
+            {"code": "23EC601", "name": "Cellular & Mobile Communications", "credits": 3.0, "type": "theory"},
+            {"code": "23EC602", "name": "Digital Signal Processing", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "name": "Elective III (Professional Elective)", "credits": 4.0},
+            {"code": "OE-2", "name": "Elective IV (Open Elective II)", "credits": 3.0, "type": "theory"},
+            {"code": "23EC603", "name": "DSP Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23MPX01", "name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"code": "23ATX01", "name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"code": "23ATX02", "name": "Human Values & Professional Ethics", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"code": "23PWX01", "name": "Project Work", "credits": 8.0, "type": "lab"},
+            {"isProfessionalElective": true, "name": "Elective V (Professional Elective)", "credits": 3.0},
+            {"isProfessionalElective": true, "name": "Elective VI (Professional Elective)", "credits": 3.0},
+            {"code": "OE-3", "name": "Elective VII (Open Elective III)", "credits": 3.0, "type": "theory"},
+            {"code": "23SIX02", "name": "Summer Internship II", "credits": 1.0, "type": "lab"}
+        ],
+        "8": [
+            {"code": "23FIX01", "name": "Full Semester Internship", "credits": 8.0, "type": "lab"},
+            {"isProfessionalElective": true, "name": "Elective VIII (Professional Elective)", "credits": 3.0},
+            {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"}
+        ]
+    },
+    "IT": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"code": "23IT301", "name": "Python Programming and Applications", "credits": 3.0, "type": "theory"},
+            {"code": "23CS304", "name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS305", "name": "Discrete Mathematical Structures", "credits": 3.0, "type": "theory"},
+            {"code": "23IT304", "name": "Database Management Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23IT305", "name": "Data Communication Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23IT306", "name": "Object Oriented Programming through Java", "credits": 4.0, "type": "integrated"},
+            {"code": "23IT307", "name": "Python Programming Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23IT308", "name": "DBMS Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 0.0, "type": "theory"}
+        ],
+        "4": [
+            {"code": "23MA405", "name": "Probability and Statistics", "credits": 3.0, "type": "theory"},
+            {"code": "23CS403", "name": "Computer Organization and Architecture", "credits": 3.0, "type": "theory"},
+            {"code": "23IT403", "name": "Operating Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23CS303", "name": "Design and Analysis of Algorithms", "credits": 3.0, "type": "theory"},
+            {"code": "23IT405", "name": "Web Technologies", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS307", "name": "Design and Analysis of Algorithms Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23IT407", "name": "Operating Systems Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"code": "23IT501", "name": "Computer Networking", "credits": 4.0, "type": "integrated"},
+            {"code": "23IT502", "name": "Artificial Intelligence", "credits": 3.0, "type": "theory"},
+            {"code": "23IT503", "name": "Cloud Computing", "credits": 3.0, "type": "theory"},
+            {"code": "23IT504", "name": "Software Engineering Principles", "credits": 4.0, "type": "integrated"},
+            {"isProfessionalElective": true, "name": "Elective I (Professional Elective)", "credits": 3.0},
+            {"code": "OE-1", "name": "Elective II (Open Elective I)", "credits": 3.0, "type": "theory"},
+            {"code": "23IT507", "name": "Cloud Computing Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23TPX01", "name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 0.0, "type": "theory"},
+            {"code": "23SIX01", "name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"code": "23HSX10", "name": "Engineering Economics & Project Management", "credits": 3.0, "type": "theory"},
+            {"code": "23IT602", "name": "Automata & Compiler Design", "credits": 3.0, "type": "theory"},
+            {"code": "23IT603", "name": "Machine Learning", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "name": "Elective III (Professional Elective)", "credits": 4.0},
+            {"code": "OE-2", "name": "Elective IV (Open Elective II)", "credits": 3.0, "type": "theory"},
+            {"code": "23IT606", "name": "Machine Learning Lab using Python", "credits": 1.5, "type": "lab"},
+            {"code": "23MPX01", "name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"code": "23ATX01", "name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"code": "23ATX02", "name": "Professional Ethics & Human Values", "credits": 0.0, "type": "theory"},
+            {"code": "Audit", "name": "Audit Course", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"isProfessionalElective": true, "name": "Elective V (Professional Elective)", "credits": 3.0},
+            {"isProfessionalElective": true, "name": "Elective VI (Professional Elective)", "credits": 3.0},
+            {"code": "OE-3", "name": "Elective VII (Open Elective III)", "credits": 3.0, "type": "theory"},
+            {"code": "23PWX01", "name": "Project", "credits": 8.0, "type": "lab"},
+            {"code": "23SIX02", "name": "Summer Internship II", "credits": 1.0, "type": "lab"}
+        ],
+        "8": [
+            {"isProfessionalElective": true, "name": "Elective VIII (Professional Elective)", "credits": 3.0},
+            {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"},
+            {"code": "23FIX01", "name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
+        ]
+    }
+};
+            {"code": "23IT301", "name": "Python Programming and Applications", "credits": 3.0, "type": "theory"},
+            {"code": "23CS304", "name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS305", "name": "Discrete Mathematical Structures", "credits": 3.0, "type": "theory"},
+            {"code": "23IT304", "name": "Database Management Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23IT305", "name": "Data Communication Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23IT306", "name": "Object Oriented Programming through Java", "credits": 4.0, "type": "integrated"},
+            {"code": "23IT307", "name": "Python Programming Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23IT308", "name": "DBMS Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 0.0, "type": "theory"}
+        ],
+        "4": [
+            {"code": "23MA405", "name": "Probability and Statistics", "credits": 3.0, "type": "theory"},
+            {"code": "23CS403", "name": "Computer Organization and Architecture", "credits": 3.0, "type": "theory"},
+            {"code": "23IT403", "name": "Operating Systems", "credits": 3.0, "type": "theory"},
+            {"code": "23CS303", "name": "Design and Analysis of Algorithms", "credits": 3.0, "type": "theory"},
+            {"code": "23IT405", "name": "Web Technologies", "credits": 4.0, "type": "integrated"},
+            {"code": "23CS307", "name": "Design and Analysis of Algorithms Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23IT407", "name": "Operating Systems Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX01", "name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"code": "23IT501", "name": "Computer Networking", "credits": 4.0, "type": "integrated"},
+            {"code": "23IT502", "name": "Artificial Intelligence", "credits": 3.0, "type": "theory"},
+            {"code": "23IT503", "name": "Cloud Computing", "credits": 3.0, "type": "theory"},
+            {"code": "23IT504", "name": "Software Engineering Principles", "credits": 4.0, "type": "integrated"},
+            {"isProfessionalElective": true, "name": "Elective I (Professional Elective)", "credits": 3.0},
+            {"code": "OE-1", "name": "Elective II (Open Elective I)", "credits": 3.0, "type": "theory"},
+            {"code": "23IT507", "name": "Cloud Computing Lab", "credits": 1.5, "type": "lab"},
+            {"code": "23TPX01", "name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 0.0, "type": "theory"},
+            {"code": "23SIX01", "name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"code": "23HSX10", "name": "Engineering Economics & Project Management", "credits": 3.0, "type": "theory"},
+            {"code": "23IT602", "name": "Automata & Compiler Design", "credits": 3.0, "type": "theory"},
+            {"code": "23IT603", "name": "Machine Learning", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "name": "Elective III (Professional Elective)", "credits": 4.0},
+            {"code": "OE-2", "name": "Elective IV (Open Elective II)", "credits": 3.0, "type": "theory"},
+            {"code": "23IT606", "name": "Machine Learning Lab using Python", "credits": 1.5, "type": "lab"},
+            {"code": "23MPX01", "name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"code": "23ESX02", "name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"code": "23ATX01", "name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"code": "23ATX02", "name": "Professional Ethics & Human Values", "credits": 0.0, "type": "theory"},
+            {"code": "Audit", "name": "Audit Course", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"isProfessionalElective": true, "name": "Elective V (Professional Elective)", "credits": 3.0},
+            {"isProfessionalElective": true, "name": "Elective VI (Professional Elective)", "credits": 3.0},
+            {"code": "OE-3", "name": "Elective VII (Open Elective III)", "credits": 3.0, "type": "theory"},
+            {"code": "23PWX01", "name": "Project", "credits": 8.0, "type": "lab"},
+            {"code": "23SIX02", "name": "Summer Internship II", "credits": 1.0, "type": "lab"}
+        ],
+        "8": [
+            {"isProfessionalElective": true, "name": "Elective VIII (Professional Elective)", "credits": 3.0},
+            {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"},
+            {"code": "23FIX01", "name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
+        ]
+    }
 };
 
 const gradePoints = {
@@ -479,26 +667,27 @@ function updateGradePredictor(internalMarks, type) {
 
 // SGPA Calculator
 function loadSemesterSubjects() {
+    const branch = document.getElementById('branch-select').value;
     const sem = document.getElementById('semester-select').value;
     const pathContainer = document.getElementById('career-path-container');
     const pathSelect = document.getElementById('career-path-select');
     const path = pathSelect.value;
     
-    // Show/hide career path selector for semesters 5, 6, 7
-    if (['5', '6', '7'].includes(sem)) {
+    // Show/hide career path selector for semesters 5, 6, 7 in CSE/IT
+    if (['CSE', 'IT'].includes(branch) && ['5', '6', '7'].includes(sem)) {
         pathContainer.classList.remove('hidden');
     } else {
         pathContainer.classList.add('hidden');
     }
 
-    const subjects = syllabus[sem] || [];
+    const subjects = syllabus[branch][sem] || [];
     const tbody = document.getElementById('sgpa-table-body');
     tbody.innerHTML = '';
 
     subjects.forEach((sub, index) => {
         // Resolve professional elective if applicable
         let actualSub = sub;
-        if (sub.isProfessionalElective) {
+        if (sub.isProfessionalElective && ['CSE', 'IT'].includes(branch) && professionalElectives[path] && professionalElectives[path][sem]) {
             actualSub = professionalElectives[path][sem];
         }
 
@@ -508,7 +697,7 @@ function loadSemesterSubjects() {
                 <div class="fw-bold text-primary" style="cursor: pointer; font-size: 0.85rem;" onclick="loadToPredictor(${index})" title="Predict Marks">
                     ${actualSub.name} <i data-lucide="external-link" style="width: 10px; height: 10px;"></i>
                 </div>
-                <div class="text-muted" style="font-size: 0.7rem;">${actualSub.code}</div>
+                <div class="text-muted" style="font-size: 0.7rem;">${actualSub.code || ''}</div>
             </td>
             <td class="text-center fw-bold">${actualSub.credits}</td>
             <td>
@@ -523,18 +712,20 @@ function loadSemesterSubjects() {
     });
     lucide.createIcons();
     updateSgpa();
+    generateCgpaInputs(); // Ensure CGPA inputs match branch credits
 }
 
 function loadToPredictor(subIndex) {
+    const branch = document.getElementById('branch-select').value;
     const sem = document.getElementById('semester-select').value;
     const path = document.getElementById('career-path-select').value;
-    let sub = syllabus[sem][subIndex];
+    let sub = syllabus[branch][sem][subIndex];
     
-    if (sub.isProfessionalElective) {
+    if (sub.isProfessionalElective && ['CSE', 'IT'].includes(branch) && professionalElectives[path] && professionalElectives[path][sem]) {
         sub = professionalElectives[path][sem];
     }
     
-    document.getElementById('course-type').value = sub.type;
+    document.getElementById('course-type').value = sub.type || 'theory';
     toggleInternalFields();
     resetInternal();
     showTab('internal');
@@ -571,12 +762,17 @@ function updateSgpa() {
 }
 
 // CGPA Calculator
-const semCredits = [20, 20, 23, 21, 24, 21, 18, 13];
-
 function generateCgpaInputs() {
+    const branch = document.getElementById('branch-select').value;
     const container = document.getElementById('cgpa-inputs');
     container.innerHTML = '';
+    
     for (let i = 1; i <= 8; i++) {
+        let credits = 20; // Default
+        if (syllabus[branch] && syllabus[branch][i]) {
+            credits = syllabus[branch][i].reduce((sum, sub) => sum + (sub.credits || 0), 0);
+        }
+        
         const div = document.createElement('div');
         div.className = 'col';
         div.innerHTML = `
@@ -584,9 +780,9 @@ function generateCgpaInputs() {
                 <label class="form-label mb-1 fw-bold text-white text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Semester ${i}</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-transparent border-end-0 text-white opacity-75" style="font-size: 0.7rem; border-color: var(--glass-border);">SGPA</span>
-                    <input type="number" step="0.01" class="form-control sem-sgpa-input border-start-0 text-white" data-credits="${semCredits[i-1]}" placeholder="0.00" oninput="updateCgpa()" style="border-color: var(--glass-border);">
+                    <input type="number" step="0.01" class="form-control sem-sgpa-input border-start-0 text-white" data-credits="${credits}" placeholder="0.00" oninput="updateCgpa()" style="border-color: var(--glass-border);">
                 </div>
-                <div class="mt-2 text-white fw-bold" style="font-size: 0.65rem; opacity: 0.9; letter-spacing: 0.5px;">CREDITS: ${semCredits[i-1]}</div>
+                <div class="mt-2 text-white fw-bold" style="font-size: 0.65rem; opacity: 0.9; letter-spacing: 0.5px;">CREDITS: ${credits}</div>
             </div>
         `;
         container.appendChild(div);
