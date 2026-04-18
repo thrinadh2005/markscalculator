@@ -116,21 +116,25 @@ function init() {
 async function updateVisitorCount() {
     const counterEl = document.getElementById('visitor-count');
     try {
-        // Using a free, reliable visitor count API (countapi.xyz is often unstable, using a more stable fallback)
-        // We'll use a simple localStorage based counter for immediate persistence 
-        // while also trying to fetch from a public count service if available.
+        // Using CounterAPI.dev for a real global visitor count
+        // Namespace: thrinadh2005, Key: markscalculator
+        const response = await fetch('https://api.counterapi.dev/v1/thrinadh2005/markscalculator/up');
+        const data = await response.json();
         
-        let count = localStorage.getItem('site_visitors') || 100; // Start at 100 for better look
+        if (data && data.count) {
+            // Display the global count
+            setTimeout(() => {
+                counterEl.textContent = data.count.toLocaleString();
+            }, 500);
+        } else {
+            throw new Error('Invalid API response');
+        }
+    } catch (error) {
+        // Fallback to localStorage if the global API fails
+        let count = localStorage.getItem('site_visitors') || 1024;
         count = parseInt(count) + 1;
         localStorage.setItem('site_visitors', count);
-        
-        // Display the count with a slight delay for effect
-        setTimeout(() => {
-            counterEl.textContent = count.toLocaleString();
-        }, 500);
-
-    } catch (error) {
-        counterEl.textContent = "1,024+";
+        counterEl.textContent = count.toLocaleString() + "+";
     }
 }
 
