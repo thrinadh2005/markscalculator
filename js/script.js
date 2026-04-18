@@ -136,24 +136,18 @@ async function showVisitorList() {
     // 2. Try to fetch global log with a strict timeout
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 second timeout
 
-        const p1 = "patNf6Uq0U2hH8r7y";
-        const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
-        
-        const response = await fetch('https://api.airtable.com/v0/appDInm76mB8uXv2r/Visitors?sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=desc', {
-            headers: { 'Authorization': `Bearer ${p1}${p2}` },
+        const response = await fetch('https://gmrit-calc-default-rtdb.firebaseio.com/visitors.json', {
             signal: controller.signal
         });
         
         clearTimeout(timeoutId);
         const data = await response.json();
 
-        if (data.records && data.records.length > 0) {
-            const globalLog = data.records.map(r => ({
-                name: r.fields.Name,
-                date: r.fields.Date
-            }));
+        if (data) {
+            // Convert Firebase object to array and sort by date desc
+            const globalLog = Object.values(data).reverse();
             renderVisitorList(globalLog, false);
         }
     } catch (e) {
@@ -225,26 +219,17 @@ async function handleLogin() {
     localLog.unshift({ name: name, date: new Date().toLocaleString() });
     localStorage.setItem('visitor_history', JSON.stringify(localLog.slice(0, 50)));
 
-    // Send name to Airtable (External Spreadsheet)
-    // NOTE: Replace these with your real Airtable Keys for a true global log
+    // Send name to Firebase (Truly Global Public Log)
     try {
-        const p1 = "patNf6Uq0U2hH8r7y";
-        const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
-        await fetch('https://api.airtable.com/v0/appDInm76mB8uXv2r/Visitors', {
+        await fetch('https://gmrit-calc-default-rtdb.firebaseio.com/visitors.json', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${p1}${p2}`,
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({
-                fields: {
-                    "Name": name,
-                    "Date": new Date().toLocaleString()
-                }
+                name: name,
+                date: new Date().toLocaleString()
             })
         });
     } catch (e) {
-        console.log("Airtable sync failed, visitor saved to local history.");
+        console.log("Global sync failed, visitor saved to local history.");
     }
 
     // Track globally using CounterAPI
