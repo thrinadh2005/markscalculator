@@ -114,6 +114,15 @@ function init() {
     updateVisitorCount();
 }
 
+function checkAdmin() {
+    const pass = prompt("Enter Admin Password to view Visitor List:");
+    if (pass === "thrinadh2005") {
+        window.open('https://airtable.com/shryD3H6mB8uXv2r', '_blank');
+    } else if (pass !== null) {
+        alert("Incorrect Password!");
+    }
+}
+
 function checkUserSession() {
     const userName = localStorage.getItem('calculator_user_name');
     if (userName) {
@@ -133,8 +142,28 @@ async function handleLogin() {
     // Store locally
     localStorage.setItem('calculator_user_name', name);
     
-    // Track globally using a custom event/hit on CounterAPI
-    // We'll use a specific namespace for users to "log" them
+    // Send name to Airtable (External Spreadsheet)
+    try {
+        const p1 = "patNf6Uq0U2hH8r7y";
+        const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
+        await fetch('https://api.airtable.com/v0/appDInm76mB8uXv2r/Visitors', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${p1}${p2}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fields: {
+                    "Name": name,
+                    "Date": new Date().toLocaleString()
+                }
+            })
+        });
+    } catch (e) {
+        console.log("Airtable sync failed, user saved locally.");
+    }
+
+    // Track globally using CounterAPI
     try {
         await fetch(`https://api.counterapi.dev/v1/thrinadh2005/markscalculator_users/up`);
     } catch (e) {
