@@ -11,4 +11,4 @@ A comprehensive tool for GMRIT (AR23 Regulation) students to calculate SGPA, CGP
 - **Print Optimization**: Generate clean, single-page reports for SGPA and Internal predictions.
 
 ## Deployment
-Deployed on Vercel: [gmrit-academic-calculator.vercel.app](https://gmrit-academic-calculator.vercel.app/)
+Deployed on Vercel: [gmritmarks.vercel.app](https://gmritmarks.vercel.app/)
