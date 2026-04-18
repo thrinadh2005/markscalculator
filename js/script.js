@@ -138,6 +138,11 @@ async function showVisitorList() {
         </div>
     `;
 
+    // 1. First, show local history (Instant)
+    const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
+    renderVisitorList(localLog, true);
+
+    // 2. Then, try to fetch global log (Airtable)
     try {
         const p1 = "patNf6Uq0U2hH8r7y";
         const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
@@ -147,27 +152,43 @@ async function showVisitorList() {
         const data = await response.json();
 
         if (data.records && data.records.length > 0) {
-            let html = '<div class="list-group list-group-flush">';
-            data.records.forEach(record => {
-                const name = record.fields.Name || "Anonymous";
-                const date = record.fields.Date || "N/A";
-                html += `
-                    <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="fw-bold text-white">${name}</div>
-                            <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            content.innerHTML = html;
-        } else {
-            content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
+            const globalLog = data.records.map(r => ({
+                name: r.fields.Name,
+                date: r.fields.Date
+            }));
+            renderVisitorList(globalLog, false);
         }
     } catch (e) {
-        content.innerHTML = '<p class="text-center text-danger py-5">Failed to load visitor list. Please try again.</p>';
+        console.log("Failed to load global log. Showing local history only.");
     }
+}
+
+function renderVisitorList(logs, isLocal) {
+    const content = document.getElementById('visitor-list-content');
+    if (logs.length === 0) {
+        if (!isLocal) content.innerHTML = '<p class="text-center text-muted py-5">No global visitors found yet.</p>';
+        return;
+    }
+
+    let html = `
+        <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px;">
+            ${isLocal ? 'Recent on this device' : 'Global Log'}
+        </div>
+        <div class="list-group list-group-flush">
+    `;
+    
+    logs.forEach(item => {
+        html += `
+            <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="fw-bold text-white">${item.name}</div>
+                    <div class="text-muted small" style="font-size: 0.65rem;">${item.date}</div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    content.innerHTML = html;
 }
 
 function closeVisitorList() {
@@ -194,10 +215,17 @@ async function handleLogin() {
         return;
     }
 
-    // Store locally
+    // Store locally for current session
     localStorage.setItem('calculator_user_name', name);
     
+    // Maintain a local history of visitors seen on this device 
+    // (This ensures the log is never empty for the user)
+    let localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
+    localLog.unshift({ name: name, date: new Date().toLocaleString() });
+    localStorage.setItem('visitor_history', JSON.stringify(localLog.slice(0, 50)));
+
     // Send name to Airtable (External Spreadsheet)
+    // NOTE: Replace these with your real Airtable Keys for a true global log
     try {
         const p1 = "patNf6Uq0U2hH8r7y";
         const p2 = ".6e746e746e746e746e746e746e746e746e746e746e746e746e746e746e746e74";
@@ -215,14 +243,14 @@ async function handleLogin() {
             })
         });
     } catch (e) {
-        console.log("Airtable sync failed, user saved locally.");
+        console.log("Airtable sync failed, visitor saved to local history.");
     }
 
     // Track globally using CounterAPI
     try {
         await fetch(`https://api.counterapi.dev/v1/thrinadh2005/markscalculator_users/up`);
     } catch (e) {
-        console.log("Global tracking failed, but user session saved locally.");
+        console.log("Global tracking failed.");
     }
 
     // Hide overlay with animation
