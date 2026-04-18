@@ -339,6 +339,11 @@ body {
         font-size: 0.75rem !important;
         padding: 0.4rem 2rem 0.4rem 0.75rem !important;
     }
+
+    .footer .glass-card {
+        width: 100%;
+        border-radius: 1rem;
+    }
 }
 
 /* Custom Scrollbar */
