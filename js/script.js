@@ -804,8 +804,8 @@ function loadSemesterSubjects() {
     const pathSelect = document.getElementById('career-path-select');
     const path = pathSelect.value;
     
-    // Show/hide career path selector for semesters 5, 6, 7 in CSE/IT
-    if (['CSE', 'IT'].includes(branch) && ['5', '6', '7'].includes(sem)) {
+    // Show/hide career path selector for semesters 5, 6, 7 in CSE/AI&DS/AI&ML/IT
+    if (['CSE', 'AI&DS', 'AI&ML', 'IT'].includes(branch) && ['5', '6', '7'].includes(sem)) {
         pathContainer.classList.remove('hidden');
     } else {
         pathContainer.classList.add('hidden');
@@ -818,7 +818,7 @@ function loadSemesterSubjects() {
     subjects.forEach((sub, index) => {
         // Resolve professional elective if applicable
         let actualSub = sub;
-        if (sub.isProfessionalElective && ['CSE', 'IT'].includes(branch) && professionalElectives[path] && professionalElectives[path][sem]) {
+        if (sub.isProfessionalElective && ['CSE', 'AI&DS', 'AI&ML', 'IT'].includes(branch) && professionalElectives[path] && professionalElectives[path][sem]) {
             actualSub = professionalElectives[path][sem];
         }
 
@@ -852,7 +852,7 @@ function loadToPredictor(subIndex) {
     const path = document.getElementById('career-path-select').value;
     let sub = syllabus[branch][sem][subIndex];
     
-    if (sub.isProfessionalElective && ['CSE', 'IT'].includes(branch) && professionalElectives[path] && professionalElectives[path][sem]) {
+    if (sub.isProfessionalElective && ['CSE', 'AI&DS', 'AI&ML', 'IT'].includes(branch) && professionalElectives[path] && professionalElectives[path][sem]) {
         sub = professionalElectives[path][sem];
     }
     
