@@ -251,8 +251,9 @@ function checkAdmin() {
     if (adminClickTimer) clearTimeout(adminClickTimer);
     
     adminClickCount++;
+    console.log("Admin click count:", adminClickCount); // Debug log
     
-    if (adminClickCount === 5) {
+    if (adminClickCount >= 5) {
         adminClickCount = 0;
         const pass = prompt("Enter Admin Password to view Visitor List:");
         if (pass === "thrinadh2005") {
@@ -261,10 +262,11 @@ function checkAdmin() {
             alert("Incorrect Password!");
         }
     } else {
-        // Reset counter after 2 seconds of inactivity
+        // Reset counter after 1 second of inactivity for tighter control
         adminClickTimer = setTimeout(() => {
             adminClickCount = 0;
-        }, 2000);
+            console.log("Admin click count reset");
+        }, 1000);
     }
 }
 
