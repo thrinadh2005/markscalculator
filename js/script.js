@@ -449,13 +449,12 @@ async function handleLogin() {
 async function updateVisitorCount() {
     const counterEl = document.getElementById('visitor-count');
     try {
-        // Using CounterAPI.dev for a real global visitor count
-        // Namespace: thrinadh2005, Key: markscalculator
-        const response = await fetch('https://api.counterapi.dev/v1/thrinadh2005/markscalculator/up');
+        // Use our new unique counting API
+        const response = await fetch('/api/count');
         const data = await response.json();
         
-        if (data && data.count) {
-            // Display the global count
+        if (data && typeof data.count === 'number') {
+            // Display the global unique count
             setTimeout(() => {
                 counterEl.textContent = data.count.toLocaleString();
             }, 500);
@@ -463,11 +462,10 @@ async function updateVisitorCount() {
             throw new Error('Invalid API response');
         }
     } catch (error) {
+        console.error("Visitor count fetch failed:", error);
         // Fallback to localStorage if the global API fails
         let count = localStorage.getItem('site_visitors') || 1024;
-        count = parseInt(count) + 1;
-        localStorage.setItem('site_visitors', count);
-        counterEl.textContent = count.toLocaleString() + "+";
+        counterEl.textContent = parseInt(count).toLocaleString() + "+";
     }
 }
 
