@@ -105,6 +105,132 @@ const syllabus = {
             {"code": "23FIX01", "name": "Full Semester Internship (FSI)", "credits": 8.0, "type": "lab"}
         ]
     },
+    "AI&DS": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"name": "Problem Solving using Python", "credits": 4.0, "type": "integrated"},
+            {"name": "Artificial Intelligence", "credits": 3.0, "type": "theory"},
+            {"name": "Design & Analysis of Algorithms", "credits": 3.0, "type": "theory"},
+            {"name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
+            {"name": "Mathematical Foundation for Data Science", "credits": 3.0, "type": "theory"},
+            {"name": "Object-Oriented Programming with Java", "credits": 3.0, "type": "theory"},
+            {"name": "DAA Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Java Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "4": [
+            {"name": "Database Management Systems", "credits": 3.0, "type": "theory"},
+            {"name": "Operating Systems", "credits": 3.0, "type": "theory"},
+            {"name": "Computer Organization & Architecture", "credits": 3.0, "type": "theory"},
+            {"name": "Probability & Statistics using Python", "credits": 4.0, "type": "integrated"},
+            {"name": "Foundations of Data Science", "credits": 3.0, "type": "theory"},
+            {"name": "DBMS Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Data Science Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"name": "Web Technologies", "credits": 4.0, "type": "integrated"},
+            {"name": "Deep Learning for Data Science", "credits": 3.0, "type": "theory"},
+            {"name": "Data Analytics & Visualization", "credits": 4.0, "type": "integrated"},
+            {"name": "Computer Networks", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective I (Professional)"},
+            {"name": "Elective II (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Deep Learning Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"name": "Optimization Techniques for ML", "credits": 3.0, "type": "theory"},
+            {"name": "Automata Theory & Language Processors", "credits": 3.0, "type": "theory"},
+            {"name": "Software Engineering", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "credits": 4.0, "name": "Elective III (Professional)"},
+            {"name": "Elective IV (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Optimization Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Professional Ethics & Human Values", "credits": 0.0, "type": "theory"},
+            {"name": "Audit Course", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective V (Professional)"},
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective VI (Professional)"},
+            {"name": "Elective VII (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Summer Internship II", "credits": 1.0, "type": "lab"},
+            {"name": "Project Work", "credits": 8.0, "type": "lab"}
+        ],
+        "8": [
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective VIII (Professional)"},
+            {"name": "Elective IX (Open)", "credits": 2.0, "type": "theory"},
+            {"name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
+        ]
+    },
+    "AI&ML": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"name": "Problem Solving using Python", "credits": 4.0, "type": "integrated"},
+            {"name": "Artificial Intelligence", "credits": 3.0, "type": "theory"},
+            {"name": "Design & Analysis of Algorithms", "credits": 3.0, "type": "theory"},
+            {"name": "Digital Logic Design", "credits": 4.0, "type": "integrated"},
+            {"name": "Mathematical Foundation for Data Science", "credits": 3.0, "type": "theory"},
+            {"name": "Object-Oriented Programming with Java", "credits": 3.0, "type": "theory"},
+            {"name": "DAA Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Java Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "4": [
+            {"name": "Database Management Systems", "credits": 3.0, "type": "theory"},
+            {"name": "Operating Systems", "credits": 3.0, "type": "theory"},
+            {"name": "Computer Organization & Architecture", "credits": 3.0, "type": "theory"},
+            {"name": "Probability & Statistics using Python", "credits": 4.0, "type": "integrated"},
+            {"name": "Foundations of Machine Learning", "credits": 3.0, "type": "theory"},
+            {"name": "DBMS Lab", "credits": 1.5, "type": "lab"},
+            {"name": "ML Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"name": "Web Technologies", "credits": 4.0, "type": "integrated"},
+            {"name": "Neural Networks", "credits": 3.0, "type": "theory"},
+            {"name": "Data Analytics & Visualization", "credits": 4.0, "type": "integrated"},
+            {"name": "Computer Networks", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective I (Professional)"},
+            {"name": "Elective II (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Neural Networks Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"name": "Deep Learning Techniques", "credits": 3.0, "type": "theory"},
+            {"name": "Automata Theory & Language Processors", "credits": 3.0, "type": "theory"},
+            {"name": "Software Engineering", "credits": 3.0, "type": "theory"},
+            {"isProfessionalElective": true, "credits": 4.0, "name": "Elective III (Professional)"},
+            {"name": "Elective IV (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Deep Learning Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Professional Ethics", "credits": 0.0, "type": "theory"},
+            {"name": "Audit Course", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective V (Professional)"},
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective VI (Professional)"},
+            {"name": "Elective VII (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Summer Internship II", "credits": 1.0, "type": "lab"},
+            {"name": "Project Work", "credits": 8.0, "type": "lab"}
+        ],
+        "8": [
+            {"isProfessionalElective": true, "credits": 3.0, "name": "Elective VIII (Professional)"},
+            {"name": "Elective IX (Open)", "credits": 2.0, "type": "theory"},
+            {"name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
+        ]
+    },
     "ECE": {
         "1": commonSem1,
         "2": commonSem2,
