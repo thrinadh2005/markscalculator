@@ -282,7 +282,7 @@ async function showVisitorList() {
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-2 text-muted small">Fetching logs...</p>
+            <p class="mt-2 text-muted small">Fetching logs from MongoDB...</p>
         </div>
     `;
 
@@ -290,20 +290,15 @@ async function showVisitorList() {
         const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // MongoDB can be a bit slower than Firebase
 
-        const response = await fetch('https://gmrit-calc-default-rtdb.firebaseio.com/visitors.json', {
+        const response = await fetch('/api/visitors', {
             signal: controller.signal
         });
         
-        clearTimeout(timeoutId);
-        const data = await response.json();
-
-        let globalLog = [];
-        if (data) {
-            globalLog = Object.values(data).reverse();
-        }
-
+        if (!response.ok) throw new Error('Failed to fetch from MongoDB');
+        
+        const globalLog = await response.json();
         renderVisitorList(globalLog, localLog);
     } catch (e) {
         console.error("Visitor list fetch failed:", e);
@@ -409,10 +404,13 @@ async function handleLogin() {
     localLog.unshift({ name: name, date: new Date().toLocaleString() });
     localStorage.setItem('visitor_history', JSON.stringify(localLog.slice(0, 50)));
 
-    // Send name to Firebase (Truly Global Public Log)
+    // Send name to MongoDB (Truly Global Public Log)
     try {
-        await fetch('https://gmrit-calc-default-rtdb.firebaseio.com/visitors.json', {
+        await fetch('/api/visitors', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 name: name,
                 date: new Date().toLocaleString()

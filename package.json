@@ -1,0 +1,13 @@
+{
+  "name": "gmrit-marks-calculator",
+  "version": "1.0.0",
+  "description": "Academic calculator for GMRIT students",
+  "main": "index.html",
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "serve ."
+  }
+}
