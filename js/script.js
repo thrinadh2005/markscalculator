@@ -248,18 +248,6 @@ function init() {
 }
 
 function checkAdmin() {
-    const now = Date.now();
-    const diff = now - lastClickTime;
-    lastClickTime = now;
-
-    // Handle LinkedIn (Double Click) - if click happened within 300ms of last one
-    if (diff < 300 && adminClickCount === 1) {
-        window.open('https://www.linkedin.com/in/venkatathrinadh/', '_blank');
-        adminClickCount = 0;
-        if (adminClickTimer) clearTimeout(adminClickTimer);
-        return;
-    }
-
     // Handle Admin (5 Taps)
     if (adminClickTimer) clearTimeout(adminClickTimer);
     adminClickCount++;
@@ -280,6 +268,10 @@ function checkAdmin() {
             console.log("Admin click count reset");
         }, 2000);
     }
+}
+
+function openLinkedIn() {
+    window.open('https://www.linkedin.com/in/venkatathrinadh/', '_blank');
 }
 
 async function showVisitorList() {
