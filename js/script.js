@@ -236,6 +236,7 @@ const gradePoints = {
 
 let adminClickCount = 0;
 let adminClickTimer = null;
+let lastClickTime = 0;
 
 function init() {
     lucide.createIcons();
@@ -247,11 +248,22 @@ function init() {
 }
 
 function checkAdmin() {
-    // Clear existing timer
+    const now = Date.now();
+    const diff = now - lastClickTime;
+    lastClickTime = now;
+
+    // Handle LinkedIn (Double Click) - if click happened within 300ms of last one
+    if (diff < 300 && adminClickCount === 1) {
+        window.open('https://www.linkedin.com/in/venkatathrinadh/', '_blank');
+        adminClickCount = 0;
+        if (adminClickTimer) clearTimeout(adminClickTimer);
+        return;
+    }
+
+    // Handle Admin (5 Taps)
     if (adminClickTimer) clearTimeout(adminClickTimer);
-    
     adminClickCount++;
-    console.log("Admin click count:", adminClickCount); // Debug log
+    console.log("Admin click count:", adminClickCount);
     
     if (adminClickCount >= 5) {
         adminClickCount = 0;
@@ -262,11 +274,11 @@ function checkAdmin() {
             alert("Incorrect Password!");
         }
     } else {
-        // Reset counter after 1 second of inactivity for tighter control
+        // Reset count if user stops clicking for 2 seconds
         adminClickTimer = setTimeout(() => {
             adminClickCount = 0;
             console.log("Admin click count reset");
-        }, 1000);
+        }, 2000);
     }
 }
 
