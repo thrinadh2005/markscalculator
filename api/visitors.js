@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 let cachedClient = null;
 let cachedDb = null;
@@ -8,8 +8,19 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  const client = await MongoClient.connect(process.env.MONGODB_URI);
-  const db = client.db('marks'); // Database name
+  // Connection URI from environment variable or provided fallback
+  const uri = process.env.MONGODB_URI || "mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks";
+
+  const client = new MongoClient(uri, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    }
+  });
+
+  await client.connect();
+  const db = client.db('marks'); // Use 'marks' database
 
   cachedClient = client;
   cachedDb = db;
