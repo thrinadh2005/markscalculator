@@ -431,13 +431,6 @@ async function handleLogin() {
         console.log("Global sync failed, visitor saved to local history.");
     }
 
-    // Track globally using CounterAPI
-    try {
-        await fetch(`https://api.counterapi.dev/v1/thrinadh2005/markscalculator_users/up`);
-    } catch (e) {
-        console.log("Global tracking failed.");
-    }
-
     // Hide overlay with animation
     const overlay = document.getElementById('login-overlay');
     overlay.style.opacity = '0';
