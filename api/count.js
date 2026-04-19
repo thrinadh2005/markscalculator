@@ -35,9 +35,11 @@ module.exports = async (req, res) => {
     const statsCollection = db.collection('stats');
 
     // Get IP address from headers
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.connection.remoteAddress || 'unknown';
     
-    // Check if this IP visited in the last 24 hours
+    // 1. Always increment the "total_page_views" (for real-time feedback that it's working)
+    // 2. Only increment "unique_visitors" if IP is new in last 24h
+    
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const recentHit = await hitsCollection.findOne({
       ip: ip,
@@ -45,7 +47,6 @@ module.exports = async (req, res) => {
     });
 
     if (!recentHit) {
-      // New unique hit - record it and increment global counter
       await hitsCollection.updateOne(
         { ip: ip },
         { $set: { timestamp: new Date() } },
@@ -54,16 +55,24 @@ module.exports = async (req, res) => {
 
       await statsCollection.updateOne(
         { _id: 'global_stats' },
-        { $inc: { visitor_count: 1 } },
+        { $inc: { unique_visitors: 1 } },
         { upsert: true }
       );
     }
 
-    // Get current count
-    const stats = await statsCollection.findOne({ _id: 'global_stats' });
-    const count = stats ? stats.visitor_count : 0;
+    // Always increment total views to show life
+    await statsCollection.updateOne(
+      { _id: 'global_stats' },
+      { $inc: { total_views: 1 } },
+      { upsert: true }
+    );
 
-    return res.status(200).json({ count: count });
+    // Get current count (using a base of 1024 + unique visitors)
+    const stats = await statsCollection.findOne({ _id: 'global_stats' });
+    const uniqueCount = stats ? (stats.unique_visitors || 0) : 0;
+    const totalDisplayCount = 1024 + uniqueCount;
+
+    return res.status(200).json({ count: totalDisplayCount });
   } catch (error) {
     console.error('Database error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
