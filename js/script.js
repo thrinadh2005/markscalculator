@@ -299,6 +299,11 @@ async function showVisitorList() {
         const timeoutId = setTimeout(() => controller.abort(), 8000); // MongoDB can be a bit slower than Firebase
 
         const response = await fetch('/api/visitors', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            },
             signal: controller.signal
         });
         
