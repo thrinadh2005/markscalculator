@@ -33,9 +33,16 @@ A comprehensive tool for GMRIT (AR23 Regulation) students to calculate SGPA, CGP
 
 - **Frontend**: HTML5, CSS3 (Bootstrap 5), JavaScript (ES6+)
 - **Icons**: Lucide Icons
-- **Backend/Database**: Firebase Realtime Database (for visitor logs)
+- **Backend**: Vercel Serverless Functions (Node.js)
+- **Database**: MongoDB Atlas (for visitor logs)
 - **APIs**: CounterAPI (for global hit tracking)
 - **Deployment**: Vercel
+
+## ⚙️ Configuration
+
+To make the MongoDB connection work, you need to set the following environment variable in your Vercel project dashboard:
+
+- `MONGODB_URI`: `mongodb+srv://marks:<your_password>@marks.vl8wfwx.mongodb.net/?appName=marks`
 
 ## 📖 How to Use
 
