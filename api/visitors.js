@@ -8,10 +8,11 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  // Connection URI from environment variable or provided fallback
-  const uri = process.env.MONGODB_URI || "mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks";
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI environment variable is not set');
+  }
 
-  const client = new MongoClient(uri, {
+  const client = new MongoClient(process.env.MONGODB_URI, {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,
