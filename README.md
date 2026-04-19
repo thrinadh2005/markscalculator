@@ -42,7 +42,7 @@ A comprehensive tool for GMRIT (AR23 Regulation) students to calculate SGPA, CGP
 
 To make the MongoDB connection work, you need to set the following environment variable in your Vercel project dashboard:
 
-- `MONGODB_URI`: `mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks`
+- `MONGODB_URI`: `mongodb+srv://marks:<your_password>@marks.vl8wfwx.mongodb.net/?appName=marks`
 
 ## 📖 How to Use
 
