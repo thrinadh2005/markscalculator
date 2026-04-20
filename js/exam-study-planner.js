@@ -146,6 +146,11 @@ class ExamStudyPlanner {
             this.generateStudyPlan();
         });
 
+        // Delete plan button
+        document.getElementById('delete-plan-btn')?.addEventListener('click', () => {
+            this.deleteAllStudyPlan();
+        });
+
         // Settings button
         document.getElementById('planner-settings-btn')?.addEventListener('click', () => {
             this.showSettingsModal();
@@ -1161,6 +1166,34 @@ class ExamStudyPlanner {
             this.renderStudyPlan();
             this.updateDashboard();
             this.showNotification('Session deleted successfully!', 'success');
+        }
+    }
+
+    // Delete all study plan
+    async deleteAllStudyPlan() {
+        if (this.studyPlan.length === 0) {
+            this.showNotification('No study plan to delete!', 'info');
+            return;
+        }
+
+        const confirmDelete = confirm(
+            `Are you sure you want to delete the entire study plan?\n\n` +
+            `This will remove ${this.studyPlan.length} study sessions and cannot be undone.\n\n` +
+            `Click "OK" to delete all sessions, or "Cancel" to keep them.`
+        );
+
+        if (confirmDelete) {
+            const sessionCount = this.studyPlan.length;
+            this.studyPlan = [];
+            
+            await this.saveStudyPlan();
+            this.renderStudyPlan();
+            this.updateDashboard();
+            
+            this.showNotification(
+                `Successfully deleted ${sessionCount} study sessions!`, 
+                'success'
+            );
         }
     }
 

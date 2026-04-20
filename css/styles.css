@@ -1001,6 +1001,44 @@ code, pre {
     box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
 }
 
+/* Delete Button Styles */
+.btn-outline-danger {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .btn-outline-danger {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+[data-theme="dark"] .btn-outline-danger:hover {
+    background: #dc2626;
+    color: white;
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+}
+
+/* Delete All Button Animation */
+#delete-all-plan-btn:hover,
+#delete-plan-btn:hover {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
 /* Enhanced Modal Styles */
 .modal-content {
     background: var(--glass);
