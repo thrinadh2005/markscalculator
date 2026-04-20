@@ -589,20 +589,22 @@ async function handleLogin() {
 async function updateVisitorCount(retryCount = 0) {
     const counterEl = document.getElementById('visitor-count');
     
-    // Show loading state
+    // Show attribution instead of loading
     if (counterEl) {
-        counterEl.textContent = 'Loading...';
-        counterEl.style.color = 'var(--text-muted)';
+        counterEl.textContent = 'Made by ADABALA VENKATA THRINADH';
+        counterEl.style.color = 'var(--primary)';
+        counterEl.style.fontWeight = '600';
     }
     
-    // Immediate fallback after 1 second if still loading
+    // Immediate fallback after 1 second if still showing attribution
     const immediateFallback = setTimeout(() => {
-        if (counterEl && counterEl.textContent === 'Loading...') {
+        if (counterEl && counterEl.textContent === 'Made by ADABALA VENKATA THRINADH') {
             let storedCount = localStorage.getItem('site_visitors');
             let count = storedCount ? parseInt(storedCount) : 1024;
             
-            counterEl.textContent = count.toLocaleString();
+            counterEl.textContent = `${count.toLocaleString()} visitors`;
             counterEl.style.color = 'var(--text)';
+            counterEl.style.fontWeight = '600';
             
             console.log('Using immediate fallback count:', count);
         }
@@ -630,17 +632,17 @@ async function updateVisitorCount(retryCount = 0) {
             // Clear immediate fallback
             clearTimeout(immediateFallback);
             
-            // Remove loading state
-            counterEl.style.color = '';
-            
-            // Display the global unique count
-            counterEl.textContent = data.count.toLocaleString();
+            // Display the global unique count with attribution
+            counterEl.textContent = `${data.count.toLocaleString()} visitors`;
+            counterEl.style.color = 'var(--text)';
+            counterEl.style.fontWeight = '600';
             
             // Add visual feedback for new visitors
             if (data.is_new_visitor) {
                 counterEl.style.color = '#28a745';
                 setTimeout(() => {
-                    counterEl.style.color = '';
+                    counterEl.style.color = 'var(--text)';
+                    counterEl.style.fontWeight = '600';
                 }, 2000);
             }
             
@@ -682,9 +684,10 @@ async function updateVisitorCount(retryCount = 0) {
             localStorage.setItem('site_visitors', count.toString());
         }
         
-        // Remove loading state and show fallback
-        counterEl.textContent = count.toLocaleString() + "+";
+        // Remove loading state and show fallback with attribution
+        counterEl.textContent = `${count.toLocaleString()} visitors`;
         counterEl.style.color = '#ffc107'; // Yellow color for fallback mode
+        counterEl.style.fontWeight = '600';
         
         console.log('Using fallback count after retries:', count);
     }
