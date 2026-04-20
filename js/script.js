@@ -594,17 +594,10 @@ async function updateVisitorCount() {
     let storedCount = localStorage.getItem('site_visitors');
     let count = storedCount ? parseInt(storedCount) : 1024;
     
-    // Show attribution initially
-    counterEl.textContent = 'Made by ADABALA VENKATA THRINADH';
-    counterEl.style.color = 'var(--primary)';
+    // Show count immediately
+    counterEl.textContent = `${count.toLocaleString()} visitors`;
+    counterEl.style.color = 'var(--text)';
     counterEl.style.fontWeight = '600';
-
-    // After 2 seconds, show the count
-    setTimeout(() => {
-        counterEl.textContent = `${count.toLocaleString()} visitors`;
-        counterEl.style.color = 'var(--text)';
-        counterEl.style.fontWeight = '600';
-    }, 2000);
 
     // Try to get real count from API
     try {
