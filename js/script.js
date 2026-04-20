@@ -601,10 +601,25 @@ async function updateVisitorCount(retryCount = 0) {
             let storedCount = localStorage.getItem('site_visitors');
             let count = storedCount ? parseInt(storedCount) : 1024;
             
+            // Check if it's a new day, reset counter
+            const today = new Date().toDateString();
+            const lastVisitDate = localStorage.getItem('last_visit_date');
+            
+            if (lastVisitDate !== today) {
+                count = 1024; // Reset to base count for new day
+                localStorage.setItem('site_visitors', count.toString());
+                localStorage.setItem('last_visit_date', today);
+                console.log('New day detected in immediate fallback, counter reset to base count:', count);
+            } else {
+                // Increment local count for today
+                count += 1;
+                localStorage.setItem('site_visitors', count.toString());
+            }
+            
             counterEl.textContent = count.toLocaleString();
             counterEl.style.color = 'var(--text)';
             
-            console.log('Using immediate fallback count:', count);
+            console.log('Using immediate fallback count for today:', count);
         }
     }, 1000);
     
@@ -668,23 +683,30 @@ async function updateVisitorCount(retryCount = 0) {
             return;
         }
         
-        // Final fallback mechanism
+        // Final fallback mechanism - start from today's date
         let storedCount = localStorage.getItem('site_visitors');
         let count = storedCount ? parseInt(storedCount) : 1024;
         
-        // Increment local count as fallback
-        if (!storedCount) {
+        // Check if it's a new day, reset counter
+        const today = new Date().toDateString();
+        const lastVisitDate = localStorage.getItem('last_visit_date');
+        
+        if (lastVisitDate !== today) {
+            count = 1024; // Reset to base count for new day
             localStorage.setItem('site_visitors', count.toString());
+            localStorage.setItem('last_visit_date', today);
+            console.log('New day detected, counter reset to base count:', count);
         } else {
+            // Increment local count for today
             count += 1;
             localStorage.setItem('site_visitors', count.toString());
         }
         
         // Show fallback count
-        counterEl.textContent = count.toLocaleString() + "+";
+        counterEl.textContent = count.toLocaleString();
         counterEl.style.color = '#ffc107'; // Yellow color for fallback mode
         
-        console.log('Using fallback count after retries:', count);
+        console.log('Using fallback count for today:', count);
     }
 }
 
