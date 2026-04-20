@@ -11,7 +11,7 @@
     /* Enhanced Light Mode Colors - Better Visibility */
     --bg: #ffffff;
     --glass: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(79, 70, 229, 0.15);
+    --glass-border: rgba(0, 0, 0, 0.08);
     --text: #1e293b;
     --text-muted: #475569;
     --text-secondary: #64748b;
@@ -24,7 +24,7 @@
     /* Perfect Dark Mode Colors - High Contrast & Readable */
     --bg: #0a0e1a !important;
     --glass: rgba(15, 23, 42, 0.95) !important;
-    --glass-border: rgba(56, 189, 248, 0.2) !important;
+    --glass-border: rgba(255, 255, 255, 0.08) !important;
     --text: #f1f5f9 !important;
     --text-muted: #94a3b8 !important;
     --text-secondary: #64748b !important;
