@@ -146,11 +146,6 @@ class ExamStudyPlanner {
             this.generateStudyPlan();
         });
 
-        // Delete plan button
-        document.getElementById('delete-plan-btn')?.addEventListener('click', () => {
-            this.deleteAllStudyPlan();
-        });
-
         // Settings button
         document.getElementById('planner-settings-btn')?.addEventListener('click', () => {
             this.showSettingsModal();
