@@ -628,3 +628,202 @@ code, pre {
         color: black !important;
     }
 }
+
+/* Offline Mode Styles */
+.offline-status {
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Exam Schedule Styles */
+.exam-card {
+    transition: all 0.3s ease;
+}
+
+.exam-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px -10px rgba(79, 70, 229, 0.2);
+}
+
+.exam-countdown {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.exam-details {
+    font-size: 0.85rem;
+}
+
+.exam-actions {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.exam-card:hover .exam-actions {
+    opacity: 1;
+}
+
+/* Study Planner Styles */
+.study-day-card {
+    transition: all 0.3s ease;
+}
+
+.study-day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px -10px rgba(79, 70, 229, 0.15);
+}
+
+.study-day-header {
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 1rem;
+}
+
+.study-session {
+    transition: all 0.2s ease;
+}
+
+.study-session:hover {
+    transform: translateX(4px);
+}
+
+.session-actions {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.study-session:hover .session-actions {
+    opacity: 1;
+}
+
+/* Progress Bar Enhancements */
+.progress {
+    background-color: var(--glass-border);
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Modal Enhancements */
+.modal-content {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(16px);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--glass-border) !important;
+}
+
+/* Form Enhancements */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+}
+
+[data-theme="dark"] .form-control:focus, 
+[data-theme="dark"] .form-select:focus {
+    border-color: var(--primary-light) !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1) !important;
+}
+
+/* Alert Enhancements */
+.alert {
+    border: none !important;
+    backdrop-filter: blur(16px);
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Badge Enhancements */
+.badge {
+    font-weight: 600;
+    padding: 0.4em 0.6em;
+}
+
+/* Button Enhancements */
+.btn-outline-primary:hover {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+    background: var(--primary-light) !important;
+    border-color: var(--primary-light) !important;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--primary);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .exam-actions, .session-actions {
+        opacity: 1;
+    }
+    
+    .study-session {
+        padding: 0.75rem !important;
+    }
+    
+    .exam-card, .study-day-card {
+        margin-bottom: 1rem !important;
+    }
+}
