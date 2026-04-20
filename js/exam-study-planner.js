@@ -671,134 +671,398 @@ class ExamStudyPlanner {
                 bsModal.hide();
             }
         }
-        
-        this.showNotification('Exam added successfully!', 'success');
     }
 
-    // Generate comprehensive study plan
-    generateStudyPlan() {
+    // Generate AI-powered study plan
+    async generateStudyPlan() {
         if (this.exams.length === 0) {
-            this.showNotification('Please add exams first to generate a study plan!', 'warning');
+            this.showNotification('Please add exams first!', 'warning');
             return;
         }
 
-        // Clear existing plan
-        this.studyPlan = [];
+        this.showNotification('AI is analyzing your exams and creating optimal study plan...', 'info');
+
+        // AI Analysis Phase
+        const aiAnalysis = await this.performAIAnalysis();
         
-        // Generate plan for each exam
-        this.exams.forEach(exam => {
-            this.generatePlanForExam(exam.id);
-        });
+        // Generate optimized study plan
+        const studyPlan = await this.generateAIOptimizedPlan(aiAnalysis);
         
-        // Optimize and merge sessions
-        this.optimizeStudyPlan();
-        
-        this.saveStudyPlan();
+        this.studyPlan = studyPlan;
+        await this.saveStudyPlan();
         this.renderStudyPlan();
         this.updateDashboard();
         
-        this.showNotification('Study plan generated successfully!', 'success');
+        this.showNotification(`AI generated ${studyPlan.length} optimized study sessions!`, 'success');
     }
 
-    // Generate plan for specific exam
-    generatePlanForExam(examId) {
-        const exam = this.exams.find(e => e.id === examId);
-        if (!exam) return;
-
-        const examDate = new Date(exam.date + 'T00:00:00');
+    // AI Analysis Engine
+    async performAIAnalysis() {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        // Calculate study period
-        const studyStartDate = new Date(examDate);
-        studyStartDate.setDate(studyStartDate.getDate() - this.settings.examPreparationDays);
-        
-        // Ensure we don't start in the past
-        const startDate = studyStartDate < today ? today : studyStartDate;
-        
-        // Calculate total recommended study hours
-        const recommendedHours = this.calculateRecommendedStudyTime(exam);
-        const availableDays = Math.ceil((examDate - startDate) / (1000 * 60 * 60 * 24));
-        
-        if (availableDays <= 0) return;
-        
-        // Calculate daily study hours needed
-        const dailyHours = recommendedHours / availableDays;
-        const sessionsPerDay = Math.ceil(dailyHours / (this.settings.studySessionDuration / 60));
-        
-        // Generate study sessions
-        for (let d = new Date(startDate); d < examDate; d.setDate(d.getDate() + 1)) {
-            const dateStr = d.toISOString().split('T')[0];
+        const analysis = {
+            examComplexity: {},
+            studyPatterns: {},
+            timeConstraints: {},
+            recommendations: {},
+            optimalSchedule: {}
+        };
+
+        // Analyze each exam with AI
+        for (const exam of this.exams) {
+            const subject = this.subjects.find(s => s.id === exam.subjectId);
+            if (!subject) continue;
+
+            const examDate = new Date(exam.date);
+            const daysUntilExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
             
-            // Check if there are already sessions for this day
-            const existingSessions = this.studyPlan.filter(s => s.date === dateStr);
-            const existingHours = existingSessions.reduce((total, s) => total + (s.duration || 0), 0);
-            const remainingHours = Math.max(0, this.settings.studyHoursPerDay - existingHours);
+            // AI Complexity Scoring
+            const complexityScore = this.calculateComplexityScore(exam, subject, daysUntilExam);
+            analysis.examComplexity[exam.id] = complexityScore;
+
+            // AI Study Pattern Analysis
+            const studyPattern = this.analyzeStudyPattern(exam, daysUntilExam);
+            analysis.studyPatterns[exam.id] = studyPattern;
+
+            // AI Time Constraints
+            const timeConstraints = this.analyzeTimeConstraints(exam, daysUntilExam);
+            analysis.timeConstraints[exam.id] = timeConstraints;
+
+            // AI Recommendations
+            const recommendations = this.generateAIRecommendations(exam, complexityScore, daysUntilExam);
+            analysis.recommendations[exam.id] = recommendations;
+        }
+
+        // AI Schedule Optimization
+        analysis.optimalSchedule = this.optimizeStudySchedule(analysis);
+        
+        return analysis;
+    }
+
+    // Calculate AI complexity score
+    calculateComplexityScore(exam, subject, daysUntilExam) {
+        let score = 0;
+        
+        // Base difficulty from subject
+        score += (subject.difficulty || 5) * 10;
+        
+        // Exam difficulty multiplier
+        const difficultyMultipliers = { hard: 1.5, medium: 1.0, easy: 0.7 };
+        score *= difficultyMultipliers[exam.difficulty] || 1.0;
+        
+        // Priority factor
+        const priorityMultipliers = { high: 1.3, medium: 1.0, low: 0.8 };
+        score *= priorityMultipliers[exam.priority] || 1.0;
+        
+        // Time pressure factor
+        if (daysUntilExam < 7) score *= 1.5;
+        else if (daysUntilExam < 14) score *= 1.2;
+        else if (daysUntilExam > 30) score *= 0.9;
+        
+        // Chapter complexity
+        if (exam.chapters && exam.chapters.length > 0) {
+            score += exam.chapters.length * 5;
+        }
+        
+        // Total marks factor
+        if (exam.totalMarks > 80) score *= 1.1;
+        else if (exam.totalMarks < 40) score *= 0.9;
+        
+        return Math.round(score);
+    }
+
+    // AI Study Pattern Analysis
+    analyzeStudyPattern(exam, daysUntilExam) {
+        const patterns = {
+            optimalSessionLength: 2, // hours
+            sessionsPerDay: 2,
+            bestStudyTimes: ['09:00', '14:00', '19:00'],
+            breakInterval: 30, // minutes
+            retentionCurve: [],
+            difficultyProgression: 'gradual' // gradual, intensive, spaced
+        };
+
+        // Adjust patterns based on exam characteristics
+        if (exam.difficulty === 'hard') {
+            patterns.optimalSessionLength = 1.5;
+            patterns.sessionsPerDay = 3;
+            patterns.difficultyProgression = 'intensive';
+        } else if (exam.difficulty === 'easy') {
+            patterns.optimalSessionLength = 2.5;
+            patterns.sessionsPerDay = 1;
+            patterns.difficultyProgression = 'spaced';
+        }
+
+        // Time-based adjustments
+        if (daysUntilExam < 7) {
+            patterns.sessionsPerDay = Math.min(4, patterns.sessionsPerDay + 1);
+            patterns.optimalSessionLength = Math.max(1, patterns.optimalSessionLength - 0.5);
+        }
+
+        return patterns;
+    }
+
+    // AI Time Constraints Analysis
+    analyzeTimeConstraints(exam, daysUntilExam) {
+        const constraints = {
+            totalAvailableHours: daysUntilExam * 8, // 8 hours per day max
+            recommendedHours: 0,
+            criticalPeriods: [],
+            bufferTime: daysUntilExam * 0.1 // 10% buffer time
+        };
+
+        // Calculate recommended hours based on AI analysis
+        const baseHours = 20; // Base hours per exam
+        const difficultyMultiplier = { hard: 1.5, medium: 1.0, easy: 0.7 }[exam.difficulty] || 1.0;
+        const priorityMultiplier = { high: 1.3, medium: 1.0, low: 0.8 }[exam.priority] || 1.0;
+        
+        constraints.recommendedHours = Math.ceil(baseHours * difficultyMultiplier * priorityMultiplier);
+
+        // Identify critical periods
+        if (daysUntilExam < 3) {
+            constraints.criticalPeriods.push('final-review');
+        } else if (daysUntilExam < 7) {
+            constraints.criticalPeriods.push('intensive-study');
+        }
+
+        return constraints;
+    }
+
+    // Generate AI Recommendations
+    generateAIRecommendations(exam, complexityScore, daysUntilExam) {
+        const recommendations = {
+            studyTechnique: '',
+            focusAreas: [],
+            reviewFrequency: '',
+            preparationStrategy: '',
+            riskFactors: [],
+            successTips: []
+        };
+
+        // AI-based study technique recommendation
+        if (complexityScore > 80) {
+            recommendations.studyTechnique = 'Pomodoro with active recall';
+            recommendations.preparationStrategy = 'Intensive with daily review';
+            recommendations.reviewFrequency = 'Daily';
+        } else if (complexityScore > 60) {
+            recommendations.studyTechnique = 'Spaced repetition';
+            recommendations.preparationStrategy = 'Balanced with periodic review';
+            recommendations.reviewFrequency = 'Every 2-3 days';
+        } else {
+            recommendations.studyTechnique = 'Block scheduling';
+            recommendations.preparationStrategy = 'Relaxed with weekly review';
+            recommendations.reviewFrequency = 'Weekly';
+        }
+
+        // Identify focus areas based on exam characteristics
+        if (exam.chapters && exam.chapters.length > 0) {
+            recommendations.focusAreas = exam.chapters.slice(0, 3); // Focus on first 3 chapters
+        }
+
+        // Risk factors
+        if (daysUntilExam < 7) {
+            recommendations.riskFactors.push('Limited preparation time');
+        }
+        if (exam.difficulty === 'hard') {
+            recommendations.riskFactors.push('High complexity subject');
+        }
+        if (exam.priority === 'high') {
+            recommendations.riskFactors.push('High priority exam');
+        }
+
+        // Success tips
+        recommendations.successTips = [
+            'Start with difficult topics when fresh',
+            'Use active recall techniques',
+            'Take regular breaks to maintain focus',
+            'Review previous day\'s material before starting new topics'
+        ];
+
+        return recommendations;
+    }
+
+    // AI Schedule Optimization
+    optimizeStudySchedule(analysis) {
+        const schedule = {
+            examOrder: [],
+            timeSlots: {},
+            breakSchedule: {},
+            intensityLevels: {}
+        };
+
+        // Sort exams by AI complexity score (highest first)
+        const sortedExams = this.exams
+            .map(exam => ({
+                ...exam,
+                complexityScore: analysis.examComplexity[exam.id] || 0
+            }))
+            .sort((a, b) => b.complexityScore - a.complexityScore);
+
+        schedule.examOrder = sortedExams;
+
+        // Optimize time slots
+        const preferredTimes = ['09:00', '11:00', '14:00', '16:00', '19:00', '21:00'];
+        schedule.timeSlots = preferredTimes;
+
+        // Break schedule optimization
+        schedule.breakSchedule = {
+            shortBreaks: 15, // minutes
+            longBreaks: 30, // minutes
+            mealBreaks: 60, // minutes
+            breakFrequency: 'every 2 sessions'
+        };
+
+        return schedule;
+    }
+
+    // Generate AI-Optimized Study Plan
+    async generateAIOptimizedPlan(aiAnalysis) {
+        const today = new Date();
+        const studyPlan = [];
+        const studySessions = new Map();
+        const schedule = aiAnalysis.optimalSchedule;
+
+        // Process exams in AI-optimized order
+        for (const exam of schedule.examOrder) {
+            const examDate = new Date(exam.date);
+            const daysUntilExam = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
             
-            if (remainingHours < 0.5) continue; // Skip if less than 30 minutes available
-            
-            // Generate sessions for this day
-            for (let session = 0; session < sessionsPerDay && session * (this.settings.studySessionDuration / 60) < remainingHours; session++) {
-                const startTime = this.calculateSessionStartTime(existingSessions, session);
-                const endTime = this.addMinutes(startTime, this.settings.studySessionDuration);
+            if (daysUntilExam <= 0) continue;
+
+            const subject = this.subjects.find(s => s.id === exam.subjectId);
+            if (!subject) continue;
+
+            const pattern = aiAnalysis.studyPatterns[exam.id];
+            const constraints = aiAnalysis.timeConstraints[exam.id];
+            const recommendations = aiAnalysis.recommendations[exam.id];
+
+            // AI-optimized session distribution
+            const totalSessions = Math.min(
+                constraints.recommendedHours / pattern.optimalSessionLength,
+                daysUntilExam * pattern.sessionsPerDay
+            );
+
+            for (let dayOffset = 0; dayOffset < daysUntilExam; dayOffset++) {
+                const studyDate = new Date(today);
+                studyDate.setDate(studyDate.getDate() + dayOffset);
                 
-                const studySession = {
-                    id: Date.now().toString() + Math.random(),
-                    examId: exam.id,
-                    date: dateStr,
-                    subjectId: exam.subjectId,
-                    startTime: startTime,
-                    endTime: endTime,
-                    duration: this.settings.studySessionDuration / 60,
-                    type: 'study',
-                    topics: this.getTopicsForSession(exam, session, sessionsPerDay),
-                    priority: exam.priority,
-                    difficulty: exam.difficulty,
-                    generated: true,
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.studyPlan.push(studySession);
-                existingSessions.push(studySession);
-                
-                // Add break after session
-                if (session < sessionsPerDay - 1) {
-                    const breakSession = {
-                        id: Date.now().toString() + Math.random() + 'break',
-                        examId: exam.id,
-                        date: dateStr,
-                        subjectId: 'break',
-                        startTime: endTime,
-                        endTime: this.addMinutes(endTime, this.settings.breakDuration),
-                        duration: this.settings.breakDuration / 60,
-                        type: 'break',
-                        topics: 'Break time',
-                        generated: true,
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    this.studyPlan.push(breakSession);
-                    existingSessions.push(breakSession);
+                // Skip weekends for less critical exams
+                if ((studyDate.getDay() === 0 || studyDate.getDay() === 6) && 
+                    exam.priority !== 'high') continue;
+
+                const sessionKey = studyDate.toISOString().split('T')[0];
+                if (!studySessions.has(sessionKey)) {
+                    studySessions.set(sessionKey, []);
                 }
+
+                // Generate AI-optimized sessions for this day
+                const daySessions = this.generateAISessionsForDay(
+                    exam, 
+                    subject, 
+                    studyDate, 
+                    pattern, 
+                    recommendations, 
+                    totalSessions / daysUntilExam
+                );
+
+                studySessions.get(sessionKey).push(...daySessions);
             }
         }
+
+        // Convert map to array and sort with AI optimization
+        for (const [date, sessions] of studySessions) {
+            // Sort sessions by AI priority and time
+            sessions.sort((a, b) => {
+                if (a.type === 'break' && b.type !== 'break') return 1;
+                if (a.type !== 'break' && b.type === 'break') return -1;
+                return new Date(a.startTime) - new Date(b.startTime);
+            });
+            
+            studyPlan.push(...sessions);
+        }
+
+        studyPlan.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+        
+        return studyPlan;
     }
 
-    // Calculate session start time
-    calculateSessionStartTime(existingSessions, sessionIndex) {
-        const startHour = 9; // Start at 9 AM
+    // Generate AI sessions for a specific day
+    generateAISessionsForDay(exam, subject, studyDate, pattern, recommendations, sessionsPerDay) {
+        const sessions = [];
+        const timeSlots = ['09:00', '11:30', '14:00', '16:30', '19:00', '21:30'];
         
-        if (existingSessions.length === 0 || sessionIndex === 0) {
-            return `${startHour.toString().padStart(2, '0')}:00`;
+        for (let i = 0; i < Math.min(sessionsPerDay, timeSlots.length); i++) {
+            const [hours, minutes] = timeSlots[i].split(':');
+            const startTime = new Date(studyDate);
+            startTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            const endTime = new Date(startTime.getTime() + (pattern.optimalSessionLength * 60 * 60000));
+            
+            // Add AI break before session (except first session of day)
+            if (i > 0 && sessions.length > 0) {
+                const lastSession = sessions[sessions.length - 1];
+                const breakStart = new Date(lastSession.endTime);
+                const breakEnd = new Date(breakStart.getTime() + (pattern.breakInterval * 60000));
+                
+                sessions.push({
+                    id: `ai-break-${exam.id}-${studyDate.toISOString().split('T')[0]}-${i}`,
+                    type: 'break',
+                    title: 'AI-Recommended Break',
+                    startTime: breakStart.toISOString(),
+                    endTime: breakEnd.toISOString(),
+                    description: `AI suggests: ${this.getAIBreakRecommendation(recommendations, i)}`
+                });
+            }
+            
+            sessions.push({
+                id: `ai-session-${exam.id}-${studyDate.toISOString().split('T')[0]}-${i}`,
+                type: 'study',
+                examId: exam.id,
+                subjectId: exam.subjectId,
+                subjectName: subject.name,
+                subjectIcon: subject.icon,
+                subjectColor: subject.color,
+                title: `AI-Optimized: ${exam.name}`,
+                startTime: startTime.toISOString(),
+                endTime: endTime.toISOString(),
+                duration: pattern.optimalSessionLength,
+                description: this.generateAISessionDescription(exam, recommendations, i, pattern),
+                priority: exam.priority,
+                difficulty: exam.difficulty,
+                chapters: exam.chapters || [],
+                aiOptimized: true,
+                studyTechnique: recommendations.studyTechnique,
+                focusAreas: recommendations.focusAreas
+            });
         }
         
-        const lastSession = existingSessions[existingSessions.length - 1];
-        const [hours, minutes] = lastSession.endTime.split(':').map(Number);
-        
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        return sessions;
     }
 
-    // Add minutes to time
+    // Get AI break recommendation
+    getAIBreakRecommendation(recommendations, sessionIndex) {
+        const breakActivities = [
+            'Take a walk and refresh your mind',
+            'Practice mindfulness for 5 minutes',
+            'Review today\'s achievements',
+            'Stretch and hydrate',
+            'Listen to calming music',
+            'Quick physical exercise'
+        ];
+        
+        return breakActivities[sessionIndex % breakActivities.length];
+    }
+
+    // Generate AI session description
+    generateAISessionDescription(exam, recommendations, sessionIndex, pattern) {
+        const focusTopics = recommendations.focusAreas.length > 0 
+            ? recommendations.focusAreas[sessionIndex % recommendations.focusAreas.length]
+            : 'Core concepts';
+            
+        return `AI recommends using ${recommendations.studyTechnique}. Focus on: ${focusTopics}. ` +
+               `Strategy: ${recommendations.preparationStrategy}. ` +
+               `Session ${sessionIndex + 1} of ${Math.ceil(pattern.optimalSessionLength * 60 / 25)} Pomodoros.`;
+    }
+
     addMinutes(time, minutes) {
         const [hours, mins] = time.split(':').map(Number);
         const totalMinutes = hours * 60 + mins + minutes;
@@ -806,58 +1070,6 @@ class ExamStudyPlanner {
         const newMinutes = totalMinutes % 60;
         
         return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
-    }
-
-    // Get topics for session
-    getTopicsForSession(exam, sessionIndex, totalSessions) {
-        if (!exam.chapters || exam.chapters.length === 0) {
-            return `Study session ${sessionIndex + 1} of ${totalSessions}`;
-        }
-        
-        const chapterIndex = Math.floor((sessionIndex / totalSessions) * exam.chapters.length);
-        const chapter = exam.chapters[Math.min(chapterIndex, exam.chapters.length - 1)];
-        
-        return `Chapter: ${chapter} (${sessionIndex + 1}/${totalSessions})`;
-    }
-
-    // Optimize study plan
-    optimizeStudyPlan() {
-        // Sort sessions by date and time
-        this.studyPlan.sort((a, b) => {
-            if (a.date !== b.date) {
-                return new Date(a.date) - new Date(b.date);
-            }
-            return a.startTime.localeCompare(b.startTime);
-        });
-        
-        // Remove overlapping sessions
-        this.studyPlan = this.studyPlan.filter((session, index) => {
-            if (session.type === 'break') return true;
-            
-            const sameTimeSessions = this.studyPlan.filter((s, i) => 
-                i !== index && 
-                s.date === session.date && 
-                s.type !== 'break' &&
-                this.timeOverlap(session.startTime, session.endTime, s.startTime, s.endTime)
-            );
-            
-            return sameTimeSessions.length === 0;
-        });
-    }
-
-    // Check time overlap
-    timeOverlap(start1, end1, start2, end2) {
-        const [h1, m1] = start1.split(':').map(Number);
-        const [h2, m2] = end1.split(':').map(Number);
-        const [h3, m3] = start2.split(':').map(Number);
-        const [h4, m4] = end2.split(':').map(Number);
-        
-        const start1Minutes = h1 * 60 + m1;
-        const end1Minutes = h2 * 60 + m2;
-        const start2Minutes = h3 * 60 + m3;
-        const end2Minutes = h4 * 60 + m4;
-        
-        return (start1Minutes < end2Minutes) && (end1Minutes > start2Minutes);
     }
 
     // Render study plan
