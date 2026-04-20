@@ -686,6 +686,13 @@ function showTab(tabName) {
             btn.classList.add('active');
         }
     });
+    
+    // Initialize tab-specific functionality
+    if (tabName === 'cgpa') {
+        updateCgpaInputs();
+    }
+    
+    lucide.createIcons();
 }
 
 function toggleInternalFields() {
@@ -945,8 +952,8 @@ function updateSgpa() {
 }
 
 // CGPA Calculator
-function generateCgpaInputs() {
-    const branchSelect = document.getElementById('branch-select');
+function updateCgpaInputs() {
+    const branchSelect = document.getElementById('cgpa-branch-select');
     if (!branchSelect) return;
     
     const branch = branchSelect.value;
@@ -973,6 +980,14 @@ function generateCgpaInputs() {
         `;
         container.appendChild(div);
     }
+    
+    // Initialize CGPA calculation
+    updateCgpa();
+}
+
+function loadCgpaInputs() {
+    // This function is now replaced by updateCgpaInputs
+    updateCgpaInputs();
 }
 
 function updateCgpa() {

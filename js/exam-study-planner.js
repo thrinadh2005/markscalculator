@@ -1218,3 +1218,13 @@ const examStudyPlanner = new ExamStudyPlanner();
 // Export for use in other modules
 window.ExamStudyPlanner = ExamStudyPlanner;
 window.examStudyPlanner = examStudyPlanner;
+
+// Auto-initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await examStudyPlanner.init();
+        console.log('Exam Study Planner initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize Exam Study Planner:', error);
+    }
+});
