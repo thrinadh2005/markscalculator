@@ -586,57 +586,105 @@ async function handleLogin() {
     }, 500);
 }
 
-async function updateVisitorCount() {
+async function updateVisitorCount(retryCount = 0) {
     const counterEl = document.getElementById('visitor-count');
-    if (!counterEl) return;
-
-    // Initialize with local count immediately
-    let storedCount = localStorage.getItem('site_visitors');
-    let count = storedCount ? parseInt(storedCount) : 1024;
     
-    // Show count immediately
-    counterEl.textContent = `${count.toLocaleString()} visitors`;
-    counterEl.style.color = 'var(--text)';
-    counterEl.style.fontWeight = '600';
-
-    // Try to get real count from API
+    // Show loading state
+    if (counterEl) {
+        counterEl.textContent = 'Loading...';
+        counterEl.style.color = 'var(--text-muted)';
+    }
+    
+    // Immediate fallback after 1 second if still loading
+    const immediateFallback = setTimeout(() => {
+        if (counterEl && counterEl.textContent === 'Loading...') {
+            let storedCount = localStorage.getItem('site_visitors');
+            let count = storedCount ? parseInt(storedCount) : 1024;
+            
+            counterEl.textContent = count.toLocaleString();
+            counterEl.style.color = 'var(--text)';
+            
+            console.log('Using immediate fallback count:', count);
+        }
+    }, 1000);
+    
     try {
-        const response = await fetch('/api/count', {
-            timeout: 5000
+        // Set timeout for API call
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('API timeout')), 3000);
         });
         
-        if (response.ok) {
-            const data = await response.json();
-            if (data && typeof data.count === 'number') {
-                // Update with real count
-                counterEl.textContent = `${data.count.toLocaleString()} visitors`;
-                counterEl.style.color = 'var(--text)';
-                counterEl.style.fontWeight = '600';
-                
-                // Flash green for new visitors
-                if (data.is_new_visitor) {
-                    counterEl.style.color = '#28a745';
-                    setTimeout(() => {
-                        counterEl.style.color = 'var(--text)';
-                        counterEl.style.fontWeight = '600';
-                    }, 2000);
-                }
-                
-                // Save the new count
-                localStorage.setItem('site_visitors', data.count.toString());
-                console.log('Real visitor count loaded:', data.count);
+        // Use our improved counting API
+        const response = await Promise.race([
+            fetch('/api/count'),
+            timeoutPromise
+        ]);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data && typeof data.count === 'number') {
+            // Clear immediate fallback
+            clearTimeout(immediateFallback);
+            
+            // Display the global unique count
+            counterEl.textContent = data.count.toLocaleString();
+            counterEl.style.color = '';
+            
+            // Add visual feedback for new visitors
+            if (data.is_new_visitor) {
+                counterEl.style.color = '#28a745';
+                setTimeout(() => {
+                    counterEl.style.color = '';
+                }, 2000);
             }
+            
+            // Log debugging info
+            console.log('Visitor count updated:', {
+                display: data.count,
+                unique: data.unique_visitors,
+                total_views: data.total_views,
+                is_new: data.is_new_visitor,
+                fallback: data.fallback
+            });
+        } else {
+            // Clear immediate fallback
+            clearTimeout(immediateFallback);
+            throw new Error('Invalid API response structure');
         }
     } catch (error) {
-        console.log('API failed, using local count:', count);
-        // Increment local count
-        count += 1;
-        localStorage.setItem('site_visitors', count.toString());
+        console.error("Visitor count fetch failed:", error);
         
-        // Update display with incremented count
-        counterEl.textContent = `${count.toLocaleString()} visitors`;
-        counterEl.style.color = '#ffc107';
-        counterEl.style.fontWeight = '600';
+        // Clear immediate fallback
+        clearTimeout(immediateFallback);
+        
+        // Retry logic
+        if (retryCount < 2) {
+            console.log(`Retrying visitor count... Attempt ${retryCount + 1}/3`);
+            setTimeout(() => updateVisitorCount(retryCount + 1), 1000);
+            return;
+        }
+        
+        // Final fallback mechanism
+        let storedCount = localStorage.getItem('site_visitors');
+        let count = storedCount ? parseInt(storedCount) : 1024;
+        
+        // Increment local count as fallback
+        if (!storedCount) {
+            localStorage.setItem('site_visitors', count.toString());
+        } else {
+            count += 1;
+            localStorage.setItem('site_visitors', count.toString());
+        }
+        
+        // Show fallback count
+        counterEl.textContent = count.toLocaleString() + "+";
+        counterEl.style.color = '#ffc107'; // Yellow color for fallback mode
+        
+        console.log('Using fallback count after retries:', count);
     }
 }
 
