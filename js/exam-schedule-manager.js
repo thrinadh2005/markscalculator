@@ -4,8 +4,23 @@ class ExamScheduleManager {
         this.exams = [];
         this.studyPlan = [];
         this.countdownTimers = {};
-        this.subjects = [];
+        this.subjects = this.getDefaultSubjects();
         this.init();
+    }
+
+    getDefaultSubjects() {
+        return [
+            { id: 'math', name: 'Mathematics', color: '#3b82f6' },
+            { id: 'physics', name: 'Physics', color: '#10b981' },
+            { id: 'chemistry', name: 'Chemistry', color: '#f59e0b' },
+            { id: 'cse', name: 'Computer Science', color: '#8b5cf6' },
+            { id: 'eee', name: 'Electrical Engineering', color: '#ef4444' },
+            { id: 'mech', name: 'Mechanical Engineering', color: '#06b6d4' },
+            { id: 'civil', name: 'Civil Engineering', color: '#84cc16' },
+            { id: 'english', name: 'English', color: '#ec4899' },
+            { id: 'programming', name: 'Programming', color: '#6366f1' },
+            { id: 'datastructures', name: 'Data Structures', color: '#14b8a6' }
+        ];
     }
 
     async init() {
@@ -13,6 +28,7 @@ class ExamScheduleManager {
         await this.loadStudyPlan();
         this.setupEventListeners();
         this.startCountdownTimers();
+        this.updateExamStats();
     }
 
     // Load exam schedule from storage or server
@@ -425,9 +441,13 @@ class ExamScheduleManager {
         const form = document.getElementById('add-exam-form');
         const formData = new FormData(form);
         
+        const subjectId = formData.get('subject');
+        const subject = this.subjects.find(s => s.id === subjectId);
+        
         const exam = {
             id: Date.now().toString(),
-            subject: formData.get('subject'),
+            subjectId: subjectId,
+            subject: subject ? subject.name : 'Unknown Subject',
             date: formData.get('date'),
             time: formData.get('time'),
             venue: formData.get('venue'),
@@ -443,7 +463,16 @@ class ExamScheduleManager {
         }
 
         this.renderExamSchedule();
-        bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();
+        this.updateExamStats();
+        
+        // Close modal if it exists
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) {
+                bsModal.hide();
+            }
+        }
         
         this.showNotification('Exam added successfully!', 'success');
     }
@@ -549,7 +578,7 @@ class ExamScheduleManager {
                     sessions.push({
                         id: Date.now().toString() + Math.random(),
                         date: day.toISOString().split('T')[0],
-                        subjectId: exam.subject,
+                        subjectId: exam.subjectId || exam.subject,
                         startTime: `${hour.toString().padStart(2, '0')}:00`,
                         endTime: `${(hour + sessionDuration).toString().padStart(2, '0')}:00`,
                         duration: sessionDuration,
@@ -563,6 +592,41 @@ class ExamScheduleManager {
         });
 
         return sessions;
+    }
+
+    // Update exam statistics
+    updateExamStats() {
+        const totalExams = this.exams.length;
+        const now = new Date();
+        const upcomingExams = this.exams.filter(exam => new Date(exam.date) > now).length;
+        
+        // Update DOM elements
+        const totalExamsEl = document.getElementById('total-exams');
+        const upcomingExamsEl = document.getElementById('upcoming-exams');
+        const nextExamInfoEl = document.getElementById('next-exam-info');
+        
+        if (totalExamsEl) totalExamsEl.textContent = totalExams;
+        if (upcomingExamsEl) upcomingExamsEl.textContent = upcomingExams;
+        
+        if (nextExamInfoEl) {
+            const futureExams = this.exams
+                .filter(exam => new Date(exam.date) > now)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            if (futureExams.length > 0) {
+                const nextExam = futureExams[0];
+                const examDate = new Date(nextExam.date);
+                const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+                
+                nextExamInfoEl.innerHTML = `
+                    <div class="fw-bold">${nextExam.subject}</div>
+                    <div class="small">${examDate.toLocaleDateString()}</div>
+                    <div class="text-primary">${daysUntil} days</div>
+                `;
+            } else {
+                nextExamInfoEl.innerHTML = 'No upcoming exams';
+            }
+        }
     }
 
     // Show notification
@@ -615,6 +679,102 @@ class ExamScheduleManager {
         }
     }
 
+    // Show add study session modal
+    showAddStudySessionModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Study Session</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-study-session-form">
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <select class="form-select" name="subjectId" required>
+                                    <option value="">Select Subject</option>
+                                    ${this.subjects.map(subject => 
+                                        `<option value="${subject.id}">${subject.name}</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" name="date" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Start Time</label>
+                                    <input type="time" class="form-control" name="startTime" value="09:00" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Duration (hours)</label>
+                                    <input type="number" class="form-control" name="duration" value="2" min="0.5" max="8" step="0.5" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Topics</label>
+                                <textarea class="form-control" name="topics" rows="3" placeholder="Topics to cover..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="examScheduleManager.saveStudySession()">Save Session</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+
+        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    }
+
+    // Save study session
+    async saveStudySession() {
+        const form = document.getElementById('add-study-session-form');
+        const formData = new FormData(form);
+        
+        const startTime = formData.get('startTime');
+        const duration = parseFloat(formData.get('duration'));
+        const session = {
+            id: Date.now().toString(),
+            date: formData.get('date'),
+            subjectId: formData.get('subjectId'),
+            startTime: startTime,
+            endTime: this.calculateEndTime(startTime, duration),
+            duration: duration,
+            topics: formData.get('topics'),
+            createdAt: new Date().toISOString()
+        };
+
+        this.studyPlan.push(session);
+        await this.saveStudyPlanOffline();
+
+        if (window.offlineManager) {
+            window.offlineManager.addToSyncQueue('save_study_planner', session);
+        }
+
+        this.renderStudyPlan();
+        
+        // Close modal if it exists
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) {
+                bsModal.hide();
+            }
+        }
+        
+        this.showNotification('Study session added successfully!', 'success');
+    }
+
     // Edit exam (placeholder)
     editExam(index) {
         this.showNotification('Edit functionality coming soon!', 'info');
@@ -627,7 +787,7 @@ class ExamScheduleManager {
 
     // Add session to day (placeholder)
     addSessionToDay(date) {
-        this.showNotification('Add session functionality coming soon!', 'info');
+        this.showAddStudySessionModal();
     }
 }
 

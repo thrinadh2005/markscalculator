@@ -374,7 +374,13 @@ class OfflineManager {
 }
 
 // Initialize offline manager
-const offlineManager = new OfflineManager();
+let offlineManager = null;
+
+try {
+    offlineManager = new OfflineManager();
+} catch (error) {
+    console.warn('Offline Manager initialization failed:', error);
+}
 
 // Export for use in other modules
 window.OfflineManager = OfflineManager;
