@@ -868,6 +868,99 @@ h1, h2, h3, h4, h5, h6 {
     text-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
 }
 
+/* CGPA Input Elements Styling */
+.cgpa-input-card {
+    background: rgba(56, 189, 248, 0.05) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.cgpa-label {
+    color: var(--text) !important;
+    font-weight: 700 !important;
+}
+
+.cgpa-input-label {
+    color: var(--text-muted) !important;
+    background: transparent !important;
+    border-color: var(--glass-border) !important;
+}
+
+.cgpa-input-field {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+.cgpa-input-field::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 0.7;
+}
+
+.cgpa-credits {
+    color: var(--text-muted) !important;
+}
+
+/* Dark Mode CGPA Input Overrides */
+[data-theme="dark"] .cgpa-input-card {
+    background: rgba(56, 189, 248, 0.08) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="dark"] .cgpa-label {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .cgpa-input-label {
+    color: var(--text-muted) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="dark"] .cgpa-input-field {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .cgpa-input-field::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .cgpa-credits {
+    color: var(--text-muted) !important;
+}
+
+/* Light Mode CGPA Input Overrides */
+[data-theme="light"] .cgpa-input-card {
+    background: rgba(79, 70, 229, 0.05) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="light"] .cgpa-label {
+    color: var(--text) !important;
+}
+
+[data-theme="light"] .cgpa-input-label {
+    color: var(--text-muted) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="light"] .cgpa-input-field {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="light"] .cgpa-input-field::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .cgpa-credits {
+    color: var(--text-muted) !important;
+}
+
 /* Form Elements Refinement */
 .form-control, .form-select {
     background: var(--glass) !important;

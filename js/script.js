@@ -962,13 +962,13 @@ function generateCgpaInputs() {
         const div = document.createElement('div');
         div.className = 'col';
         div.innerHTML = `
-            <div class="p-3 glass-card bg-opacity-10" style="background: rgba(56, 189, 248, 0.05);">
-                <label class="form-label mb-1 fw-bold text-white text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Semester ${i}</label>
+            <div class="p-3 glass-card bg-opacity-10 cgpa-input-card" style="background: rgba(56, 189, 248, 0.05);">
+                <label class="form-label mb-1 fw-bold cgpa-label text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Semester ${i}</label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-transparent border-end-0 text-white opacity-75" style="font-size: 0.7rem; border-color: var(--glass-border);">SGPA</span>
-                    <input type="number" step="0.01" class="form-control sem-sgpa-input border-start-0 text-white" data-credits="${credits}" placeholder="0.00" oninput="updateCgpa()" style="border-color: var(--glass-border);">
+                    <span class="input-group-text bg-transparent border-end-0 cgpa-input-label opacity-75" style="font-size: 0.7rem; border-color: var(--glass-border);">SGPA</span>
+                    <input type="number" step="0.01" class="form-control sem-sgpa-input border-start-0 cgpa-input-field" data-credits="${credits}" placeholder="0.00" oninput="updateCgpa()" style="border-color: var(--glass-border);">
                 </div>
-                <div class="mt-2 text-white fw-bold" style="font-size: 0.65rem; opacity: 0.9; letter-spacing: 0.5px;">CREDITS: ${credits}</div>
+                <div class="mt-2 cgpa-credits fw-bold" style="font-size: 0.65rem; opacity: 0.9; letter-spacing: 0.5px;">CREDITS: ${credits}</div>
             </div>
         `;
         container.appendChild(div);
