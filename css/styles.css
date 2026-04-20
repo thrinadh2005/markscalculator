@@ -785,22 +785,31 @@ h1, h2, h3, h4, h5, h6 {
     color: white !important;
 }
 
-/* Summary Box: Sophisticated Gradient Mixing */
+/* Summary Box: Enhanced Visibility */
 .summary-box {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--accent));
-    background-size: 200% 200%;
-    animation: gradientMove 8s ease infinite;
-    color: white;
+    background: var(--glass);
+    color: var(--text);
+    border: 1px solid var(--glass-border);
     border-radius: 1.5rem;
     padding: 2rem;
     text-align: center;
-    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.summary-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+    opacity: 0.7;
+    animation: shimmer 3s infinite;
 }
 
 .summary-value {
@@ -808,7 +817,55 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 900;
     letter-spacing: -3px;
     line-height: 1;
-    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: var(--primary);
+    text-shadow: 0 2px 10px rgba(79, 70, 229, 0.2);
+    margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .summary-value {
+    color: var(--primary);
+    text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+}
+
+.summary-box .small {
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+}
+
+.summary-box .opacity-75 {
+    opacity: 0.75 !important;
+}
+
+.summary-box .fw-bold {
+    color: var(--text) !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="dark"] .summary-box .fw-bold {
+    color: var(--text) !important;
+}
+
+/* CGPA Class Specific Styling */
+#cgpa-class {
+    color: var(--primary) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 3px rgba(79, 70, 229, 0.2);
+}
+
+[data-theme="dark"] #cgpa-class {
+    color: var(--primary) !important;
+    text-shadow: 0 1px 3px rgba(56, 189, 248, 0.3);
+}
+
+#sgpa-result, #cgpa-result-val {
+    color: var(--primary) !important;
+    font-weight: 900 !important;
+}
+
+[data-theme="dark"] #sgpa-result,
+[data-theme="dark"] #cgpa-result-val {
+    color: var(--primary) !important;
+    text-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
 }
 
 /* Form Elements Refinement */
