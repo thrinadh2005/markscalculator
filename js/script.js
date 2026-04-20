@@ -606,11 +606,10 @@ async function updateVisitorCount(retryCount = 0) {
             const lastVisitDate = localStorage.getItem('last_visit_date');
             
             if (lastVisitDate !== today) {
-                count = 0; // Reset to 0 for exact count on new day
-                localStorage.setItem('site_visitors', count.toString());
+                // We no longer reset to 0 locally, we let the API provide the global count
                 localStorage.setItem('last_visit_date', today);
-                console.log('New day detected in immediate fallback, counter reset to 0:', count);
-            } else {
+                console.log('New day detected, waiting for API to update global count');
+            }
                 // Use exact count from API (don't increment here)
                 // The API will handle counting
                 console.log('Using exact count for today:', count);
@@ -692,13 +691,7 @@ async function updateVisitorCount(retryCount = 0) {
         const lastVisitDate = localStorage.getItem('last_visit_date');
         
         if (lastVisitDate !== today) {
-            count = 0; // Reset to 0 for exact count on new day
-            localStorage.setItem('site_visitors', count.toString());
             localStorage.setItem('last_visit_date', today);
-            console.log('New day detected, counter reset to 0:', count);
-        } else {
-            // Use exact count (API handles the actual counting)
-            console.log('Using exact count for today:', count);
         }
         
         // Show fallback count

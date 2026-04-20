@@ -8,35 +8,33 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  // Try multiple MongoDB URI sources (prioritize Vercel environment variable)
-  let mongodbUri = process.env.MONGODB_URI || process.env.VONGODB_URL;
+  // Use only MongoDB URI from environment variables for security
+  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL;
   
   if (!mongodbUri) {
-    // Default to your Atlas database for Vercel deployment
-    mongodbUri = 'mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks';
+    throw new Error('MONGODB_URI environment variable is not defined');
   }
   
-  // Fallback to local for development
-  if (!mongodbUri || mongodbUri.includes('localhost')) {
-    mongodbUri = 'mongodb://localhost:27017/marks_calculator';
-  }
-
   console.log('Attempting MongoDB connection for visitors...');
 
   const client = new MongoClient(mongodbUri, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 10000,
+    serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
-    connectTimeoutMS: 10000,
-    retryWrites: true,
-    w: 'majority'
   });
 
   try {
     await client.connect();
+    // Test connection
     await client.db('admin').command({ ping: 1 });
     console.log('MongoDB connected successfully for visitors!');
     
+    // Use the database name from the environment or default to 'marks_calculator'
     const db = client.db('marks_calculator');
     cachedClient = client;
     cachedDb = db;
