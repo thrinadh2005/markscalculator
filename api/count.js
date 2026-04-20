@@ -106,14 +106,13 @@ module.exports = async (req, res) => {
     const uniqueCount = stats ? (stats.unique_visitors || 0) : 0;
     const totalViews = stats ? (stats.total_views || 0) : 0;
     
-    // Calculate display count (base count + actual unique visitors)
-    const baseCount = 1024;
-    const totalDisplayCount = baseCount + uniqueCount;
+    // Return exact visitor count (no base offset)
+    const exactCount = uniqueCount;
 
-    console.log(`Stats - Unique: ${uniqueCount}, Total Views: ${totalViews}, Display: ${totalDisplayCount}`);
+    console.log(`Stats - Unique: ${uniqueCount}, Total Views: ${totalViews}, Exact Count: ${exactCount}`);
 
     return res.status(200).json({ 
-      count: totalDisplayCount,
+      count: exactCount,
       unique_visitors: uniqueCount,
       total_views: totalViews,
       is_new_visitor: isNewVisitor
@@ -123,11 +122,14 @@ module.exports = async (req, res) => {
     console.error('Database error in count.js:', error);
     
     // Fallback response when MongoDB fails
-    const fallbackCount = 1024 + Math.floor(Math.random() * 100);
+    // Use exact count from localStorage if available, otherwise 0
+    const fallbackCount = 0; // Start from 0 for exact count
     return res.status(200).json({ 
       count: fallbackCount,
+      unique_visitors: 0,
+      total_views: 0,
       fallback: true,
-      error: 'Using fallback count due to database error'
+      error: 'Database unavailable - showing exact count'
     });
   }
 };

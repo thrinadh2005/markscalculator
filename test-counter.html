@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visitor Counter Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .counter { font-size: 24px; font-weight: bold; margin: 10px 0; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Visitor Counter Test</h1>
+    
+    <div class="counter" id="visitor-count">Loading...</div>
+    
+    <div class="debug">
+        <h3>Debug Info:</h3>
+        <div id="debug-info"></div>
+    </div>
+    
+    <button onclick="testCounter()">Test Counter</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    <button onclick="checkStorage()">Check Storage</button>
+    
+    <script>
+        async function testCounter() {
+            const counterEl = document.getElementById('visitor-count');
+            const debugEl = document.getElementById('debug-info');
+            
+            // Show loading state
+            counterEl.textContent = 'Loading...';
+            counterEl.style.color = '#666';
+            
+            debugEl.innerHTML = 'Testing visitor counter logic...';
+            
+            // Simulate the visitor counter logic
+            try {
+                // Immediate fallback after 1 second
+                setTimeout(() => {
+                    let storedCount = localStorage.getItem('site_visitors');
+                    let count = storedCount ? parseInt(storedCount) : 1024;
+                    
+                    // Check if it's a new day, reset counter
+                    const today = new Date().toDateString();
+                    const lastVisitDate = localStorage.getItem('last_visit_date');
+                    
+                    if (lastVisitDate !== today) {
+                        count = 1024; // Reset to base count for new day
+                        localStorage.setItem('site_visitors', count.toString());
+                        localStorage.setItem('last_visit_date', today);
+                        debugEl.innerHTML += `<br>New day detected, counter reset to base count: ${count}`;
+                    } else {
+                        // Increment local count for today
+                        count += 1;
+                        localStorage.setItem('site_visitors', count.toString());
+                        debugEl.innerHTML += `<br>Same day, incremented count to: ${count}`;
+                    }
+                    
+                    counterEl.textContent = count.toLocaleString();
+                    counterEl.style.color = '#000';
+                    
+                    debugEl.innerHTML += `<br>Today: ${today}`;
+                    debugEl.innerHTML += `<br>Last Visit: ${lastVisitDate}`;
+                    debugEl.innerHTML += `<br>Final Count: ${count}`;
+                }, 1000);
+                
+            } catch (error) {
+                debugEl.innerHTML += `<br>Error: ${error.message}`;
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.removeItem('site_visitors');
+            localStorage.removeItem('last_visit_date');
+            document.getElementById('visitor-count').textContent = 'Cleared';
+            document.getElementById('debug-info').innerHTML = 'Storage cleared';
+        }
+        
+        function checkStorage() {
+            const debugEl = document.getElementById('debug-info');
+            const storedCount = localStorage.getItem('site_visitors');
+            const lastVisitDate = localStorage.getItem('last_visit_date');
+            const today = new Date().toDateString();
+            
+            debugEl.innerHTML = `
+                Stored Count: ${storedCount || 'Not found'}<br>
+                Last Visit Date: ${lastVisitDate || 'Not found'}<br>
+                Today: ${today}<br>
+                Is New Day: ${lastVisitDate !== today ? 'Yes' : 'No'}
+            `;
+        }
+        
+        // Auto-test on load
+        window.onload = () => testCounter();
+    </script>
+</body>
+</html>

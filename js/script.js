@@ -599,27 +599,27 @@ async function updateVisitorCount(retryCount = 0) {
     const immediateFallback = setTimeout(() => {
         if (counterEl && counterEl.textContent === 'Loading...') {
             let storedCount = localStorage.getItem('site_visitors');
-            let count = storedCount ? parseInt(storedCount) : 1024;
+            let count = storedCount ? parseInt(storedCount) : 0;
             
             // Check if it's a new day, reset counter
             const today = new Date().toDateString();
             const lastVisitDate = localStorage.getItem('last_visit_date');
             
             if (lastVisitDate !== today) {
-                count = 1024; // Reset to base count for new day
+                count = 0; // Reset to 0 for exact count on new day
                 localStorage.setItem('site_visitors', count.toString());
                 localStorage.setItem('last_visit_date', today);
-                console.log('New day detected in immediate fallback, counter reset to base count:', count);
+                console.log('New day detected in immediate fallback, counter reset to 0:', count);
             } else {
-                // Increment local count for today
-                count += 1;
-                localStorage.setItem('site_visitors', count.toString());
+                // Use exact count from API (don't increment here)
+                // The API will handle counting
+                console.log('Using exact count for today:', count);
             }
             
             counterEl.textContent = count.toLocaleString();
             counterEl.style.color = 'var(--text)';
             
-            console.log('Using immediate fallback count for today:', count);
+            console.log('Using immediate fallback exact count:', count);
         }
     }, 1000);
     
@@ -683,30 +683,29 @@ async function updateVisitorCount(retryCount = 0) {
             return;
         }
         
-        // Final fallback mechanism - start from today's date
+        // Final fallback mechanism - exact count
         let storedCount = localStorage.getItem('site_visitors');
-        let count = storedCount ? parseInt(storedCount) : 1024;
+        let count = storedCount ? parseInt(storedCount) : 0;
         
         // Check if it's a new day, reset counter
         const today = new Date().toDateString();
         const lastVisitDate = localStorage.getItem('last_visit_date');
         
         if (lastVisitDate !== today) {
-            count = 1024; // Reset to base count for new day
+            count = 0; // Reset to 0 for exact count on new day
             localStorage.setItem('site_visitors', count.toString());
             localStorage.setItem('last_visit_date', today);
-            console.log('New day detected, counter reset to base count:', count);
+            console.log('New day detected, counter reset to 0:', count);
         } else {
-            // Increment local count for today
-            count += 1;
-            localStorage.setItem('site_visitors', count.toString());
+            // Use exact count (API handles the actual counting)
+            console.log('Using exact count for today:', count);
         }
         
         // Show fallback count
         counterEl.textContent = count.toLocaleString();
         counterEl.style.color = '#ffc107'; // Yellow color for fallback mode
         
-        console.log('Using fallback count for today:', count);
+        console.log('Using fallback exact count:', count);
     }
 }
 
