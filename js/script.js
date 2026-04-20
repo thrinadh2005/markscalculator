@@ -368,7 +368,7 @@ function init() {
     lucide.createIcons();
     checkUserSession();
     loadSemesterSubjects();
-    generateCgpaInputs();
+    updateCgpaInputs();
     setupInputValidation();
     updateVisitorCount();
 }
@@ -960,7 +960,7 @@ function loadSemesterSubjects() {
     });
     lucide.createIcons();
     updateSgpa();
-    generateCgpaInputs(); // Ensure CGPA inputs match branch credits
+    updateCgpaInputs(); // Ensure CGPA inputs match branch credits
 }
 
 function loadToPredictor(subIndex) {
