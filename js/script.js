@@ -406,23 +406,23 @@ async function showVisitorList() {
     if (!overlay || !content) return;
 
     overlay.classList.remove('hidden');
-    overlay.style.opacity = '1';
-    
-    // Show loading state
+    setTimeout(() => overlay.style.opacity = '1', 10);
+
     content.innerHTML = `
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="visually-hidden">Loading visitor logs...</span>
             </div>
-            <p class="mt-2 text-muted small">Fetching logs from MongoDB...</p>
+            <p class="mt-2 text-muted">Fetching visitor data...</p>
         </div>
     `;
 
     try {
         const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
+        console.log('Local visitor log count:', localLog.length);
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // MongoDB can be a bit slower than Firebase
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased timeout for MongoDB
 
         const response = await fetch('/api/visitors', {
             method: 'GET',
@@ -432,15 +432,36 @@ async function showVisitorList() {
             },
             signal: controller.signal
         });
-        
-        if (!response.ok) throw new Error('Failed to fetch from MongoDB');
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         
         const globalLog = await response.json();
+        console.log('Global visitor log count:', globalLog.length);
+        
         renderVisitorList(globalLog, localLog);
     } catch (e) {
         console.error("Visitor list fetch failed:", e);
-        const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
-        renderVisitorList([], localLog);
+        
+        // Show error message and fallback to local data
+        content.innerHTML = `
+            <div class="alert alert-warning" role="alert">
+                <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i>
+                <strong>Connection Issue:</strong> Unable to fetch global visitor logs. Showing local data only.
+            </div>
+        `;
+        
+        // Re-initialize lucide icons for the alert
+        setTimeout(() => lucide.createIcons(), 100);
+        
+        // Wait a moment then show local data
+        setTimeout(() => {
+            const localLog = JSON.parse(localStorage.getItem('visitor_history') || '[]');
+            renderVisitorList([], localLog);
+        }, 2000);
     }
 }
 
@@ -568,7 +589,7 @@ async function handleLogin() {
 async function updateVisitorCount() {
     const counterEl = document.getElementById('visitor-count');
     try {
-        // Use our new unique counting API
+        // Use our improved counting API
         const response = await fetch('/api/count');
         const data = await response.json();
         
@@ -576,15 +597,46 @@ async function updateVisitorCount() {
             // Display the global unique count
             setTimeout(() => {
                 counterEl.textContent = data.count.toLocaleString();
+                
+                // Add visual feedback for new visitors
+                if (data.is_new_visitor) {
+                    counterEl.style.color = '#28a745';
+                    setTimeout(() => {
+                        counterEl.style.color = '';
+                    }, 2000);
+                }
+                
+                // Log debugging info
+                console.log('Visitor count updated:', {
+                    display: data.count,
+                    unique: data.unique_visitors,
+                    total_views: data.total_views,
+                    is_new: data.is_new_visitor,
+                    fallback: data.fallback
+                });
             }, 500);
         } else {
             throw new Error('Invalid API response');
         }
     } catch (error) {
         console.error("Visitor count fetch failed:", error);
-        // Fallback to localStorage if the global API fails
-        let count = localStorage.getItem('site_visitors') || 1024;
-        counterEl.textContent = parseInt(count).toLocaleString() + "+";
+        
+        // Improved fallback mechanism
+        let storedCount = localStorage.getItem('site_visitors');
+        let count = storedCount ? parseInt(storedCount) : 1024;
+        
+        // Increment local count as fallback
+        if (!storedCount) {
+            localStorage.setItem('site_visitors', count.toString());
+        } else {
+            count += 1;
+            localStorage.setItem('site_visitors', count.toString());
+        }
+        
+        counterEl.textContent = count.toLocaleString() + "+";
+        counterEl.style.color = '#ffc107'; // Yellow color for fallback mode
+        
+        console.log('Using fallback count:', count);
     }
 }
 

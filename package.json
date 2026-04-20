@@ -1,13 +1,20 @@
 {
   "name": "gmrit-marks-calculator",
   "version": "1.0.0",
-  "description": "Academic calculator for GMRIT students",
+  "description": "Academic calculator for GMRIT students with MongoDB visitor tracking",
   "main": "index.html",
   "dependencies": {
-    "mongodb": "^6.3.0"
+    "mongodb": "^6.3.0",
+    "serve": "^14.2.0"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "serve ."
-  }
+    "start": "serve .",
+    "dev": "serve .",
+    "serve": "serve .",
+    "build": "echo 'Build complete - static site ready'"
+  },
+  "keywords": ["calculator", "academic", "mongodb", "visitor-tracking", "gmrit"],
+  "author": "Thrinadh",
+  "license": "MIT"
 }

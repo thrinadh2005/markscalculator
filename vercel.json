@@ -3,14 +3,26 @@
   "name": "gmrit-academic-calculator",
   "builds": [
     {
+      "src": "api/count.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/visitors.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/count",
+      "dest": "/api/count.js"
+    },
+    {
+      "src": "/api/visitors",
+      "dest": "/api/visitors.js"
     },
     {
       "handle": "filesystem"
@@ -19,5 +31,8 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks"
+  }
 }
