@@ -664,31 +664,8 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-muted) !important;
 }
 
-/* Enhanced Background Blobs with Better Color Mix */
-.blob {
-    position: fixed;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    filter: blur(120px);
-    z-index: -1;
-    opacity: 0.18;
-    animation: move 25s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-}
+/* Removed background blobs - clean background */
 
-[data-theme="dark"] .blob {
-    opacity: 0.12; /* Softer blobs in dark mode */
-}
-
-.blob-1 { background: #38bdf8; top: -20%; left: -10%; }
-.blob-2 { background: #22d3ee; bottom: -20%; right: -10%; animation-delay: -7s; }
-
-@keyframes move {
-    from { transform: translate(0, 0) scale(1) rotate(0deg); }
-    to { transform: translate(150px, 150px) scale(1.3) rotate(30deg); }
-}
-
-/* Enhanced Glass Cards */
 .glass-card {
     background: var(--glass);
     backdrop-filter: blur(20px);
@@ -1345,7 +1322,7 @@ code, pre {
         font-size: 10pt; /* Slightly smaller for print fit */
     }
 
-    .no-print, .blob, nav, .nav-pills, .btn, .btn-sm { 
+    .no-print, nav, .nav-pills, .btn, .btn-sm { 
         display: none !important; 
     }
 
