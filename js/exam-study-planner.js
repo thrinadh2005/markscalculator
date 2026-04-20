@@ -12,7 +12,7 @@ class ExamStudyPlanner {
             prioritySubjects: [],
             difficultyLevels: {}
         };
-        this.init();
+        // Removed this.init() from constructor to prevent premature initialization
     }
 
     getDefaultSubjects() {
@@ -20,6 +20,15 @@ class ExamStudyPlanner {
     }
 
     async init() {
+        // Wait for offline manager to be ready if it exists
+        if (window.offlineManager) {
+            try {
+                await window.offlineManager.isReady;
+            } catch (e) {
+                console.warn('Proceeding without offline manager:', e);
+            }
+        }
+
         await this.loadSubjects();
         await this.loadExams();
         await this.loadStudyPlan();

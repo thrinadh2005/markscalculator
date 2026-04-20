@@ -6,6 +6,10 @@ class OfflineManager {
         this.dbVersion = 1;
         this.db = null;
         this.syncQueue = [];
+        this.isReady = new Promise((resolve, reject) => {
+            this._resolveReady = resolve;
+            this._rejectReady = reject;
+        });
         
         this.init();
         this.setupEventListeners();
@@ -15,8 +19,10 @@ class OfflineManager {
         try {
             await this.initDatabase();
             await this.checkAndSync();
+            this._resolveReady();
         } catch (error) {
             console.error('Offline Manager initialization failed:', error);
+            this._rejectReady(error);
         }
     }
 
