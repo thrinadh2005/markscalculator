@@ -29,6 +29,44 @@ class ExamScheduleManager {
         this.setupEventListeners();
         this.startCountdownTimers();
         this.updateExamStats();
+        
+        // Add sample data if empty
+        if (this.exams.length === 0) {
+            this.addSampleData();
+        }
+    }
+
+    addSampleData() {
+        const today = new Date();
+        const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const twoWeeks = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+        
+        this.exams = [
+            {
+                id: '1',
+                subjectId: 'math',
+                subject: 'Mathematics',
+                date: nextWeek.toISOString().split('T')[0],
+                time: '10:00',
+                venue: 'Room A101',
+                type: 'Regular',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: '2',
+                subjectId: 'programming',
+                subject: 'Programming',
+                date: twoWeeks.toISOString().split('T')[0],
+                time: '14:00',
+                venue: 'Lab B205',
+                type: 'Regular',
+                createdAt: new Date().toISOString()
+            }
+        ];
+        
+        this.saveExamScheduleOffline();
+        this.renderExamSchedule();
+        this.updateExamStats();
     }
 
     // Load exam schedule from storage or server
