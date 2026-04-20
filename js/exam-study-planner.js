@@ -16,27 +16,45 @@ class ExamStudyPlanner {
     }
 
     getDefaultSubjects() {
-        return [
-            { id: 'math', name: 'Mathematics', color: '#3b82f6', icon: 'calculator', difficulty: 7 },
-            { id: 'physics', name: 'Physics', color: '#10b981', icon: 'atom', difficulty: 8 },
-            { id: 'chemistry', name: 'Chemistry', color: '#f59e0b', icon: 'flask', difficulty: 6 },
-            { id: 'cse', name: 'Computer Science', color: '#8b5cf6', icon: 'monitor', difficulty: 6 },
-            { id: 'eee', name: 'Electrical Engineering', color: '#ef4444', icon: 'zap', difficulty: 7 },
-            { id: 'mech', name: 'Mechanical Engineering', color: '#06b6d4', icon: 'cog', difficulty: 8 },
-            { id: 'civil', name: 'Civil Engineering', color: '#84cc16', icon: 'building', difficulty: 5 },
-            { id: 'english', name: 'English', color: '#ec4899', icon: 'book-open', difficulty: 3 },
-            { id: 'programming', name: 'Programming', color: '#6366f1', icon: 'code', difficulty: 7 },
-            { id: 'datastructures', name: 'Data Structures', color: '#14b8a6', icon: 'database', difficulty: 8 }
-        ];
+        return []; // Start with empty subjects - users will add their own
     }
 
     async init() {
+        await this.loadSubjects();
         await this.loadExams();
         await this.loadStudyPlan();
         await this.loadSettings();
         this.setupEventListeners();
+        this.renderSubjects();
         this.renderExamPlanner();
         this.updateDashboard();
+    }
+
+    // Load user subjects from storage
+    async loadSubjects() {
+        try {
+            if (window.offlineManager) {
+                const subjects = await window.offlineManager.getData('user_subjects');
+                if (subjects && subjects.length > 0) {
+                    this.subjects = subjects;
+                    return;
+                }
+            }
+            
+            // Start with empty subjects
+            this.subjects = [];
+        } catch (error) {
+            console.error('Failed to load subjects:', error);
+            this.subjects = [];
+        }
+    }
+
+    // Save subjects to storage
+    async saveSubjects() {
+        if (window.offlineManager) {
+            await window.offlineManager.clearData('user_subjects');
+            await window.offlineManager.saveData('user_subjects', this.subjects);
+        }
     }
 
     // Load exams from storage
@@ -88,56 +106,9 @@ class ExamStudyPlanner {
         }
     }
 
-    // Add sample exams
+    // Start with empty exams - users will add their own
     addSampleExams() {
-        const today = new Date();
-        const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-        const twoWeeks = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-        const threeWeeks = new Date(today.getTime() + 21 * 24 * 60 * 60 * 1000);
-        
-        this.exams = [
-            {
-                id: '1',
-                name: 'Mathematics Final Exam',
-                subjectId: 'math',
-                date: nextWeek.toISOString().split('T')[0],
-                time: '10:00',
-                duration: 3, // hours
-                totalMarks: 100,
-                difficulty: 'hard',
-                priority: 'high',
-                chapters: ['Calculus', 'Linear Algebra', 'Differential Equations'],
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: '2',
-                name: 'Physics Mid-term',
-                subjectId: 'physics',
-                date: twoWeeks.toISOString().split('T')[0],
-                time: '14:00',
-                duration: 2,
-                totalMarks: 50,
-                difficulty: 'medium',
-                priority: 'medium',
-                chapters: ['Mechanics', 'Thermodynamics', 'Optics'],
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: '3',
-                name: 'Programming Lab Test',
-                subjectId: 'programming',
-                date: threeWeeks.toISOString().split('T')[0],
-                time: '09:00',
-                duration: 2,
-                totalMarks: 30,
-                difficulty: 'medium',
-                priority: 'medium',
-                chapters: ['Data Structures', 'Algorithms', 'Problem Solving'],
-                createdAt: new Date().toISOString()
-            }
-        ];
-        
-        this.saveExams();
+        this.exams = [];
     }
 
     // Save exams to storage
@@ -179,6 +150,95 @@ class ExamStudyPlanner {
         document.getElementById('planner-settings-btn')?.addEventListener('click', () => {
             this.showSettingsModal();
         });
+
+        // Add subject button
+        document.getElementById('add-subject-btn')?.addEventListener('click', () => {
+            this.showAddSubjectModal();
+        });
+    }
+
+    // Render subjects
+    renderSubjects() {
+        const container = document.getElementById('subjects-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (this.subjects.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <i data-lucide="book-open" style="width: 48px; height: 48px;" class="text-muted mb-4"></i>
+                    <p class="text-muted">Add subjects to start creating exams and study plans</p>
+                </div>
+            `;
+            return;
+        }
+
+        const subjectsGrid = document.createElement('div');
+        subjectsGrid.className = 'row g-3';
+        
+        this.subjects.forEach(subject => {
+            const subjectCard = this.createSubjectCard(subject);
+            subjectsGrid.appendChild(subjectCard);
+        });
+
+        container.appendChild(subjectsGrid);
+        setTimeout(() => lucide.createIcons(), 100);
+    }
+
+    // Create subject card
+    createSubjectCard(subject) {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 col-lg-4';
+        
+        col.innerHTML = `
+            <div class="glass-card p-3 subject-card" style="border-left: 4px solid ${subject.color};">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="subject-icon me-2" style="background: ${subject.color};">
+                                <i data-lucide="${subject.icon}" style="width: 16px; height: 16px; color: white;"></i>
+                            </div>
+                            <h6 class="mb-0">${subject.name}</h6>
+                        </div>
+                        <div class="text-muted small">
+                            Difficulty: ${subject.difficulty}/10
+                        </div>
+                    </div>
+                    <div class="subject-actions">
+                        <button class="btn btn-sm btn-outline-danger" onclick="examStudyPlanner.deleteSubject('${subject.id}')" title="Delete">
+                            <i data-lucide="trash" style="width: 14px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return col;
+    }
+
+    // Delete subject
+    async deleteSubject(subjectId) {
+        if (confirm('Are you sure you want to delete this subject? This will also remove all exams for this subject.')) {
+            this.subjects = this.subjects.filter(s => s.id !== subjectId);
+            
+            // Remove exams for this subject
+            this.exams = this.exams.filter(e => e.subjectId !== subjectId);
+            
+            // Remove study sessions for this subject
+            this.studyPlan = this.studyPlan.filter(s => s.subjectId !== subjectId);
+            
+            await this.saveSubjects();
+            await this.saveExams();
+            await this.saveStudyPlan();
+            
+            this.renderSubjects();
+            this.renderExamPlanner();
+            this.renderStudyPlan();
+            this.updateDashboard();
+            
+            this.showNotification('Subject deleted successfully!', 'success');
+        }
     }
 
     // Render exam planner
@@ -192,10 +252,7 @@ class ExamStudyPlanner {
             container.innerHTML = `
                 <div class="text-center py-8">
                     <i data-lucide="calendar-check" style="width: 48px; height: 48px;" class="text-muted mb-4"></i>
-                    <p class="text-muted">No exams scheduled yet</p>
-                    <button class="btn btn-primary mt-3" onclick="examStudyPlanner.showAddExamModal()">
-                        <i data-lucide="plus me-2"></i>Add First Exam
-                    </button>
+                    <p class="text-muted">Add exams to generate intelligent study plans</p>
                 </div>
             `;
             return;
@@ -393,8 +450,107 @@ class ExamStudyPlanner {
         return Math.min(100, (plannedHours / recommendedHours) * 100);
     }
 
+    // Show add subject modal
+    showAddSubjectModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Subject</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-subject-form">
+                            <div class="mb-3">
+                                <label class="form-label">Subject Name</label>
+                                <input type="text" class="form-control" name="name" placeholder="e.g., Mathematics" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Color</label>
+                                    <input type="color" class="form-control form-control-color" name="color" value="#3b82f6" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Difficulty (1-10)</label>
+                                    <input type="number" class="form-control" name="difficulty" value="5" min="1" max="10" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Icon</label>
+                                <select class="form-select" name="icon" required>
+                                    <option value="book">Book</option>
+                                    <option value="calculator">Calculator</option>
+                                    <option value="atom">Atom</option>
+                                    <option value="flask">Flask</option>
+                                    <option value="monitor">Monitor</option>
+                                    <option value="zap">Lightning</option>
+                                    <option value="cog">Cog</option>
+                                    <option value="building">Building</option>
+                                    <option value="book-open">Book Open</option>
+                                    <option value="code">Code</option>
+                                    <option value="database">Database</option>
+                                    <option value="globe">Globe</option>
+                                    <option value="heart">Heart</option>
+                                    <option value="star">Star</option>
+                                    <option value="music">Music</option>
+                                    <option value="palette">Palette</option>
+                                    <option value="camera">Camera</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="examStudyPlanner.saveSubject()">Save Subject</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+
+        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    }
+
+    // Save subject
+    async saveSubject() {
+        const form = document.getElementById('add-subject-form');
+        const formData = new FormData(form);
+        
+        const subject = {
+            id: Date.now().toString(),
+            name: formData.get('name'),
+            color: formData.get('color'),
+            icon: formData.get('icon'),
+            difficulty: parseInt(formData.get('difficulty'))
+        };
+
+        this.subjects.push(subject);
+        await this.saveSubjects();
+        
+        // Close modal
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) {
+                bsModal.hide();
+            }
+        }
+        
+        this.showNotification('Subject added successfully!', 'success');
+    }
+
     // Show add exam modal
     showAddExamModal() {
+        if (this.subjects.length === 0) {
+            this.showNotification('Please add subjects first before creating exams!', 'warning');
+            return;
+        }
+
         const modal = document.createElement('div');
         modal.className = 'modal fade';
         modal.innerHTML = `

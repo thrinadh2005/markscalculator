@@ -1048,14 +1048,47 @@ code, pre {
     border: 2px solid var(--bg);
 }
 
+/* Subject Cards */
+.subject-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary);
+}
+
+.subject-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px -10px rgba(79, 70, 229, 0.15);
+}
+
+.subject-actions {
+    opacity: 0;
+    transition: all 0.3s ease;
+    transform: translateX(10px);
+}
+
+.subject-card:hover .subject-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.subject-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.subject-actions .btn:hover {
+    transform: scale(1.1);
+}
+
 /* Responsive Enhancements */
 @media (max-width: 768px) {
-    .exam-actions, .session-actions {
+    .exam-actions, .session-actions, .subject-actions {
         opacity: 1;
         transform: none;
     }
     
-    .exam-card, .study-day-card {
+    .exam-card, .study-day-card, .subject-card {
         margin-bottom: 1rem !important;
     }
     
