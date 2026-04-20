@@ -817,6 +817,257 @@ code, pre {
     background: linear-gradient(90deg, rgba(107, 114, 128, 0.1), transparent) !important;
 }
 
+/* Exam Study Planner Styles */
+.exam-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary);
+}
+
+.exam-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px -15px rgba(79, 70, 229, 0.2);
+    border-left-color: var(--primary-light);
+}
+
+.exam-details {
+    font-size: 0.85rem;
+}
+
+.exam-countdown {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.exam-actions {
+    opacity: 0;
+    transition: all 0.3s ease;
+    transform: translateX(10px);
+}
+
+.exam-card:hover .exam-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.exam-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.exam-actions .btn:hover {
+    transform: scale(1.1);
+}
+
+/* Study Allocation Progress */
+.study-allocation {
+    margin-top: 1rem;
+}
+
+.study-allocation .progress {
+    height: 8px;
+    background-color: var(--glass-border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.study-allocation .progress-bar {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.study-allocation .progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* Break Session Styles */
+.break-session {
+    opacity: 0.8;
+    border-style: dashed !important;
+}
+
+.break-session:hover {
+    opacity: 1;
+}
+
+/* Priority Badges */
+.priority-high {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+.priority-medium {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.priority-low {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+/* Urgency Animations */
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(1.05);
+    }
+}
+
+/* Exam Dashboard Stats */
+.exam-dashboard .stat-card {
+    transition: all 0.3s ease;
+}
+
+.exam-dashboard .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Button Styles */
+.btn-sparkles {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-sparkles:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+}
+
+/* Modal Enhancements */
+.modal-lg {
+    max-width: 800px;
+}
+
+/* Form Enhancements */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+}
+
+[data-theme="dark"] .form-control:focus, 
+[data-theme="dark"] .form-select:focus {
+    border-color: var(--primary-light) !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1) !important;
+}
+
+/* Chapter Badges */
+.chapter-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.chapter-badge:hover {
+    background: var(--hover-bg);
+    transform: translateY(-1px);
+}
+
+/* Time Indicator */
+.time-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+}
+
+.time-indicator.urgent {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.time-indicator.warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.time-indicator.normal {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+/* Study Plan Timeline */
+.study-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.study-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--glass-border);
+}
+
+.study-timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.study-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.3rem;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--bg);
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .exam-actions, .session-actions {
+        opacity: 1;
+        transform: none;
+    }
+    
+    .exam-card, .study-day-card {
+        margin-bottom: 1rem !important;
+    }
+    
+    .modal-lg {
+        max-width: 95%;
+    }
+    
+    .exam-dashboard .row {
+        gap: 0.5rem;
+    }
+}
+
 
 /* Progress Bar Enhancements */
 .progress {

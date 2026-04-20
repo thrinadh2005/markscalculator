@@ -274,64 +274,126 @@
         <!-- Study Planner -->
         <div id="study-planner-tab" class="tab-content hidden">
             <div class="row g-4 justify-content-center">
-                <div class="col-lg-9">
+                <div class="col-lg-8">
                     <div class="glass-card p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="mb-0 fw-bold">Study Planner</h4>
+                            <h4 class="mb-0 fw-bold">Exam-Driven Study Planner</h4>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-light d-flex align-items-center gap-1" onclick="studyPlanner.showAddSessionModal()">
-                                    <i data-lucide="plus" style="width: 14px;"></i> Add Session
+                                <button class="btn btn-sm btn-light d-flex align-items-center gap-1" id="add-exam-btn">
+                                    <i data-lucide="plus" style="width: 14px;"></i> Add Exam
                                 </button>
-                                <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" id="study-settings-btn">
+                                <button class="btn btn-sm btn-primary d-flex align-items-center gap-1" id="generate-plan-btn">
+                                    <i data-lucide="sparkles" style="width: 14px;"></i> Generate Plan
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" id="planner-settings-btn">
                                     <i data-lucide="settings" style="width: 14px;"></i> Settings
                                 </button>
                             </div>
                         </div>
-                        <div id="study-plan-container">
-                            <div class="text-center py-8">
-                                <i data-lucide="book-reader" style="width: 48px; height: 48px;" class="text-muted mb-4"></i>
-                                <p class="text-muted">Loading study plan...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="glass-card p-4">
-                        <h5 class="mb-4 fw-bold">Study Progress</h5>
                         
+                        <!-- Exam List -->
                         <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="small fw-bold text-primary">Today's Goal</span>
-                                <span class="small fw-bold" id="today-current">0</span>/<span id="today-goal">4</span> hrs
-                            </div>
-                            <div class="progress" id="today-progress" style="height: 10px;">
-                                <div class="progress-bar" style="width: 0%; background: var(--primary);"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="small fw-bold text-success">Week Progress</span>
-                                <span class="small fw-bold" id="week-current">0</span>/<span id="week-goal">28</span> hrs
-                            </div>
-                            <div class="progress" id="week-progress" style="height: 10px;">
-                                <div class="progress-bar" style="width: 0%; background: var(--accent);"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-3">Study Streak</h6>
-                            <div class="d-flex align-items-center justify-content-center p-3 rounded" style="background: var(--hover-bg);">
-                                <div id="study-streak">
-                                    <i data-lucide="flame" style="width: 24px; height: 24px; color: #f59e0b;" class="me-2"></i>
-                                    <span class="fw-bold text-warning">0 days</span>
+                            <h5 class="mb-3 fw-bold">Your Exams</h5>
+                            <div id="exam-planner-container">
+                                <div class="text-center py-8">
+                                    <i data-lucide="calendar-check" style="width: 48px; height: 48px;" class="text-muted mb-4"></i>
+                                    <p class="text-muted">Add exams to generate intelligent study plans</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="text-center">
-                            <button class="btn btn-sm btn-outline-primary w-100" onclick="studyPlanner.showSettingsModal()">
-                                <i data-lucide="settings" style="width: 14px;" class="me-1"></i> Customize Goals
+                        <!-- Study Plan -->
+                        <div>
+                            <h5 class="mb-3 fw-bold">Generated Study Plan</h5>
+                            <div id="study-plan-container">
+                                <div class="text-center py-8">
+                                    <i data-lucide="calendar-x" style="width: 48px; height: 48px;" class="text-muted mb-4"></i>
+                                    <p class="text-muted">No study plan generated yet</p>
+                                    <button class="btn btn-primary mt-3" onclick="examStudyPlanner.generateStudyPlan()">
+                                        <i data-lucide="sparkles me-2"></i>Generate Study Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 mb-4">
+                        <h5 class="mb-4 fw-bold">Exam Dashboard</h5>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <div class="text-center p-3 rounded" style="background: var(--hover-bg);">
+                                    <div class="fw-bold text-primary" id="total-exams">0</div>
+                                    <div class="small text-muted">Total Exams</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 rounded" style="background: var(--hover-bg);">
+                                    <div class="fw-bold text-success" id="upcoming-exams">0</div>
+                                    <div class="small text-muted">Upcoming</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <div class="text-center p-3 rounded" style="background: var(--hover-bg);">
+                                    <div class="fw-bold text-info" id="total-sessions">0</div>
+                                    <div class="small text-muted">Study Sessions</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 rounded" style="background: var(--hover-bg);">
+                                    <div class="fw-bold text-warning" id="total-hours">0h</div>
+                                    <div class="small text-muted">Total Hours</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-bold mb-2">Next Exam</h6>
+                            <div id="next-exam" class="text-muted small">
+                                No upcoming exams
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-4">
+                        <h5 class="mb-3 fw-bold">Study Settings</h5>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small">Daily Study Hours</span>
+                                <span class="small fw-bold text-primary">6h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small">Session Duration</span>
+                                <span class="small fw-bold text-success">45min</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small">Break Duration</span>
+                                <span class="small fw-bold text-warning">15min</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small">Preparation Days</span>
+                                <span class="small fw-bold text-info">14 days</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-sm btn-outline-primary w-100" onclick="examStudyPlanner.showSettingsModal()">
+                                <i data-lucide="settings" style="width: 14px;" class="me-1"></i> Customize Settings
                             </button>
                         </div>
                     </div>
@@ -373,6 +435,6 @@
     <!-- Custom Scripts -->
     <script src="js/script.js"></script>
     <script src="js/offline-manager.js"></script>
-    <script src="js/study-planner.js"></script>
+    <script src="js/exam-study-planner.js"></script>
 </body>
 </html>
