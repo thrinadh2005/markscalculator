@@ -15,9 +15,9 @@ A high-performance, feature-rich academic management tool tailored for GMRIT stu
 *   **Dynamic Formula**: Uses the exact AR23 formula: `(0.8 * Better + 0.2 * Other) / 40 * 20 + Assignment (30→10)`.
 
 ### 2. SGPA & CGPA Calculators
-*   **Automated Syllabus**: Pre-loaded curriculum for **CSE, ECE, IT, AI&DS, and AI&ML** for all 8 semesters.
+*   **Automated Syllabus**: Pre-loaded curriculum for **CSE, ECE, EEE, MECH, CIVIL, IT, AI&DS, and AI&ML** for all 8 semesters.
 *   **Career Path Support**: Integrated elective management for paths like Full Stack, Cyber Security, and Cloud Computing.
-*   **Smart CGPA Tracker**: Automatic credit weighting and degree classification (Distinction, First Class, etc.).
+*   **Smart GPA Tracker**: Automatic credit weighting, lateral entry support (120/127 credits), and degree classification (Distinction, First Class, etc.).
 
 ### 3. AI-Driven Study Planner 🧠
 *   **Exam-Driven Scheduling**: Generate intelligent study schedules based on exam dates, subject difficulty, and priority.
