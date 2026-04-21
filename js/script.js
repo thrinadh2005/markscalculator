@@ -353,6 +353,192 @@ const syllabus = {
             {"code": "OE-4", "name": "Elective IX (Open Elective IV)", "credits": 2.0, "type": "theory"},
             {"code": "23FIX01", "name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
         ]
+    },
+    "EEE": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"name": "Math III", "credits": 3.0, "type": "theory"},
+            {"name": "DC Machines & Transformers", "credits": 3.0, "type": "theory"},
+            {"name": "Circuit Analysis II", "credits": 3.0, "type": "theory"},
+            {"name": "EM Field Theory", "credits": 3.0, "type": "theory"},
+            {"name": "Measurements", "credits": 3.0, "type": "theory"},
+            {"name": "Semiconductor Devices", "credits": 3.0, "type": "theory"},
+            {"name": "DC Machines Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Python Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "4": [
+            {"name": "AC Machines", "credits": 3.0, "type": "theory"},
+            {"name": "Integrated Circuits", "credits": 3.0, "type": "theory"},
+            {"name": "Power Electronics", "credits": 4.0, "type": "integrated"},
+            {"name": "Power Generation", "credits": 3.0, "type": "theory"},
+            {"name": "Signals & Systems", "credits": 3.0, "type": "theory"},
+            {"name": "AC Machines Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Measurements Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"name": "Java OOP", "credits": 3.0, "type": "theory"},
+            {"name": "Control Systems", "credits": 3.0, "type": "theory"},
+            {"name": "Electrical Drives", "credits": 3.0, "type": "theory"},
+            {"name": "Power System Protection", "credits": 3.0, "type": "theory"},
+            {"name": "Elective I (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective II (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Electrical Systems Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"name": "Economics & Project Management", "credits": 3.0, "type": "theory"},
+            {"name": "Power System Analysis", "credits": 3.0, "type": "theory"},
+            {"name": "Utilization of Electrical Energy", "credits": 3.0, "type": "theory"},
+            {"name": "Elective III (Professional)", "credits": 4.0, "type": "integrated"},
+            {"name": "Elective IV (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Power Systems Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Ethics", "credits": 0.0, "type": "theory"},
+            {"name": "Indian Knowledge Systems", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"name": "Elective V (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective VI (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective VII (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Summer Internship II", "credits": 1.0, "type": "lab"},
+            {"name": "Project", "credits": 8.0, "type": "lab"}
+        ],
+        "8": [
+            {"name": "Elective VIII (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective IX (Open)", "credits": 2.0, "type": "theory"},
+            {"name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
+        ]
+    },
+    "MECH": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"name": "Materials & Manufacturing", "credits": 3.0, "type": "theory"},
+            {"name": "Machine Drawing", "credits": 3.0, "type": "theory"},
+            {"name": "Python Programming", "credits": 4.0, "type": "integrated"},
+            {"name": "Fluid Mechanics", "credits": 3.0, "type": "theory"},
+            {"name": "Kinematics", "credits": 3.0, "type": "theory"},
+            {"name": "Thermodynamics", "credits": 3.0, "type": "theory"},
+            {"name": "Fluid Mechanics Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Computational Math Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "4": [
+            {"name": "Java OOP", "credits": 4.0, "type": "integrated"},
+            {"name": "Applied Thermodynamics", "credits": 3.0, "type": "theory"},
+            {"name": "Dynamics of Machinery", "credits": 3.0, "type": "theory"},
+            {"name": "Metal Cutting", "credits": 3.0, "type": "theory"},
+            {"name": "Mechanics of Solids", "credits": 3.0, "type": "theory"},
+            {"name": "Thermal Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Solids Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"name": "CAD & CAM", "credits": 3.0, "type": "theory"},
+            {"name": "Design of Machine Elements I", "credits": 3.0, "type": "theory"},
+            {"name": "Steam & Gas Turbines", "credits": 3.0, "type": "theory"},
+            {"name": "Measurements & Metrology", "credits": 3.0, "type": "theory"},
+            {"name": "Elective I (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective II (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Metrology Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"name": "Design of Machine Elements II", "credits": 3.0, "type": "theory"},
+            {"name": "FEM", "credits": 3.0, "type": "theory"},
+            {"name": "Heat Transfer", "credits": 3.0, "type": "theory"},
+            {"name": "Elective III (Professional)", "credits": 4.0, "type": "integrated"},
+            {"name": "Elective IV (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Heat Transfer Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Ethics", "credits": 0.0, "type": "theory"},
+            {"name": "Audit Course", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"name": "Project Work", "credits": 8.0, "type": "lab"},
+            {"name": "Elective V (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective VI (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective VII (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Summer Internship II", "credits": 1.0, "type": "lab"}
+        ],
+        "8": [
+            {"name": "Full Semester Internship", "credits": 8.0, "type": "lab"},
+            {"name": "Elective VIII (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective IX (Open)", "credits": 2.0, "type": "theory"}
+        ]
+    },
+    "CIVIL": {
+        "1": commonSem1,
+        "2": commonSem2,
+        "3": [
+            {"name": "Numerical Methods", "credits": 3.0, "type": "theory"},
+            {"name": "Building Materials", "credits": 3.0, "type": "theory"},
+            {"name": "Planning & Drawing", "credits": 3.0, "type": "theory"},
+            {"name": "Fluid Mechanics", "credits": 4.0, "type": "integrated"},
+            {"name": "Solid Mechanics I", "credits": 3.0, "type": "theory"},
+            {"name": "Surveying", "credits": 3.0, "type": "theory"},
+            {"name": "Solid Mechanics Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Surveying Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "4": [
+            {"name": "Hydraulics", "credits": 3.0, "type": "theory"},
+            {"name": "Soil Mechanics", "credits": 3.0, "type": "theory"},
+            {"name": "Solid Mechanics II", "credits": 3.0, "type": "theory"},
+            {"name": "Structural Analysis", "credits": 3.0, "type": "theory"},
+            {"name": "Transportation Engg", "credits": 4.0, "type": "integrated"},
+            {"name": "Hydraulics Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Soil Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills I", "credits": 2.0, "type": "theory"}
+        ],
+        "5": [
+            {"name": "RC Structures", "credits": 3.0, "type": "theory"},
+            {"name": "Environmental Engg", "credits": 3.0, "type": "theory"},
+            {"name": "Foundation Engg", "credits": 3.0, "type": "theory"},
+            {"name": "Hydrology", "credits": 3.0, "type": "theory"},
+            {"name": "Elective I (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective II (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Environmental Engg Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Term Paper", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Summer Internship I", "credits": 1.0, "type": "lab"}
+        ],
+        "6": [
+            {"name": "OOPS", "credits": 3.0, "type": "theory"},
+            {"name": "Steel Structures", "credits": 3.0, "type": "theory"},
+            {"name": "Estimation & Costing", "credits": 3.0, "type": "theory"},
+            {"name": "Elective III (Professional)", "credits": 4.0, "type": "integrated"},
+            {"name": "Elective IV (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Concrete Lab", "credits": 1.5, "type": "lab"},
+            {"name": "Mini Project", "credits": 1.5, "type": "lab"},
+            {"name": "Employability Skills II", "credits": 2.0, "type": "theory"},
+            {"name": "Environmental Studies", "credits": 0.0, "type": "theory"},
+            {"name": "Ethics", "credits": 0.0, "type": "theory"},
+            {"name": "Audit Course", "credits": 0.0, "type": "theory"}
+        ],
+        "7": [
+            {"name": "Elective V (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective VI (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective VII (Open)", "credits": 3.0, "type": "theory"},
+            {"name": "Project Work", "credits": 8.0, "type": "lab"},
+            {"name": "Summer Internship II", "credits": 1.0, "type": "lab"}
+        ],
+        "8": [
+            {"name": "Elective VIII (Professional)", "credits": 3.0, "type": "theory"},
+            {"name": "Elective IX (Open)", "credits": 2.0, "type": "theory"},
+            {"name": "Full Semester Internship", "credits": 8.0, "type": "lab"}
+        ]
     }
 };
 
@@ -1014,7 +1200,18 @@ function updateCgpaInputs() {
     const branchSelect = document.getElementById('cgpa-branch-select');
     if (!branchSelect) return;
     
-    const branch = branchSelect.value;
+    let branch = branchSelect.value;
+    
+    // Normalize branch name to match syllabus keys
+    if (branch === 'cse') branch = 'CSE';
+    if (branch === 'ece') branch = 'ECE';
+    if (branch === 'eee') branch = 'EEE';
+    if (branch === 'mech') branch = 'MECH';
+    if (branch === 'civil') branch = 'CIVIL';
+    if (branch === 'it') branch = 'IT';
+    if (branch === 'aiml') branch = 'AI&ML';
+    if (branch === 'aids') branch = 'AI&DS';
+    
     const container = document.getElementById('cgpa-inputs');
     container.innerHTML = '';
     
