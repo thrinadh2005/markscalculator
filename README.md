@@ -24,7 +24,13 @@ A high-performance, feature-rich academic management tool tailored for GMRIT stu
 *   **Dynamic Sessions**: AI analyzes your complexity scoring to recommend optimal session lengths and break intervals.
 *   **Dashboards**: Track total study hours, upcoming exams, and preparation progress.
 
-### 4. Advanced Technical Features
+### 4. Progressive Web App (PWA) 📱
+*   **Mobile Installable**: Full support for "Add to Home Screen" on Android and iOS with a custom installation banner.
+*   **Offline Functionality**: Advanced Service Worker caching ensures the app works perfectly without an internet connection.
+*   **Standalone Mode**: Launches in its own window without browser UI for a native, fast-loading experience.
+*   **App Icon**: Custom-designed high-resolution icons for a professional mobile brand.
+
+### 5. Advanced Technical Features
 *   **Offline First**: Powered by **IndexedDB**, ensuring your data is saved and accessible even without an internet connection.
 *   **Real-time Visitor Tracking**: Robust global visitor counter and public history log powered by **MongoDB Atlas**.
 *   **Glassmorphism UI**: A premium, responsive dark-themed interface built for a "state-of-the-art" user experience.
@@ -35,7 +41,8 @@ A high-performance, feature-rich academic management tool tailored for GMRIT stu
 ## 🛠️ Technology Stack
 
 -   **Frontend**: HTML5, Vanilla CSS3 (Glassmorphism), JavaScript (ES6+)
--   **Storage**: IndexedDB (Local/Offline)
+-   **PWA Support**: Web App Manifest & Service Workers (Asset Caching)
+-   **Storage**: IndexedDB (Local/Offline data)
 -   **Backend**: Node.js via Vercel Serverless Functions
 -   **Database**: MongoDB Atlas (Global Stats & Visitor Logs)
 -   **Icons**: Lucide Icons
