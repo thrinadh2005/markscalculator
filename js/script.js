@@ -1074,3 +1074,55 @@ function updateCgpa() {
 }
 
 init();
+
+// PWA: Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker Registered'))
+            .catch(err => console.log('Service Worker Registration Failed', err));
+    });
+}
+
+// PWA: Install Prompt Logic
+let deferredPrompt;
+const pwaBanner = document.getElementById('pwa-install-banner');
+const installBtn = document.getElementById('pwa-install-btn');
+const closeBtn = document.getElementById('pwa-close-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI notify the user they can add to home screen
+    if (!localStorage.getItem('pwa_banner_closed')) {
+        pwaBanner.classList.remove('hidden');
+    }
+});
+
+installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, and can't use it again, throw it away
+        deferredPrompt = null;
+        // Hide the banner
+        pwaBanner.classList.add('hidden');
+    }
+});
+
+closeBtn.addEventListener('click', () => {
+    pwaBanner.classList.add('hidden');
+    // Remember the user closed the banner
+    localStorage.setItem('pwa_banner_closed', 'true');
+});
+
+// Check if app is already installed
+window.addEventListener('appinstalled', (evt) => {
+    console.log('GMRIT Calculator was installed');
+    pwaBanner.classList.add('hidden');
+});

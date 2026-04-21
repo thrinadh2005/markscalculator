@@ -2260,3 +2260,44 @@ code, pre {
         margin-bottom: 1rem !important;
     }
 }
+
+/* PWA Banner Styles */
+.pwa-banner {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.pwa-icon {
+    background: rgba(255, 255, 255, 0.15);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pwa-banner.hidden {
+    display: none !important;
+}
+
+#pwa-install-btn {
+    background-color: white !important;
+    border-color: white !important;
+    color: var(--primary) !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#pwa-install-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
