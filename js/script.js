@@ -934,11 +934,6 @@ function showTab(tabName) {
     // Initialize tab-specific functionality
     if (tabName === 'cgpa') {
         updateCgpaInputs();
-    } else if (tabName === 'analytics') {
-        // Initialize analytics charts
-        if (typeof showAnalyticsTab === 'function') {
-            showAnalyticsTab();
-        }
     }
     
     lucide.createIcons();
@@ -1011,7 +1006,40 @@ function calculateInternal() {
     }
     
     const finalTotal = Math.ceil(total);
-    document.getElementById('internal-result').textContent = finalTotal;
+    const resultElement = document.getElementById('internal-result');
+    
+    // Add color based on marks
+    let resultColor = '';
+    let resultBg = '';
+    
+    if (finalTotal >= 35) {
+        resultColor = '#16a34a'; // Green - Excellent
+        resultBg = '#dcfce7';
+    } else if (finalTotal >= 30) {
+        resultColor = '#2563eb'; // Blue - Very Good
+        resultBg = '#dbeafe';
+    } else if (finalTotal >= 25) {
+        resultColor = '#7c3aed'; // Indigo - Good
+        resultBg = '#e9d5ff';
+    } else if (finalTotal >= 20) {
+        resultColor = '#06b6d4'; // Cyan - Average
+        resultBg = '#cffafe';
+    } else if (finalTotal >= 15) {
+        resultColor = '#f59e0b'; // Amber - Satisfactory
+        resultBg = '#fef3c7';
+    } else {
+        resultColor = '#ef4444'; // Red - Poor
+        resultBg = '#fef2f2';
+    }
+    
+    resultElement.textContent = finalTotal;
+    resultElement.style.color = resultColor;
+    resultElement.style.background = resultBg;
+    resultElement.style.padding = '8px 16px';
+    resultElement.style.borderRadius = '8px';
+    resultElement.style.fontWeight = 'bold';
+    resultElement.style.display = 'inline-block';
+    
     updateGradePredictor(finalTotal, type);
 }
 
@@ -1092,8 +1120,20 @@ function updateGradePredictor(internalMarks, type) {
             seeDisplay = `${actualRequired.toFixed(1)} <span style="font-size: 0.65rem;" class="text-warning">(Min)</span>`;
         }
 
+        // Add color based on grade
+        const gradeColors = {
+            'S': { color: '#16a34a', bg: '#dcfce7' },      // Green - Outstanding
+            'A': { color: '#2563eb', bg: '#dbeafe' },      // Blue - Excellent
+            'B': { color: '#7c3aed', bg: '#e9d5ff' },      // Indigo - Very Good
+            'C': { color: '#06b6d4', bg: '#cffafe' },      // Cyan - Good
+            'D': { color: '#f59e0b', bg: '#fef3c7' },      // Amber - Average
+            'E': { color: '#ef4444', bg: '#fef2f2' }       // Red - Poor/Fail
+        };
+        
+        const gradeColor = gradeColors[t.grade] || { color: '#6b7280', bg: '#f3f4f6' };
+        
         tr.innerHTML = `
-            <td class="fw-bold">${t.grade}</td>
+            <td class="fw-bold" style="color: ${gradeColor.color}; background: ${gradeColor.bg}; padding: 4px 8px; border-radius: 4px;">${t.grade}</td>
             <td class="fw-bold">${seeDisplay}</td>
             <td class="text-muted">${minTotal}</td>
         `;
@@ -1198,11 +1238,6 @@ function updateSgpa() {
 
     const sgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
     document.getElementById('sgpa-result').textContent = sgpa;
-    
-    // Update analytics if available and analytics tab is active
-    if (typeof marksAnalytics !== 'undefined' && marksAnalytics) {
-        marksAnalytics.updateChartsWithNewData();
-    }
 }
 
 // CGPA Calculator
@@ -1278,11 +1313,6 @@ function updateCgpa() {
     else if (cgpa >= 5.75) classLabel.textContent = "Second Class";
     else if (cgpa >= 4.0) classLabel.textContent = "Pass Class";
     else classLabel.textContent = "";
-    
-    // Update analytics if available and analytics tab is active
-    if (typeof marksAnalytics !== 'undefined' && marksAnalytics) {
-        marksAnalytics.updateChartsWithNewData();
-    }
 }
 
 init();

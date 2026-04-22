@@ -107,9 +107,6 @@
                 <button class="nav-link" onclick="showTab('study-planner')">Study Planner</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" onclick="showTab('analytics')">Analytics</button>
-            </li>
-            <li class="nav-item">
                 <button class="nav-link" onclick="showTab('results')">Results Portal</button>
             </li>
         </ul>
@@ -467,80 +464,6 @@
             </div>
         </div>
 
-        <!-- Analytics Dashboard -->
-        <div id="analytics-tab" class="tab-content hidden">
-            <div class="glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="mb-0 fw-bold">Marks Analytics Dashboard</h4>
-                    <button class="btn btn-sm btn-primary" onclick="refreshAnalytics()">
-                        <i data-lucide="refresh-cw" style="width: 16px;"></i> Refresh
-                    </button>
-                </div>
-                
-                <div class="row g-4">
-                    <!-- Performance Overview -->
-                    <div class="col-lg-6">
-                        <div class="glass-card p-3 h-100">
-                            <h5 class="mb-3 fw-bold">Performance Overview</h5>
-                            <canvas id="performanceChart" width="400" height="300"></canvas>
-                        </div>
-                    </div>
-                    
-                    <!-- Subject Distribution -->
-                    <div class="col-lg-6">
-                        <div class="glass-card p-3 h-100">
-                            <h5 class="mb-3 fw-bold">Subject Performance</h5>
-                            <canvas id="subjectChart" width="400" height="300"></canvas>
-                        </div>
-                    </div>
-                    
-                    <!-- Grade Distribution -->
-                    <div class="col-lg-6">
-                        <div class="glass-card p-3 h-100">
-                            <h5 class="mb-3 fw-bold">Grade Distribution</h5>
-                            <canvas id="gradeChart" width="400" height="300"></canvas>
-                        </div>
-                    </div>
-                    
-                    <!-- Progress Trends -->
-                    <div class="col-lg-6">
-                        <div class="glass-card p-3 h-100">
-                            <h5 class="mb-3 fw-bold">Progress Trends</h5>
-                            <canvas id="trendChart" width="400" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Statistics Cards -->
-                <div class="row g-3 mt-3">
-                    <div class="col-md-3">
-                        <div class="glass-card p-3 text-center">
-                            <div class="fw-bold text-primary fs-4" id="avgMarks">0</div>
-                            <div class="small text-muted">Average Marks</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="glass-card p-3 text-center">
-                            <div class="fw-bold text-success fs-4" id="highestMarks">0</div>
-                            <div class="small text-muted">Highest Score</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="glass-card p-3 text-center">
-                            <div class="fw-bold text-warning fs-4" id="totalSubjects">0</div>
-                            <div class="small text-muted">Total Subjects</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="glass-card p-3 text-center">
-                            <div class="fw-bold text-info fs-4" id="sgpaValue">0.0</div>
-                            <div class="small text-muted">Current SGPA</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Results Portal -->
         <div id="results-tab" class="tab-content hidden">
             <div class="glass-card p-4 overflow-hidden" style="height: 80vh;">
@@ -582,6 +505,5 @@
     <script src="js/script.js"></script>
     <script src="js/offline-manager.js"></script>
     <script src="js/exam-study-planner.js"></script>
-    <script src="js/analytics.js"></script>
 </body>
 </html>
