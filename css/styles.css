@@ -67,6 +67,252 @@ body {
     color: inherit !important;
 }
 
+/* Additional Dark Theme Fixes */
+[data-theme="dark"] .text-white {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .text-light {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .bg-white {
+    background-color: var(--glass) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .bg-light {
+    background-color: var(--glass) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .border-white {
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="dark"] .border-light {
+    border-color: var(--glass-border) !important;
+}
+
+/* Fix for visitor counter in dark theme */
+[data-theme="dark"] #visitor-count {
+    color: var(--text) !important;
+}
+
+/* Fix for footer links in dark theme */
+[data-theme="dark"] footer a {
+    color: var(--accent) !important;
+}
+
+[data-theme="dark"] footer a:hover {
+    color: var(--primary-light) !important;
+}
+
+/* Fix for icons in dark theme */
+[data-theme="dark"] [data-lucide] {
+    color: var(--text) !important;
+}
+
+/* Fix for input placeholders in dark theme */
+[data-theme="dark"] input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] textarea::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] select::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* Fix for focus states in dark theme */
+[data-theme="dark"] input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25) !important;
+}
+
+[data-theme="dark"] select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25) !important;
+}
+
+[data-theme="dark"] textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Fix for disabled elements in dark theme */
+[data-theme="dark"] input:disabled {
+    background-color: var(--glass-border) !important;
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] select:disabled {
+    background-color: var(--glass-border) !important;
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] button:disabled {
+    background-color: var(--glass-border) !important;
+    color: var(--text-muted) !important;
+}
+
+/* Fix for internal predictor in dark theme */
+[data-theme="dark"] #internal-result {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+/* Fix for grade predictor in dark theme */
+[data-theme="dark"] #grade-predictor {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="dark"] #grade-predictor th {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="dark"] #grade-predictor td {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border-color: var(--glass-border) !important;
+}
+
+/* Fix for SGPA/CGPA results in dark theme */
+[data-theme="dark"] #sgpa-result {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] #cgpa-result-val {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] #cgpa-class {
+    color: var(--text-muted) !important;
+}
+
+/* Fix for navigation tabs in dark theme */
+[data-theme="dark"] .nav-pills .nav-link {
+    background: var(--glass) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .nav-pills .nav-link:hover {
+    background: var(--hover-bg) !important;
+    color: var(--primary-light) !important;
+}
+
+/* Fix for study planner in dark theme */
+[data-theme="dark"] .study-session {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .break-session {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--text-muted) !important;
+}
+
+/* Fix for modals in dark theme */
+[data-theme="dark"] .modal-content {
+    background: var(--glass) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .modal-header {
+    background: var(--glass) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .modal-footer {
+    background: var(--glass) !important;
+    border-top: 1px solid var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+/* Fix for forms in dark theme */
+[data-theme="dark"] .form-label {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .form-text {
+    color: var(--text-muted) !important;
+}
+
+/* Fix for alerts in dark theme */
+[data-theme="dark"] .alert {
+    background: var(--glass) !important;
+    border-color: var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+/* Fix for tables in dark theme */
+[data-theme="dark"] .table {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .table th {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border-color: var(--glass-border) !important;
+}
+
+[data-theme="dark"] .table td {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border-color: var(--glass-border) !important;
+}
+
+/* Fix for badges in dark theme */
+[data-theme="dark"] .badge {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+/* Fix for progress bars in dark theme */
+[data-theme="dark"] .progress {
+    background: var(--glass-border) !important;
+}
+
+[data-theme="dark"] .progress-bar {
+    background: var(--primary) !important;
+}
+
+/* Fix for tooltips in dark theme */
+[data-theme="dark"] .tooltip {
+    background: var(--glass) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+/* Fix for dropdowns in dark theme */
+[data-theme="dark"] .dropdown-menu {
+    background: var(--glass) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background: var(--hover-bg) !important;
+    color: var(--primary) !important;
+}
+
 [data-theme="dark"] h1,
 [data-theme="dark"] h2,
 [data-theme="dark"] h3,
