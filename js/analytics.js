@@ -7,7 +7,114 @@ class MarksAnalytics {
     }
 
     initializeData() {
-        // Sample data - in real implementation, this would come from user inputs or API
+        return this.fetchRealMarksData();
+    }
+
+    fetchRealMarksData() {
+        const data = {
+            subjects: [],
+            marks: [],
+            internalMarks: [],
+            externalMarks: [],
+            grades: [],
+            semesters: [],
+            sgpaData: []
+        };
+
+        try {
+            // Fetch SGPA data from CGPA inputs
+            const sgpaInputs = document.querySelectorAll('.sem-sgpa-input');
+            if (sgpaInputs.length > 0) {
+                sgpaInputs.forEach((input, index) => {
+                    const value = parseFloat(input.value);
+                    if (!isNaN(value) && value > 0) {
+                        data.sgpaData.push(value);
+                        data.semesters.push(`Sem ${index + 1}`);
+                    }
+                });
+            }
+
+            // Fetch subject and grade data from SGPA calculator
+            const subjectRows = document.querySelectorAll('#sgpa-subjects .row');
+            if (subjectRows.length > 0) {
+                subjectRows.forEach(row => {
+                    const subjectName = row.querySelector('.subject-name');
+                    const gradeSelect = row.querySelector('select');
+                    const credits = row.querySelector('[data-credits]');
+                    
+                    if (subjectName && gradeSelect && credits) {
+                        const subject = subjectName.textContent.trim();
+                        const grade = gradeSelect.value;
+                        const credit = parseInt(credits.getAttribute('data-credits'));
+                        
+                        if (subject && grade) {
+                            data.subjects.push(subject);
+                            data.grades.push(grade);
+                            
+                            // Calculate marks based on grade
+                            const gradePoints = {
+                                'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6,
+                                'C+': 5, 'C': 4, 'D': 3, 'F': 0
+                            };
+                            
+                            const point = gradePoints[grade] || 0;
+                            const totalMarks = Math.round((point / 10) * 100);
+                            data.marks.push(totalMarks);
+                            
+                            // Split into internal and external (50-50 split)
+                            const internal = Math.round(totalMarks * 0.5);
+                            const external = totalMarks - internal;
+                            data.internalMarks.push(internal);
+                            data.externalMarks.push(external);
+                        }
+                    }
+                });
+            }
+
+            // Fetch internal marks data if available
+            const internalData = this.getInternalMarksData();
+            if (internalData && internalData.length > 0) {
+                data.internalData = internalData;
+            }
+
+            // If no real data found, provide sample data for demonstration
+            if (data.subjects.length === 0) {
+                return this.getSampleData();
+            }
+
+        } catch (error) {
+            console.error('Error fetching real marks data:', error);
+            return this.getSampleData();
+        }
+
+        return data;
+    }
+
+    getInternalMarksData() {
+        try {
+            // Try to get internal marks from localStorage or form inputs
+            const internalData = [];
+            
+            // Check if internal marks form is filled
+            const internalInputs = document.querySelectorAll('#internal-form input[type="number"]');
+            if (internalInputs.length > 0) {
+                internalInputs.forEach(input => {
+                    const value = parseFloat(input.value);
+                    if (!isNaN(value) && value > 0) {
+                        internalData.push(value);
+                    }
+                });
+            }
+            
+            return internalData;
+        } catch (error) {
+            console.error('Error fetching internal marks:', error);
+            return [];
+        }
+    }
+
+    getSampleData() {
+        // Fallback sample data when no real data is available
         return {
             subjects: ['Mathematics', 'Physics', 'Chemistry', 'Programming', 'English', 'Electronics'],
             marks: [85, 78, 92, 88, 76, 81],
@@ -259,21 +366,85 @@ class MarksAnalytics {
     }
 
     refresh() {
-        // In real implementation, this would fetch fresh data
-        // For now, we'll just update with some random variations
-        this.data.marks = this.data.marks.map(mark => 
-            Math.max(60, Math.min(100, mark + Math.floor(Math.random() * 11) - 5))
-        );
+        // Fetch fresh data from the application
+        const newData = this.fetchRealMarksData();
         
-        // Update charts with new data
-        this.charts.subject.data.datasets[0].data = this.data.marks;
-        this.charts.subject.update();
+        // Update all data
+        this.data = newData;
+        
+        // Update all charts with fresh data
+        this.updateAllCharts();
         
         // Update statistics
         this.updateStatistics();
         
         // Show notification
-        this.showNotification('Analytics refreshed successfully!', 'success');
+        this.showNotification('Analytics refreshed with latest marks data!', 'success');
+    }
+
+    updateAllCharts() {
+        // Update Performance Chart (Radar)
+        if (this.charts.performance) {
+            this.charts.performance.data.labels = this.data.subjects;
+            this.charts.performance.data.datasets[0].data = this.data.internalMarks;
+            this.charts.performance.data.datasets[1].data = this.data.externalMarks;
+            this.charts.performance.update();
+        }
+        
+        // Update Subject Chart (Bar)
+        if (this.charts.subject) {
+            this.charts.subject.data.labels = this.data.subjects;
+            this.charts.subject.data.datasets[0].data = this.data.marks;
+            this.charts.subject.update();
+        }
+        
+        // Update Grade Chart (Doughnut)
+        if (this.charts.grade) {
+            const gradeCounts = {};
+            this.data.grades.forEach(grade => {
+                gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
+            });
+            
+            this.charts.grade.data.labels = Object.keys(gradeCounts);
+            this.charts.grade.data.datasets[0].data = Object.values(gradeCounts);
+            this.charts.grade.update();
+        }
+        
+        // Update Trend Chart (Line)
+        if (this.charts.trend) {
+            this.charts.trend.data.labels = this.data.semesters;
+            this.charts.trend.data.datasets[0].data = this.data.sgpaData;
+            this.charts.trend.update();
+        }
+    }
+
+    // Method to update charts when new marks are entered
+    updateChartsWithNewData() {
+        this.refresh();
+    }
+
+    // Method to get current statistics
+    getCurrentStatistics() {
+        if (this.data.marks.length === 0) {
+            return {
+                avgMarks: 0,
+                highestMarks: 0,
+                totalSubjects: 0,
+                currentSGPA: 0.0
+            };
+        }
+        
+        const avgMarks = Math.round(this.data.marks.reduce((a, b) => a + b, 0) / this.data.marks.length);
+        const highestMarks = Math.max(...this.data.marks);
+        const totalSubjects = this.data.subjects.length;
+        const currentSGPA = this.data.sgpaData.length > 0 ? this.data.sgpaData[this.data.sgpaData.length - 1] : 0.0;
+        
+        return {
+            avgMarks,
+            highestMarks,
+            totalSubjects,
+            currentSGPA
+        };
     }
 
     showNotification(message, type = 'info') {

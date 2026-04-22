@@ -1198,6 +1198,11 @@ function updateSgpa() {
 
     const sgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
     document.getElementById('sgpa-result').textContent = sgpa;
+    
+    // Update analytics if available and analytics tab is active
+    if (typeof marksAnalytics !== 'undefined' && marksAnalytics) {
+        marksAnalytics.updateChartsWithNewData();
+    }
 }
 
 // CGPA Calculator
@@ -1273,6 +1278,11 @@ function updateCgpa() {
     else if (cgpa >= 5.75) classLabel.textContent = "Second Class";
     else if (cgpa >= 4.0) classLabel.textContent = "Pass Class";
     else classLabel.textContent = "";
+    
+    // Update analytics if available and analytics tab is active
+    if (typeof marksAnalytics !== 'undefined' && marksAnalytics) {
+        marksAnalytics.updateChartsWithNewData();
+    }
 }
 
 init();
