@@ -196,6 +196,12 @@ class MarksAnalytics {
 
     createSubjectChart() {
         const ctx = document.getElementById('subjectChart').getContext('2d');
+        
+        // Generate colors based on grades
+        const gradeColors = this.getGradeColors();
+        const backgroundColors = this.data.grades.map(grade => gradeColors[grade].bg);
+        const borderColors = this.data.grades.map(grade => gradeColors[grade].border);
+        
         this.charts.subject = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -203,22 +209,8 @@ class MarksAnalytics {
                 datasets: [{
                     label: 'Total Marks',
                     data: this.data.marks,
-                    backgroundColor: [
-                        'rgba(79, 70, 229, 0.8)',
-                        'rgba(6, 182, 212, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(139, 92, 246, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(79, 70, 229, 1)',
-                        'rgba(6, 182, 212, 1)',
-                        'rgba(16, 185, 129, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(239, 68, 68, 1)',
-                        'rgba(139, 92, 246, 1)'
-                    ],
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
                     borderWidth: 2
                 }]
             },
@@ -250,11 +242,29 @@ class MarksAnalytics {
         });
     }
 
+    getGradeColors() {
+        return {
+            'O': { bg: 'rgba(16, 185, 129, 0.8)', border: 'rgba(16, 185, 129, 1)' },      // Green - Outstanding
+            'A+': { bg: 'rgba(59, 130, 246, 0.8)', border: 'rgba(59, 130, 246, 1)' },    // Blue - Excellent
+            'A': { bg: 'rgba(79, 70, 229, 0.8)', border: 'rgba(79, 70, 229, 1)' },      // Indigo - Very Good
+            'B+': { bg: 'rgba(6, 182, 212, 0.8)', border: 'rgba(6, 182, 212, 1)' },     // Cyan - Good
+            'B': { bg: 'rgba(245, 158, 11, 0.8)', border: 'rgba(245, 158, 11, 1)' },     // Amber - Average
+            'C+': { bg: 'rgba(251, 146, 60, 0.8)', border: 'rgba(251, 146, 60, 1)' },    // Orange - Satisfactory
+            'C': { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },     // Orange-Red - Pass
+            'D': { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red - Poor
+            'F': { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' }         // Dark Red - Fail
+        };
+    }
+
     createGradeChart() {
         const gradeCounts = {};
         this.data.grades.forEach(grade => {
             gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
         });
+
+        const gradeColors = this.getGradeColors();
+        const backgroundColors = Object.keys(gradeCounts).map(grade => gradeColors[grade]?.bg || 'rgba(107, 114, 128, 0.8)');
+        const borderColors = Object.keys(gradeCounts).map(grade => gradeColors[grade]?.border || 'rgba(107, 114, 128, 1)');
 
         const ctx = document.getElementById('gradeChart').getContext('2d');
         this.charts.grade = new Chart(ctx, {
@@ -263,20 +273,8 @@ class MarksAnalytics {
                 labels: Object.keys(gradeCounts),
                 datasets: [{
                     data: Object.values(gradeCounts),
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(79, 70, 229, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(107, 114, 128, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(16, 185, 129, 1)',
-                        'rgba(79, 70, 229, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(239, 68, 68, 1)',
-                        'rgba(107, 114, 128, 1)'
-                    ],
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
                     borderWidth: 2
                 }]
             },
@@ -395,6 +393,14 @@ class MarksAnalytics {
         if (this.charts.subject) {
             this.charts.subject.data.labels = this.data.subjects;
             this.charts.subject.data.datasets[0].data = this.data.marks;
+            
+            // Update colors based on grades
+            const gradeColors = this.getGradeColors();
+            const backgroundColors = this.data.grades.map(grade => gradeColors[grade]?.bg || 'rgba(107, 114, 128, 0.8)');
+            const borderColors = this.data.grades.map(grade => gradeColors[grade]?.border || 'rgba(107, 114, 128, 1)');
+            
+            this.charts.subject.data.datasets[0].backgroundColor = backgroundColors;
+            this.charts.subject.data.datasets[0].borderColor = borderColors;
             this.charts.subject.update();
         }
         
@@ -405,8 +411,14 @@ class MarksAnalytics {
                 gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
             });
             
+            const gradeColors = this.getGradeColors();
+            const backgroundColors = Object.keys(gradeCounts).map(grade => gradeColors[grade]?.bg || 'rgba(107, 114, 128, 0.8)');
+            const borderColors = Object.keys(gradeCounts).map(grade => gradeColors[grade]?.border || 'rgba(107, 114, 128, 1)');
+            
             this.charts.grade.data.labels = Object.keys(gradeCounts);
             this.charts.grade.data.datasets[0].data = Object.values(gradeCounts);
+            this.charts.grade.data.datasets[0].backgroundColor = backgroundColors;
+            this.charts.grade.data.datasets[0].borderColor = borderColors;
             this.charts.grade.update();
         }
         
