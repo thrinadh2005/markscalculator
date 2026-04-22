@@ -934,6 +934,11 @@ function showTab(tabName) {
     // Initialize tab-specific functionality
     if (tabName === 'cgpa') {
         updateCgpaInputs();
+    } else if (tabName === 'analytics') {
+        // Initialize analytics charts
+        if (typeof showAnalyticsTab === 'function') {
+            showAnalyticsTab();
+        }
     }
     
     lucide.createIcons();
