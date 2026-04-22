@@ -890,7 +890,7 @@ function setupInputValidation() {
     
     inputs.forEach(input => {
         input.addEventListener('input', function() {
-            const max = parseFloat(this.getAttribute('max'));
+            const max = parseFloat(this.getAttribute('max')) || 100;
             const min = parseFloat(this.getAttribute('min')) || 0;
             let value = parseFloat(this.value);
 
@@ -898,8 +898,26 @@ function setupInputValidation() {
 
             if (value > max) {
                 this.value = max;
+                // Show visual feedback for max limit
+                this.style.borderColor = '#ef4444';
+                this.style.backgroundColor = '#fef2f2';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                    this.style.backgroundColor = '';
+                }, 1500);
             } else if (value < min) {
                 this.value = min;
+                // Show visual feedback for min limit
+                this.style.borderColor = '#f59e0b';
+                this.style.backgroundColor = '#fef3c7';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                    this.style.backgroundColor = '';
+                }, 1500);
+            } else {
+                // Normal state
+                this.style.borderColor = '';
+                this.style.backgroundColor = '';
             }
         });
     });
@@ -977,29 +995,48 @@ function toggleInternalFields() {
 function calculateInternal() {
     const type = document.getElementById('course-type').value;
     let total = 0;
+    
+    // Helper function to get validated input value
+    function getValidatedValue(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return 0;
+        const max = parseFloat(input.getAttribute('max')) || 100;
+        const min = parseFloat(input.getAttribute('min')) || 0;
+        let value = parseFloat(input.value) || 0;
+        
+        // Clamp the value to the valid range
+        if (isNaN(value)) value = min;
+        if (value > max) value = max;
+        if (value < min) value = min;
+        
+        // Update the input to show the clamped value
+        input.value = value;
+        return value;
+    }
+    
     if (type === 'theory') {
-        const m1 = parseFloat(document.getElementById('mid1').value) || 0;
-        const m2 = parseFloat(document.getElementById('mid2').value) || 0;
-        const assRaw = parseFloat(document.getElementById('assignment').value) || 0;
+        const m1 = getValidatedValue('mid1');
+        const m2 = getValidatedValue('mid2');
+        const assRaw = getValidatedValue('assignment');
         const assScaled = (assRaw / 30) * 10;
         const betterMid = Math.max(m1, m2);
         const otherMid = Math.min(m1, m2);
         total = ((0.8 * betterMid + 0.2 * otherMid) / 40) * 20 + assScaled;
     } else if (type === 'lab') {
-        const rec = parseFloat(document.getElementById('lab-record').value) || 0;
-        const test = parseFloat(document.getElementById('lab-test').value) || 0;
+        const rec = getValidatedValue('lab-record');
+        const test = getValidatedValue('lab-test');
         total = rec + test;
-    } else if (type === 'integrated') {
+    } else if (type === 'input') {
         // Theory Component (30)
-        const m1 = parseFloat(document.getElementById('mid1').value) || 0;
-        const m2 = parseFloat(document.getElementById('mid2').value) || 0;
+        const m1 = getValidatedValue('mid1');
+        const m2 = getValidatedValue('mid2');
         const betterMid = Math.max(m1, m2);
         const otherMid = Math.min(m1, m2);
         const theoryPart = ((0.8 * betterMid + 0.2 * otherMid) / 40) * 30;
         
         // Lab Component (10)
-        const labRec = parseFloat(document.getElementById('int-lab-record').value) || 0;
-        const labTest = parseFloat(document.getElementById('int-lab-test').value) || 0;
+        const labRec = getValidatedValue('lab-record');
+        const labTest = getValidatedValue('lab-test');
         const labPart = labRec + labTest;
         
         total = theoryPart + labPart;
