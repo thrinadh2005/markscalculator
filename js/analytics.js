@@ -197,10 +197,10 @@ class MarksAnalytics {
     createSubjectChart() {
         const ctx = document.getElementById('subjectChart').getContext('2d');
         
-        // Generate colors based on grades
-        const gradeColors = this.getGradeColors();
-        const backgroundColors = this.data.grades.map(grade => gradeColors[grade].bg);
-        const borderColors = this.data.grades.map(grade => gradeColors[grade].border);
+        // Generate colors based on actual marks
+        const marksColors = this.getMarksColors();
+        const backgroundColors = this.data.marks.map(mark => marksColors[mark]?.bg || 'rgba(107, 114, 128, 0.8)');
+        const borderColors = this.data.marks.map(mark => marksColors[mark]?.border || 'rgba(107, 114, 128, 1)');
         
         this.charts.subject = new Chart(ctx, {
             type: 'bar',
@@ -253,6 +253,122 @@ class MarksAnalytics {
             'C': { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },     // Orange-Red - Pass
             'D': { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red - Poor
             'F': { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' }         // Dark Red - Fail
+        };
+    }
+
+    getMarksColors() {
+        return {
+            // 90-100: Excellent (Purple/Violet shades)
+            95: { bg: 'rgba(139, 92, 246, 0.8)', border: 'rgba(139, 92, 246, 1)' },      // Violet
+            94: { bg: 'rgba(124, 58, 237, 0.8)', border: 'rgba(124, 58, 237, 1)' },      // Purple
+            93: { bg: 'rgba(109, 40, 217, 0.8)', border: 'rgba(109, 40, 217, 1)' },      // Purple
+            92: { bg: 'rgba(91, 33, 182, 0.8)', border: 'rgba(91, 33, 182, 1)' },        // Purple
+            91: { bg: 'rgba(76, 29, 149, 0.8)', border: 'rgba(76, 29, 149, 1)' },        // Purple
+            90: { bg: 'rgba(67, 56, 202, 0.8)', border: 'rgba(67, 56, 202, 1)' },        // Indigo
+            
+            // 80-89: Very Good (Blue shades)
+            89: { bg: 'rgba(59, 130, 246, 0.8)', border: 'rgba(59, 130, 246, 1)' },      // Blue
+            88: { bg: 'rgba(37, 99, 235, 0.8)', border: 'rgba(37, 99, 235, 1)' },        // Blue
+            87: { bg: 'rgba(29, 78, 216, 0.8)', border: 'rgba(29, 78, 216, 1)' },        // Blue
+            86: { bg: 'rgba(30, 64, 175, 0.8)', border: 'rgba(30, 64, 175, 1)' },        // Blue
+            85: { bg: 'rgba(29, 78, 216, 0.8)', border: 'rgba(29, 78, 216, 1)' },        // Blue
+            84: { bg: 'rgba(37, 99, 235, 0.8)', border: 'rgba(37, 99, 235, 1)' },        // Blue
+            83: { bg: 'rgba(59, 130, 246, 0.8)', border: 'rgba(59, 130, 246, 1)' },      // Blue
+            82: { bg: 'rgba(79, 70, 229, 0.8)', border: 'rgba(79, 70, 229, 1)' },        // Indigo
+            81: { bg: 'rgba(67, 56, 202, 0.8)', border: 'rgba(67, 56, 202, 1)' },        // Indigo
+            80: { bg: 'rgba(79, 70, 229, 0.8)', border: 'rgba(79, 70, 229, 1)' },        // Indigo
+            
+            // 70-79: Good (Cyan/Teal shades)
+            79: { bg: 'rgba(6, 182, 212, 0.8)', border: 'rgba(6, 182, 212, 1)' },       // Cyan
+            78: { bg: 'rgba(8, 145, 178, 0.8)', border: 'rgba(8, 145, 178, 1)' },       // Cyan
+            77: { bg: 'rgba(14, 116, 144, 0.8)', border: 'rgba(14, 116, 144, 1)' },       // Teal
+            76: { bg: 'rgba(5, 150, 105, 0.8)', border: 'rgba(5, 150, 105, 1)' },       // Teal
+            75: { bg: 'rgba(20, 184, 166, 0.8)', border: 'rgba(20, 184, 166, 1)' },      // Teal
+            74: { bg: 'rgba(13, 148, 136, 0.8)', border: 'rgba(13, 148, 136, 1)' },       // Teal
+            73: { bg: 'rgba(6, 182, 212, 0.8)', border: 'rgba(6, 182, 212, 1)' },       // Cyan
+            72: { bg: 'rgba(8, 145, 178, 0.8)', border: 'rgba(8, 145, 178, 1)' },       // Cyan
+            71: { bg: 'rgba(14, 116, 144, 0.8)', border: 'rgba(14, 116, 144, 1)' },       // Teal
+            70: { bg: 'rgba(5, 150, 105, 0.8)', border: 'rgba(5, 150, 105, 1)' },       // Teal
+            
+            // 60-69: Average (Green shades)
+            69: { bg: 'rgba(34, 197, 94, 0.8)', border: 'rgba(34, 197, 94, 1)' },        // Green
+            68: { bg: 'rgba(22, 163, 74, 0.8)', border: 'rgba(22, 163, 74, 1)' },        // Green
+            67: { bg: 'rgba(21, 128, 61, 0.8)', border: 'rgba(21, 128, 61, 1)' },        // Green
+            66: { bg: 'rgba(16, 185, 129, 0.8)', border: 'rgba(16, 185, 129, 1)' },      // Green
+            65: { bg: 'rgba(34, 197, 94, 0.8)', border: 'rgba(34, 197, 94, 1)' },        // Green
+            64: { bg: 'rgba(22, 163, 74, 0.8)', border: 'rgba(22, 163, 74, 1)' },        // Green
+            63: { bg: 'rgba(21, 128, 61, 0.8)', border: 'rgba(21, 128, 61, 1)' },        // Green
+            62: { bg: 'rgba(16, 185, 129, 0.8)', border: 'rgba(16, 185, 129, 1)' },      // Green
+            61: { bg: 'rgba(34, 197, 94, 0.8)', border: 'rgba(34, 197, 94, 1)' },        // Green
+            60: { bg: 'rgba(22, 163, 74, 0.8)', border: 'rgba(22, 163, 74, 1)' },        // Green
+            
+            // 50-59: Satisfactory (Yellow/Amber shades)
+            59: { bg: 'rgba(250, 204, 21, 0.8)', border: 'rgba(250, 204, 21, 1)' },      // Yellow
+            58: { bg: 'rgba(245, 158, 11, 0.8)', border: 'rgba(245, 158, 11, 1)' },      // Amber
+            57: { bg: 'rgba(251, 191, 36, 0.8)', border: 'rgba(251, 191, 36, 1)' },      // Amber
+            56: { bg: 'rgba(245, 158, 11, 0.8)', border: 'rgba(245, 158, 11, 1)' },      // Amber
+            55: { bg: 'rgba(251, 191, 36, 0.8)', border: 'rgba(251, 191, 36, 1)' },      // Amber
+            54: { bg: 'rgba(250, 204, 21, 0.8)', border: 'rgba(250, 204, 21, 1)' },      // Yellow
+            53: { bg: 'rgba(245, 158, 11, 0.8)', border: 'rgba(245, 158, 11, 1)' },      // Amber
+            52: { bg: 'rgba(251, 191, 36, 0.8)', border: 'rgba(251, 191, 36, 1)' },      // Amber
+            51: { bg: 'rgba(250, 204, 21, 0.8)', border: 'rgba(250, 204, 21, 1)' },      // Yellow
+            50: { bg: 'rgba(245, 158, 11, 0.8)', border: 'rgba(245, 158, 11, 1)' },      // Amber
+            
+            // 40-49: Pass (Orange shades)
+            49: { bg: 'rgba(251, 146, 60, 0.8)', border: 'rgba(251, 146, 60, 1)' },      // Orange
+            48: { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },      // Orange-Red
+            47: { bg: 'rgba(251, 146, 60, 0.8)', border: 'rgba(251, 146, 60, 1)' },      // Orange
+            46: { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },      // Orange-Red
+            45: { bg: 'rgba(251, 146, 60, 0.8)', border: 'rgba(251, 146, 60, 1)' },      // Orange
+            44: { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },      // Orange-Red
+            43: { bg: 'rgba(251, 146, 60, 0.8)', border: 'rgba(251, 146, 60, 1)' },      // Orange
+            42: { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },      // Orange-Red
+            41: { bg: 'rgba(251, 146, 60, 0.8)', border: 'rgba(251, 146, 60, 1)' },      // Orange
+            40: { bg: 'rgba(249, 115, 22, 0.8)', border: 'rgba(249, 115, 22, 1)' },      // Orange-Red
+            
+            // 30-39: Poor (Red shades)
+            39: { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red
+            38: { bg: 'rgba(220, 38, 38, 0.8)', border: 'rgba(220, 38, 38, 1)' },        // Red
+            37: { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red
+            36: { bg: 'rgba(220, 38, 38, 0.8)', border: 'rgba(220, 38, 38, 1)' },        // Red
+            35: { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red
+            34: { bg: 'rgba(220, 38, 38, 0.8)', border: 'rgba(220, 38, 38, 1)' },        // Red
+            33: { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red
+            32: { bg: 'rgba(220, 38, 38, 0.8)', border: 'rgba(220, 38, 38, 1)' },        // Red
+            31: { bg: 'rgba(239, 68, 68, 0.8)', border: 'rgba(239, 68, 68, 1)' },        // Red
+            30: { bg: 'rgba(220, 38, 38, 0.8)', border: 'rgba(220, 38, 38, 1)' },        // Red
+            
+            // 0-29: Fail (Dark Red shades)
+            29: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            28: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            27: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            26: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            25: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            24: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            23: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            22: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            21: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            20: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            19: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            18: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            17: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            16: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            15: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            14: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            13: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            12: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            11: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            10: { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            9:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            8:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            7:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            6:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            5:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            4:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            3:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            2:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            1:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' },        // Dark Red
+            0:  { bg: 'rgba(127, 29, 29, 0.8)', border: 'rgba(127, 29, 29, 1)' }         // Dark Red
         };
     }
 
@@ -394,10 +510,10 @@ class MarksAnalytics {
             this.charts.subject.data.labels = this.data.subjects;
             this.charts.subject.data.datasets[0].data = this.data.marks;
             
-            // Update colors based on grades
-            const gradeColors = this.getGradeColors();
-            const backgroundColors = this.data.grades.map(grade => gradeColors[grade]?.bg || 'rgba(107, 114, 128, 0.8)');
-            const borderColors = this.data.grades.map(grade => gradeColors[grade]?.border || 'rgba(107, 114, 128, 1)');
+            // Update colors based on actual marks
+            const marksColors = this.getMarksColors();
+            const backgroundColors = this.data.marks.map(mark => marksColors[mark]?.bg || 'rgba(107, 114, 128, 0.8)');
+            const borderColors = this.data.marks.map(mark => marksColors[mark]?.border || 'rgba(107, 114, 128, 1)');
             
             this.charts.subject.data.datasets[0].backgroundColor = backgroundColors;
             this.charts.subject.data.datasets[0].borderColor = borderColors;
