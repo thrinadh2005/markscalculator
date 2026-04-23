@@ -115,10 +115,10 @@ module.exports = async (req, res) => {
         }
     );
     
-    // Use the actual count from stats table
-    const finalCount = visitorData.count;
+    // Return only the unique visitors count as requested
+    const finalCount = visitorData.unique_visitors;
 
-    console.log(`Final Display: ${finalCount} (Count from stats table)`);
+    console.log(`Final Display (Unique Only): ${finalCount}`);
 
     return res.status(200).json({ 
       count: finalCount,
