@@ -1405,3 +1405,13 @@ window.addEventListener('appinstalled', (evt) => {
     console.log('GMRIT Calculator was installed');
     pwaBanner.classList.add('hidden');
 });
+
+// Results Portal Refresh
+function refreshResults() {
+    const iframe = document.getElementById('results-iframe');
+    if (iframe) {
+        const originalSrc = "https://gmrit.campx.in/gmrit/ums/results";
+        // Show loading state by briefly hiding or using a timestamp
+        iframe.src = originalSrc + "?t=" + new Date().getTime();
+    }
+}
