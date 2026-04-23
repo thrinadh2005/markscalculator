@@ -48,9 +48,9 @@ async function connectToDatabase() {
 module.exports = async (req, res) => {
   try {
     const { db } = await connectToDatabase();
-    const hitsCollection = db.collection('unique_hits');
-    const statsCollection = db.collection('stats');
-
+    // Use 'visitors' collection which is used by api/visitors.js and contains historical data
+    const visitorsCollection = db.collection('visitors');
+    
     // Get IP address from headers
     const ip = req.headers['x-forwarded-for'] || 
                req.headers['x-real-ip'] || 
@@ -60,59 +60,44 @@ module.exports = async (req, res) => {
     
     console.log(`Processing visit from IP: ${ip}`);
     
-    // Atomic operation to track unique hits by IP
-    // This handles the "is new visitor" check and update in one strike
-    const previousHit = await hitsCollection.findOneAndUpdate(
-      { ip: ip },
-      { 
-        $set: { last_seen: new Date() },
-        $setOnInsert: { first_seen: new Date() }
-      },
-      { upsert: true, returnDocument: 'before' }
-    );
-
-    // A visitor is "new" if they've never visited before, OR if their last visit was > 24h ago
+    // Check if this is a new visitor in the last 24h
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const isNewVisitor = !previousHit || previousHit.last_seen < oneDayAgo;
+    const recentVisit = await visitorsCollection.findOne({
+      ip: ip,
+      timestamp: { $gt: oneDayAgo }
+    });
+
+    const isNewVisitor = !recentVisit;
     
     if (isNewVisitor) {
-      console.log(`Recording unique visit from: ${ip}`);
-      // Increment unique visitors count
-      await statsCollection.updateOne(
-        { _id: 'global_stats' },
-        { 
-          $inc: { unique_visitors: 1 },
-          $setOnInsert: { created_at: new Date() }
-        },
-        { upsert: true }
-      );
+      console.log(`Recording new visit from: ${ip}`);
+      // Record the visit document (matches the structure in api/visitors.js)
+      await visitorsCollection.insertOne({
+        name: 'Anonymous',
+        date: new Date().toLocaleString(),
+        ip: ip,
+        timestamp: new Date(),
+        user_agent: req.headers['user-agent'] || 'unknown',
+        is_automatic: true
+      });
     }
 
-    // Always increment total page views (hits)
-    await statsCollection.updateOne(
-      { _id: 'global_stats' },
-      { 
-        $inc: { total_views: 1 },
-        $setOnInsert: { created_at: new Date() }
-      },
-      { upsert: true }
-    );
-
-    // Get final stats
-    const stats = await statsCollection.findOne({ _id: 'global_stats' });
-    const uniqueCount = stats ? (stats.unique_visitors || 0) : 0;
-    const totalViews = stats ? (stats.total_views || 0) : 0;
+    // Get the actual number of unique visitors (by IP)
+    // For performance, we can use distinct or countDocuments
+    // But since we want to be robust, we'll count entries in the visitors collection
+    const uniqueIPs = await visitorsCollection.distinct('ip');
+    const uniqueCount = uniqueIPs.length;
     
-    // We return unique_visitors as the main 'count' for the 'Visitors' display
-    // but we can adjust this to total_views if preferred
-    const finalCount = uniqueCount;
+    // Restore the "Original" base count of 1024
+    // This ensures the counter starts from the number you are used to
+    const baseCount = 1024;
+    const finalCount = baseCount + uniqueCount;
 
-    console.log(`Stats updated - Unique: ${uniqueCount}, Total Views: ${totalViews}`);
+    console.log(`Count calculated - Unique IPs: ${uniqueCount}, Final Display: ${finalCount}`);
 
     return res.status(200).json({ 
       count: finalCount,
       unique_visitors: uniqueCount,
-      total_views: totalViews,
       is_new_visitor: isNewVisitor
     });
 
@@ -120,11 +105,9 @@ module.exports = async (req, res) => {
     console.error('Database error in count.js:', error);
     
     // Return a last-resort fallback count if database fails
-    // This prevents the UI from showing "0" if it's just a temporary connection issue
     return res.status(200).json({ 
-      count: 1024, // Use the last known good base if DB fails
-      unique_visitors: 1024,
-      total_views: 1024,
+      count: 1024, 
+      unique_visitors: 0,
       fallback: true,
       error: 'Database connection failed'
     });
