@@ -50,8 +50,8 @@ async function connectToDatabase() {
 module.exports = async (req, res) => {
   try {
     const { db } = await connectToDatabase();
-    // Point to the 'visitors' collection which holds the summary document
-    const visitorsCollection = db.collection('visitors');
+    // Point to the 'stats' collection which holds the visitor count
+    const statsCollection = db.collection('stats');
     
     // Get IP address from headers
     const ip = req.headers['x-forwarded-for'] || 
@@ -62,19 +62,20 @@ module.exports = async (req, res) => {
     
     console.log(`Processing visit from IP: ${ip}`);
     
-    // Fetch the summary document that contains the high count
-    let visitorData = await visitorsCollection.findOne({ unique_visitors: { $exists: true } });
+    // Fetch the stats document that contains the visitor count
+    let visitorData = await statsCollection.findOne({ count: { $exists: true } });
     
     if (!visitorData) {
-        // If no summary document exists, initialize it with the base count
-        console.log('Summary document not found, initializing...');
+        // If no stats document exists, initialize it with the base count
+        console.log('Stats document not found, initializing...');
         visitorData = {
+            count: 0,
             unique_visitors: 0,
             total_views: 0,
             daily_visitors: {},
             last_updated: new Date()
         };
-        await visitorsCollection.insertOne(visitorData);
+        await statsCollection.insertOne(visitorData);
     }
 
     const today = new Date().toDateString();
@@ -99,11 +100,15 @@ module.exports = async (req, res) => {
     // Always increment total views
     visitorData.total_views = (visitorData.total_views || 0) + 1;
     
+    // Increment the main count
+    visitorData.count = (visitorData.count || 0) + 1;
+    
     // Save updated data back to MongoDB
-    await visitorsCollection.updateOne(
+    await statsCollection.updateOne(
         { _id: visitorData._id },
         { 
             $set: {
+                count: visitorData.count,
                 unique_visitors: visitorData.unique_visitors,
                 total_views: visitorData.total_views,
                 daily_visitors: visitorData.daily_visitors,
@@ -112,11 +117,10 @@ module.exports = async (req, res) => {
         }
     );
     
-    // Restore the "Original" base count of 1024
-    const baseCount = 1024;
-    const finalCount = baseCount + visitorData.unique_visitors;
+    // Use the actual count from stats table
+    const finalCount = visitorData.count;
 
-    console.log(`Final Display: ${finalCount} (Base ${baseCount} + Unique ${visitorData.unique_visitors})`);
+    console.log(`Final Display: ${finalCount} (Count from stats table)`);
 
     return res.status(200).json({ 
       count: finalCount,
@@ -130,8 +134,9 @@ module.exports = async (req, res) => {
     
     // Return a last-resort fallback count if database fails
     return res.status(200).json({ 
-      count: 1024, 
+      count: 0, 
       unique_visitors: 0,
+      total_views: 0,
       fallback: true,
       error: 'Database connection failed'
     });
