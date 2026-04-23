@@ -8,14 +8,16 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  // Use only MongoDB URI from environment variables for security
-  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL;
+  // Prioritize environment variable, then use the specific Atlas URI from today's version
+  const mongodbUri = process.env.MONGODB_URI || 
+                    process.env.MONGODB_URL || 
+                    'mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/marks_calculator?retryWrites=true&w=majority';
   
   if (!mongodbUri) {
     throw new Error('MONGODB_URI environment variable is not defined');
   }
   
-  console.log('Attempting MongoDB connection...');
+  console.log('Attempting MongoDB connection for count...');
 
   const client = new MongoClient(mongodbUri, {
     serverApi: {
@@ -34,7 +36,7 @@ async function connectToDatabase() {
     await client.db('admin').command({ ping: 1 });
     console.log('MongoDB connected successfully!');
     
-    // Use the database name from the environment or default to 'marks_calculator'
+    // Use the specific database name 'marks_calculator'
     const db = client.db('marks_calculator');
     cachedClient = client;
     cachedDb = db;
@@ -48,7 +50,7 @@ async function connectToDatabase() {
 module.exports = async (req, res) => {
   try {
     const { db } = await connectToDatabase();
-    // Use 'visitors' collection which is used by api/visitors.js and contains historical data
+    // Point to the 'visitors' collection which holds the summary document
     const visitorsCollection = db.collection('visitors');
     
     // Get IP address from headers
@@ -60,44 +62,66 @@ module.exports = async (req, res) => {
     
     console.log(`Processing visit from IP: ${ip}`);
     
-    // Check if this is a new visitor in the last 24h
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const recentVisit = await visitorsCollection.findOne({
-      ip: ip,
-      timestamp: { $gt: oneDayAgo }
-    });
-
-    const isNewVisitor = !recentVisit;
+    // Fetch the summary document that contains the high count
+    let visitorData = await visitorsCollection.findOne({ unique_visitors: { $exists: true } });
     
-    if (isNewVisitor) {
-      console.log(`Recording new visit from: ${ip}`);
-      // Record the visit document (matches the structure in api/visitors.js)
-      await visitorsCollection.insertOne({
-        name: 'Anonymous',
-        date: new Date().toLocaleString(),
-        ip: ip,
-        timestamp: new Date(),
-        user_agent: req.headers['user-agent'] || 'unknown',
-        is_automatic: true
-      });
+    if (!visitorData) {
+        // If no summary document exists, initialize it with the base count
+        console.log('Summary document not found, initializing...');
+        visitorData = {
+            unique_visitors: 0,
+            total_views: 0,
+            daily_visitors: {},
+            last_updated: new Date()
+        };
+        await visitorsCollection.insertOne(visitorData);
     }
 
-    // Get the actual number of unique visitors (by IP)
-    // For performance, we can use distinct or countDocuments
-    // But since we want to be robust, we'll count entries in the visitors collection
-    const uniqueIPs = await visitorsCollection.distinct('ip');
-    const uniqueCount = uniqueIPs.length;
+    const today = new Date().toDateString();
+    let isNewVisitor = true;
+    
+    // Ensure daily_visitors object exists
+    if (!visitorData.daily_visitors) visitorData.daily_visitors = {};
+    
+    // Check if we've seen this IP today
+    if (visitorData.daily_visitors[today]) {
+        if (visitorData.daily_visitors[today].includes(ip)) {
+            isNewVisitor = false;
+        } else {
+            visitorData.daily_visitors[today].push(ip);
+            visitorData.unique_visitors++;
+        }
+    } else {
+        visitorData.daily_visitors[today] = [ip];
+        visitorData.unique_visitors++;
+    }
+    
+    // Always increment total views
+    visitorData.total_views = (visitorData.total_views || 0) + 1;
+    
+    // Save updated data back to MongoDB
+    await visitorsCollection.updateOne(
+        { _id: visitorData._id },
+        { 
+            $set: {
+                unique_visitors: visitorData.unique_visitors,
+                total_views: visitorData.total_views,
+                daily_visitors: visitorData.daily_visitors,
+                last_updated: new Date()
+            }
+        }
+    );
     
     // Restore the "Original" base count of 1024
-    // This ensures the counter starts from the number you are used to
     const baseCount = 1024;
-    const finalCount = baseCount + uniqueCount;
+    const finalCount = baseCount + visitorData.unique_visitors;
 
-    console.log(`Count calculated - Unique IPs: ${uniqueCount}, Final Display: ${finalCount}`);
+    console.log(`Final Display: ${finalCount} (Base ${baseCount} + Unique ${visitorData.unique_visitors})`);
 
     return res.status(200).json({ 
       count: finalCount,
-      unique_visitors: uniqueCount,
+      unique_visitors: visitorData.unique_visitors,
+      total_views: visitorData.total_views,
       is_new_visitor: isNewVisitor
     });
 
