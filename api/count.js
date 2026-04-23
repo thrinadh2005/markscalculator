@@ -8,10 +8,8 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  // Prioritize environment variable, then use the specific Atlas URI from today's version
-  const mongodbUri = process.env.MONGODB_URI || 
-                    process.env.MONGODB_URL || 
-                    'mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/marks_calculator?retryWrites=true&w=majority';
+  // Use only environment variables for Vercel deployment
+  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL;
   
   if (!mongodbUri) {
     throw new Error('MONGODB_URI environment variable is not defined');

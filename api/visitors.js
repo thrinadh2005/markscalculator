@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
     console.log(`Visitors API - Method: ${req.method}`);
     
     const { db } = await connectToDatabase();
-    const collection = db.collection('visitors');
+    const collection = db.collection('stats');
 
     if (req.method === 'GET') {
       console.log('Fetching visitor logs...');
