@@ -830,6 +830,9 @@ async function updateVisitorCount(retryCount = 0) {
             counterEl.textContent = data.count.toLocaleString();
             counterEl.style.color = '';
             
+            // Cache the successful count for future fallbacks
+            localStorage.setItem('site_visitors', data.count.toString());
+            
             // Add visual feedback for new visitors
             if (data.is_new_visitor) {
                 counterEl.style.color = '#28a745';
@@ -1026,7 +1029,7 @@ function calculateInternal() {
         const rec = getValidatedValue('lab-record');
         const test = getValidatedValue('lab-test');
         total = rec + test;
-    } else if (type === 'input') {
+    } else if (type === 'integrated') {
         // Theory Component (30)
         const m1 = getValidatedValue('mid1');
         const m2 = getValidatedValue('mid2');
@@ -1035,8 +1038,8 @@ function calculateInternal() {
         const theoryPart = ((0.8 * betterMid + 0.2 * otherMid) / 40) * 30;
         
         // Lab Component (10)
-        const labRec = getValidatedValue('lab-record');
-        const labTest = getValidatedValue('lab-test');
+        const labRec = getValidatedValue('int-lab-record');
+        const labTest = getValidatedValue('int-lab-test');
         const labPart = labRec + labTest;
         
         total = theoryPart + labPart;

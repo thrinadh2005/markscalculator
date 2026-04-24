@@ -88,11 +88,11 @@ module.exports = async (req, res) => {
             isNewVisitor = false;
         } else {
             visitorData.daily_visitors[today].push(ip);
-            visitorData.unique_visitors++;
+            visitorData.unique_visitors = (visitorData.unique_visitors || 0) + 1;
         }
     } else {
         visitorData.daily_visitors[today] = [ip];
-        visitorData.unique_visitors++;
+        visitorData.unique_visitors = (visitorData.unique_visitors || 0) + 1;
     }
     
     // Always increment total views
@@ -130,13 +130,10 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('Database error in count.js:', error);
     
-    // Return a last-resort fallback count if database fails
-    return res.status(200).json({ 
-      count: 0, 
-      unique_visitors: 0,
-      total_views: 0,
-      fallback: true,
-      error: 'Database connection failed'
+    // Return an error status so the frontend knows it's a failure, not a zero count
+    return res.status(500).json({ 
+      error: 'Database connection failed',
+      message: error.message
     });
   }
 };
