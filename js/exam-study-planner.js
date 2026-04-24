@@ -1015,9 +1015,11 @@ class ExamStudyPlanner {
                 sessions.push({
                     id: `ai-break-${exam.id}-${studyDate.toISOString().split('T')[0]}-${i}`,
                     type: 'break',
+                    date: studyDate.toISOString().split('T')[0],
                     title: 'AI-Recommended Break',
                     startTime: breakStart.toISOString(),
                     endTime: breakEnd.toISOString(),
+                    duration: pattern.breakInterval / 60,
                     description: `AI suggests: ${this.getAIBreakRecommendation(recommendations, i)}`
                 });
             }
@@ -1025,6 +1027,7 @@ class ExamStudyPlanner {
             sessions.push({
                 id: `ai-session-${exam.id}-${studyDate.toISOString().split('T')[0]}-${i}`,
                 type: 'study',
+                date: studyDate.toISOString().split('T')[0],
                 examId: exam.id,
                 subjectId: exam.subjectId,
                 subjectName: subject.name,
@@ -1176,11 +1179,11 @@ class ExamStudyPlanner {
                         <div class="d-flex align-items-center mb-1">
                             <i data-lucide="coffee" style="width: 16px; height: 16px; color: #6b7280;" class="me-2"></i>
                             <span class="fw-bold">Break Time</span>
-                            <span class="badge bg-light text-dark ms-2">${session.duration}h</span>
+                            <span class="badge bg-light text-dark ms-2">${(session.duration || 0).toFixed(1)}h</span>
                         </div>
                         <div class="text-muted small">
                             <i data-lucide="clock" style="width: 14px; height: 14px;" class="me-1"></i>
-                            ${session.startTime} - ${session.endTime}
+                            ${this.formatTime(session.startTime)} - ${this.formatTime(session.endTime)}
                         </div>
                     </div>
                     <div class="session-actions">
@@ -1212,10 +1215,10 @@ class ExamStudyPlanner {
                     </div>
                     <div class="text-muted small mb-1">
                         <i data-lucide="clock" style="width: 14px; height: 14px;" class="me-1"></i>
-                        ${session.startTime} - ${session.endTime}
+                        ${this.formatTime(session.startTime)} - ${this.formatTime(session.endTime)}
                         <span class="ms-2">
                             <i data-lucide="hourglass" style="width: 14px; height: 14px;" class="me-1"></i>
-                            ${session.duration}h
+                            ${(session.duration || 0).toFixed(1)}h
                         </span>
                     </div>
                     <div class="text-muted small">
@@ -1410,6 +1413,21 @@ class ExamStudyPlanner {
                 `Successfully deleted ${sessionCount} study sessions!`, 
                 'success'
             );
+        }
+    }
+
+    // Format ISO string to human readable time
+    formatTime(isoString) {
+        if (!isoString) return '--:--';
+        try {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        } catch (e) {
+            return isoString;
         }
     }
 

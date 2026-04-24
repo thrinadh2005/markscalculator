@@ -553,10 +553,22 @@ let lastClickTime = 0;
 function init() {
     lucide.createIcons();
     checkUserSession();
+    
+    // Load saved selections
+    const savedBranch = localStorage.getItem('last_branch');
+    const savedSem = localStorage.getItem('last_sem');
+    if (savedBranch) document.getElementById('branch-select').value = savedBranch;
+    if (savedSem) document.getElementById('semester-select').value = savedSem;
+    
     loadSemesterSubjects();
     updateCgpaInputs();
     setupInputValidation();
     updateVisitorCount();
+    
+    // Initialize Study Planner
+    if (window.examStudyPlanner) {
+        examStudyPlanner.init().catch(err => console.warn('Study Planner init failed:', err));
+    }
 }
 
 function checkAdmin() {
@@ -1230,8 +1242,22 @@ function loadSemesterSubjects() {
         tbody.appendChild(tr);
     });
     lucide.createIcons();
+    
+    // Load saved grades if available
+    const savedGrades = JSON.parse(localStorage.getItem(`grades_${branch}_${sem}`) || '{}');
+    const rows = document.querySelectorAll('#sgpa-table-body tr');
+    rows.forEach((row, index) => {
+        const select = row.querySelector('select');
+        if (savedGrades[index]) {
+            select.value = savedGrades[index];
+        }
+    });
+    
     updateSgpa();
-    updateCgpaInputs(); // Ensure CGPA inputs match branch credits
+    
+    // Save selections
+    localStorage.setItem('last_branch', branch);
+    localStorage.setItem('last_sem', sem);
 }
 
 function loadToPredictor(subIndex) {
@@ -1278,6 +1304,16 @@ function updateSgpa() {
 
     const sgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
     document.getElementById('sgpa-result').textContent = sgpa;
+    
+    // Save current grades
+    const branch = document.getElementById('branch-select').value;
+    const sem = document.getElementById('semester-select').value;
+    const grades = {};
+    rows.forEach((row, index) => {
+        const select = row.querySelector('select');
+        if (select.value) grades[index] = select.value;
+    });
+    localStorage.setItem(`grades_${branch}_${sem}`, JSON.stringify(grades));
 }
 
 // CGPA Calculator
