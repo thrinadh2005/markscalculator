@@ -62,9 +62,9 @@ body {
         radial-gradient(at 100% 100%, rgba(34, 211, 238, 0.04) 0px, transparent 50%);
 }
 
-/* Dark Mode Specific Overrides */
-[data-theme="dark"] * {
-    color: inherit !important;
+/* Theme Transitions */
+* {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Additional Dark Theme Fixes */
@@ -287,7 +287,7 @@ body {
 }
 
 [data-theme="dark"] .progress-bar {
-    background: var(--primary) !important;
+    background-color: var(--primary);
 }
 
 /* Fix for tooltips in dark theme */
@@ -326,10 +326,6 @@ body {
     background: var(--glass) !important;
     border-color: var(--glass-border) !important;
     color: var(--text) !important;
-}
-
-[data-theme="dark"] .glass-card * {
-    color: inherit !important;
 }
 
 [data-theme="dark"] .text-muted {
@@ -910,7 +906,52 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-muted) !important;
 }
 
-/* Removed background blobs - clean background */
+/* Background Blobs - Professional & Subtle */
+.blob {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.15;
+    animation: blobMove 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.blob-1 {
+    top: -100px;
+    left: -100px;
+    background: var(--primary);
+}
+
+.blob-2 {
+    bottom: -100px;
+    right: -100px;
+    background: var(--accent);
+    animation-delay: -5s;
+    animation-duration: 25s;
+}
+
+[data-theme="dark"] .blob {
+    opacity: 0.12;
+    filter: blur(100px);
+}
+
+[data-theme="dark"] .blob-1 {
+    background: var(--primary-dark);
+}
+
+[data-theme="dark"] .blob-2 {
+    background: var(--accent);
+}
+
+@keyframes blobMove {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, 50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
 
 .glass-card {
     background: var(--glass);
