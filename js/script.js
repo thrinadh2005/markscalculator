@@ -968,6 +968,11 @@ function showTab(tabName) {
     if (tabName === 'cgpa') {
         updateCgpaInputs();
     }
+
+    // Auto-load results iframe when tab opens
+    if (tabName === 'results') {
+        loadResultsInFrame();
+    }
     
     lucide.createIcons();
 }
@@ -1446,44 +1451,77 @@ window.addEventListener('appinstalled', (evt) => {
 });
 
 // Results Portal
-const RESULTS_URL = "http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx";
+const RESULTS_URL = "https://gmrit.edu.in/examination/results.php";
+const RESULTS_DIRECT_URL = "http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx";
+
+let resultsLoaded = false;
 
 function loadResultsInFrame() {
     const iframe = document.getElementById('results-iframe');
     const wrap = document.getElementById('results-iframe-wrap');
+    const loading = document.getElementById('results-loading');
     const notice = document.getElementById('results-blocked-notice');
-    if (iframe) {
-        iframe.src = RESULTS_URL;
-        if (wrap) wrap.classList.remove('hidden');
-        if (notice) notice.classList.add('hidden');
-    }
+
+    if (!iframe) return;
+
+    // Show spinner, hide iframe & notice
+    if (loading) loading.classList.remove('hidden');
+    if (wrap) wrap.classList.add('hidden');
+    if (notice) notice.classList.add('hidden');
+
+    // Load the URL with cache-busting only on refresh
+    iframe.src = RESULTS_URL;
+
+    // Safety timeout — if nothing happens in 10s, show blocked notice
+    clearTimeout(window._resultsTimeout);
+    window._resultsTimeout = setTimeout(() => {
+        const stillLoading = loading && !loading.classList.contains('hidden');
+        if (stillLoading) handleIframeError();
+    }, 10000);
 }
 
 function refreshResults() {
+    resultsLoaded = false;
     const iframe = document.getElementById('results-iframe');
-    if (iframe && iframe.src !== 'about:blank') {
-        iframe.src = RESULTS_URL + "?t=" + new Date().getTime();
-    } else {
-        loadResultsInFrame();
-    }
+    if (iframe) iframe.src = 'about:blank';
+    setTimeout(loadResultsInFrame, 100);
 }
 
 function handleIframeLoad(iframe) {
-    // Try to detect if the page was blocked (cross-origin, can't reliably read content)
+    clearTimeout(window._resultsTimeout);
+
+    const loading = document.getElementById('results-loading');
+    const wrap = document.getElementById('results-iframe-wrap');
+    const notice = document.getElementById('results-blocked-notice');
+
+    // If src is still about:blank, ignore
+    if (!iframe.src || iframe.src === 'about:blank') return;
+
+    // Try to detect a blocked/empty page (same-origin only)
     try {
-        // If we can access contentDocument, it loaded in same origin context
         const doc = iframe.contentDocument || iframe.contentWindow.document;
         if (doc && doc.body && doc.body.innerHTML.trim() === '') {
             handleIframeError();
+            return;
         }
     } catch (e) {
-        // Cross-origin: can't read — but page likely loaded; show it
+        // Cross-origin — assume loaded successfully
     }
+
+    // Show iframe, hide spinner
+    if (loading) loading.classList.add('hidden');
+    if (notice) notice.classList.add('hidden');
+    if (wrap) wrap.classList.remove('hidden');
+    resultsLoaded = true;
 }
 
 function handleIframeError() {
+    clearTimeout(window._resultsTimeout);
+    const loading = document.getElementById('results-loading');
     const wrap = document.getElementById('results-iframe-wrap');
     const notice = document.getElementById('results-blocked-notice');
+
+    if (loading) loading.classList.add('hidden');
     if (wrap) wrap.classList.add('hidden');
     if (notice) {
         notice.classList.remove('hidden');

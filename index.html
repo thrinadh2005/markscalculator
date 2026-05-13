@@ -466,56 +466,52 @@
 
         <!-- Results Portal -->
         <div id="results-tab" class="tab-content hidden">
-            <!-- Latest Results Card -->
-            <div class="glass-card p-4 mb-4">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge rounded-pill px-3 py-1 fw-bold" style="background: linear-gradient(135deg, #22c55e, #16a34a); font-size: 0.7rem; letter-spacing: 0.5px;">🆕 NEW</span>
-                            <span class="small text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Latest Results</span>
+            <div class="glass-card overflow-hidden" style="height: 82vh;">
+                <!-- Header Bar -->
+                <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-primary border-opacity-10">
+                    <div class="d-flex align-items-center gap-3">
+                        <div>
+                            <h5 class="mb-0 fw-bold">GMRIT Examination Results</h5>
+                            <p class="mb-0 text-muted" style="font-size: 0.72rem;">Live feed from gmrit.edu.in &nbsp;·&nbsp; Always up to date</p>
                         </div>
-                        <h5 class="mb-1 fw-bold">B.Tech Regular — 4th Semester</h5>
-                        <p class="text-muted mb-0 small">April 2026 Examinations &nbsp;·&nbsp; Batch 2024 &nbsp;·&nbsp; Round 2 (Supplementary)</p>
                     </div>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button onclick="loadResultsInFrame()" class="btn btn-sm btn-success d-flex align-items-center gap-2 text-white fw-bold">
-                            <i data-lucide="monitor" style="width: 16px;"></i> View Below
+                    <div class="d-flex gap-2 align-items-center">
+                        <button onclick="refreshResults()" id="results-refresh-btn" class="btn btn-sm btn-success d-flex align-items-center gap-2 text-white fw-bold">
+                            <i data-lucide="rotate-cw" style="width: 15px;"></i> Refresh
                         </button>
-                        <a id="results-open-btn" href="http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx" target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2 text-white fw-bold shadow-sm">
-                            <i data-lucide="external-link" style="width: 16px;"></i> Open in New Tab
+                        <a href="https://gmrit.edu.in/examination/results.php" target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2 text-white fw-bold shadow-sm">
+                            <i data-lucide="external-link" style="width: 15px;"></i> Open in New Tab
                         </a>
                     </div>
                 </div>
-            </div>
 
-            <!-- Iframe Viewer -->
-            <div class="glass-card p-4 overflow-hidden" style="height: 72vh;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0 fw-bold">GMRIT Results Portal</h4>
-                    <div class="d-flex gap-2">
-                        <button onclick="refreshResults()" class="btn btn-sm btn-success d-flex align-items-center gap-2 text-white fw-bold">
-                            <i data-lucide="rotate-cw" style="width: 16px;"></i> Refresh
-                        </button>
-                        <a href="http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx" target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2 text-white fw-bold shadow-sm">
-                            <i data-lucide="external-link" style="width: 16px;"></i> Open in New Tab
-                        </a>
-                    </div>
+                <!-- Loading Spinner (shown while iframe loads) -->
+                <div id="results-loading" class="d-flex flex-column align-items-center justify-content-center" style="height: calc(100% - 65px);">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                    <p class="text-muted fw-bold mb-1">Loading Results Page…</p>
+                    <p class="text-muted small">Fetching from gmrit.edu.in</p>
                 </div>
-                <!-- Blocked notice (shown if iframe fails) -->
-                <div id="results-blocked-notice" class="rounded-3 p-5 text-center border border-warning border-opacity-25 hidden" style="background: rgba(234,179,8,0.07);">
-                    <i data-lucide="shield-alert" style="width: 48px; height: 48px; color: #f59e0b;" class="mb-3"></i>
-                    <h5 class="fw-bold mb-2">Page cannot be shown in embedded view</h5>
-                    <p class="text-muted mb-4">The university results server blocks embedding. Please open it directly in a new tab.</p>
-                    <a href="http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx" target="_blank" class="btn btn-primary fw-bold d-inline-flex align-items-center gap-2">
-                        <i data-lucide="external-link" style="width: 16px;"></i> Open Results Page
+
+                <!-- Blocked notice (shown if iframe is blocked) -->
+                <div id="results-blocked-notice" class="d-flex flex-column align-items-center justify-content-center text-center hidden" style="height: calc(100% - 65px); padding: 2rem;">
+                    <i data-lucide="shield-alert" style="width: 56px; height: 56px; color: #f59e0b;" class="mb-3"></i>
+                    <h5 class="fw-bold mb-2">Cannot embed this page</h5>
+                    <p class="text-muted mb-4" style="max-width: 420px;">The GMRIT results server has blocked embedding (X-Frame-Options). Open the page directly to see all results.</p>
+                    <a href="https://gmrit.edu.in/examination/results.php" target="_blank" class="btn btn-primary fw-bold d-inline-flex align-items-center gap-2 mb-3">
+                        <i data-lucide="external-link" style="width: 16px;"></i> Open GMRIT Results Page
+                    </a>
+                    <p class="text-muted small mb-1">Latest direct link:</p>
+                    <a href="http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx" target="_blank" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-2">
+                        <i data-lucide="file-check" style="width: 14px;"></i> B.Tech 4th Sem Apr 2026 Results
                     </a>
                 </div>
-                <div id="results-iframe-wrap" class="rounded-3 overflow-hidden border border-primary border-opacity-10 bg-white" style="height: calc(100% - 60px);">
+
+                <!-- Iframe -->
+                <div id="results-iframe-wrap" class="hidden" style="height: calc(100% - 65px);">
                     <iframe id="results-iframe"
                         src="about:blank"
                         style="width: 100%; height: 100%; border: none;"
-                        title="GMRIT Results"
-                        sandbox="allow-same-origin allow-scripts allow-forms"
+                        title="GMRIT Examination Results"
                         onload="handleIframeLoad(this)"
                         onerror="handleIframeError()"
                     ></iframe>
