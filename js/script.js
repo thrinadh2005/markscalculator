@@ -1445,12 +1445,49 @@ window.addEventListener('appinstalled', (evt) => {
     pwaBanner.classList.add('hidden');
 });
 
-// Results Portal Refresh
-function refreshResults() {
+// Results Portal
+const RESULTS_URL = "http://115.241.205.4/examresults/BTechReg4thSemApr2026Batch2024Rnd2s7ns.aspx";
+
+function loadResultsInFrame() {
     const iframe = document.getElementById('results-iframe');
+    const wrap = document.getElementById('results-iframe-wrap');
+    const notice = document.getElementById('results-blocked-notice');
     if (iframe) {
-        const originalSrc = "https://gmrit.campx.in/gmrit/ums/results";
-        // Show loading state by briefly hiding or using a timestamp
-        iframe.src = originalSrc + "?t=" + new Date().getTime();
+        iframe.src = RESULTS_URL;
+        if (wrap) wrap.classList.remove('hidden');
+        if (notice) notice.classList.add('hidden');
     }
 }
+
+function refreshResults() {
+    const iframe = document.getElementById('results-iframe');
+    if (iframe && iframe.src !== 'about:blank') {
+        iframe.src = RESULTS_URL + "?t=" + new Date().getTime();
+    } else {
+        loadResultsInFrame();
+    }
+}
+
+function handleIframeLoad(iframe) {
+    // Try to detect if the page was blocked (cross-origin, can't reliably read content)
+    try {
+        // If we can access contentDocument, it loaded in same origin context
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc && doc.body && doc.body.innerHTML.trim() === '') {
+            handleIframeError();
+        }
+    } catch (e) {
+        // Cross-origin: can't read — but page likely loaded; show it
+    }
+}
+
+function handleIframeError() {
+    const wrap = document.getElementById('results-iframe-wrap');
+    const notice = document.getElementById('results-blocked-notice');
+    if (wrap) wrap.classList.add('hidden');
+    if (notice) {
+        notice.classList.remove('hidden');
+        lucide.createIcons();
+    }
+}
+
