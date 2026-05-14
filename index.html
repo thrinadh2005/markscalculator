@@ -82,10 +82,16 @@
 
     <nav class="navbar navbar-expand-lg border-bottom no-print mb-3">
         <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#" onclick="checkAdmin()" style="cursor: pointer;">
+            <!-- Mobile Menu Toggle Button -->
+            <button class="navbar-toggler border-0 shadow-none px-0 me-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavSidebar" aria-controls="mobileNavSidebar">
+                <i data-lucide="menu" style="color: var(--primary);"></i>
+            </button>
+            
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold me-auto" href="#" onclick="checkAdmin()" style="cursor: pointer;">
                 <i data-lucide="calculator" style="color: var(--primary);"></i>
                 <span>GMRIT AR23</span>
             </a>
+            
             <button class="btn btn-link text-muted p-0" onclick="toggleTheme()">
                 <i data-lucide="sun" id="theme-icon"></i>
             </button>
@@ -93,26 +99,38 @@
     </nav>
 
     <div class="container-fluid px-4">
-        <ul class="nav nav-pills gap-2 mb-4 no-print justify-content-center">
-            <li class="nav-item">
-                <button class="nav-link active" onclick="showTab('internal')">Internal Predictor</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" onclick="showTab('sgpa')">SGPA Calculator</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" onclick="showTab('cgpa')">CGPA Calculator</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" onclick="showTab('study-planner')">Study Planner</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" onclick="showTab('nptel')">NPTEL Calculator</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" onclick="showTab('results')">Results Portal</button>
-            </li>
-        </ul>
+        <!-- Responsive Offcanvas Navigation -->
+        <div class="offcanvas-lg offcanvas-start no-print mb-4" tabindex="-1" id="mobileNavSidebar" aria-labelledby="mobileNavSidebarLabel">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title d-flex align-items-center gap-2 fw-bold" id="mobileNavSidebarLabel">
+                    <i data-lucide="calculator" style="color: var(--primary);"></i>
+                    <span>Navigation</span>
+                </h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" data-bs-target="#mobileNavSidebar" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body d-block p-3 p-lg-0">
+                <ul class="nav nav-pills flex-column flex-lg-row gap-2 justify-content-center w-100">
+                    <li class="nav-item">
+                        <button class="nav-link active w-100 text-lg-center text-start" onclick="showTab('internal')">Internal Predictor</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-lg-center text-start" onclick="showTab('sgpa')">SGPA Calculator</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-lg-center text-start" onclick="showTab('cgpa')">CGPA Calculator</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-lg-center text-start" onclick="showTab('study-planner')">Study Planner</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-lg-center text-start" onclick="showTab('nptel')">NPTEL Calculator</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link w-100 text-lg-center text-start" onclick="showTab('results')">Results Portal</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <!-- Internal Marks -->
         <div id="internal-tab" class="tab-content">

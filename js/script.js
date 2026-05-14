@@ -975,6 +975,15 @@ function showTab(tabName) {
     }
     
     lucide.createIcons();
+
+    // Close mobile offcanvas if open
+    const offcanvasEl = document.getElementById('mobileNavSidebar');
+    if (offcanvasEl) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (bsOffcanvas) {
+            bsOffcanvas.hide();
+        }
+    }
 }
 
 function toggleInternalFields() {
