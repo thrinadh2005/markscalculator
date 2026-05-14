@@ -463,6 +463,34 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <div class="glass-card p-4 mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold">Study Timer</h5>
+                            <span class="badge bg-primary" id="timer-mode-badge">Focus</span>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <div class="display-1 fw-bold" id="study-timer-display" style="font-variant-numeric: tabular-nums; color: var(--primary);">45:00</div>
+                            <div class="text-muted small" id="study-timer-status">Ready to focus</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-2 mb-3">
+                            <button class="btn btn-primary d-flex align-items-center gap-2" id="timer-start-btn" onclick="examStudyPlanner.toggleTimer()">
+                                <i data-lucide="play" id="timer-play-icon" style="width: 18px;"></i>
+                                <span id="timer-start-text">Start</span>
+                            </button>
+                            <button class="btn btn-outline-danger d-flex align-items-center gap-2" onclick="examStudyPlanner.resetTimer()">
+                                <i data-lucide="square" style="width: 18px;"></i>
+                                Stop
+                            </button>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-sm btn-light" onclick="examStudyPlanner.setTimerMode('focus')">Focus</button>
+                            <button class="btn btn-sm btn-light" onclick="examStudyPlanner.setTimerMode('break')">Break</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

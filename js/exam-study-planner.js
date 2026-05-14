@@ -12,6 +12,7 @@ class ExamStudyPlanner {
             prioritySubjects: [],
             difficultyLevels: {}
         };
+        this.timer = { mode: 'focus', timeLeft: 45 * 60, interval: null, isRunning: false };
         // Removed this.init() from constructor to prevent premature initialization
     }
 
@@ -37,6 +38,7 @@ class ExamStudyPlanner {
         this.renderSubjects();
         this.renderExamPlanner();
         this.updateDashboard();
+        this.initTimer();
     }
 
     // Load user subjects from storage
@@ -1341,7 +1343,15 @@ class ExamStudyPlanner {
         this.settings.breakDuration = parseInt(formData.get('breakDuration'));
         this.settings.examPreparationDays = parseInt(formData.get('examPreparationDays'));
         
-        await this.saveSettings();
+        // This is a bug in the original code, it was calling itself. Fixed to call this.saveSettingsStorage if needed, or better, we can assume the offline manager handles it inside `this.saveSettingsData()`.
+        if (window.offlineManager) {
+            await window.offlineManager.saveData('study_settings', this.settings);
+        }
+        
+        // Re-initialize timer with new settings if it's not currently running
+        if (!this.timer.isRunning) {
+            this.initTimer();
+        }
         
         // Close modal
         const modal = document.querySelector('.modal');
@@ -1448,6 +1458,129 @@ class ExamStudyPlanner {
                 notification.remove();
             }
         }, 5000);
+    }
+
+    // --- Study Timer ---
+    initTimer() {
+        if (!this.timer) {
+            this.timer = { mode: 'focus', timeLeft: this.settings.studySessionDuration * 60, interval: null, isRunning: false };
+        } else {
+            this.timer.timeLeft = this.settings.studySessionDuration * 60;
+            this.timer.mode = 'focus';
+            this.timer.isRunning = false;
+            clearInterval(this.timer.interval);
+        }
+        this.updateTimerDisplay();
+    }
+
+    setTimerMode(mode) {
+        this.timer.mode = mode;
+        this.timer.isRunning = false;
+        clearInterval(this.timer.interval);
+        
+        const badge = document.getElementById('timer-mode-badge');
+        const status = document.getElementById('study-timer-status');
+        const playIcon = document.getElementById('timer-play-icon');
+        const startText = document.getElementById('timer-start-text');
+        const btn = document.getElementById('timer-start-btn');
+        
+        if (mode === 'focus') {
+            this.timer.timeLeft = this.settings.studySessionDuration * 60;
+            if (badge) {
+                badge.textContent = 'Focus';
+                badge.className = 'badge bg-primary';
+            }
+            if (status) status.textContent = 'Ready to focus';
+        } else {
+            this.timer.timeLeft = this.settings.breakDuration * 60;
+            if (badge) {
+                badge.textContent = 'Break';
+                badge.className = 'badge bg-success';
+            }
+            if (status) status.textContent = 'Ready for a break';
+        }
+        
+        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+        if (startText) startText.textContent = 'Start';
+        if (btn) btn.className = 'btn btn-primary d-flex align-items-center gap-2';
+        
+        lucide.createIcons();
+        this.updateTimerDisplay();
+    }
+
+    toggleTimer() {
+        const playIcon = document.getElementById('timer-play-icon');
+        const startText = document.getElementById('timer-start-text');
+        const status = document.getElementById('study-timer-status');
+        const btn = document.getElementById('timer-start-btn');
+
+        if (this.timer.isRunning) {
+            // Pause
+            clearInterval(this.timer.interval);
+            this.timer.isRunning = false;
+            if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+            if (startText) startText.textContent = 'Resume';
+            if (status) status.textContent = 'Paused';
+            if (btn) btn.className = 'btn btn-primary d-flex align-items-center gap-2';
+        } else {
+            // Start
+            this.timer.isRunning = true;
+            if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
+            if (startText) startText.textContent = 'Pause';
+            if (status) status.textContent = this.timer.mode === 'focus' ? 'Focusing...' : 'Taking a break...';
+            if (btn) btn.className = 'btn btn-warning d-flex align-items-center gap-2 text-dark fw-bold';
+            
+            this.timer.interval = setInterval(() => {
+                this.timer.timeLeft--;
+                this.updateTimerDisplay();
+                
+                if (this.timer.timeLeft <= 0) {
+                    this.timerFinished();
+                }
+            }, 1000);
+        }
+        lucide.createIcons();
+    }
+
+    resetTimer() {
+        this.setTimerMode(this.timer.mode);
+    }
+
+    timerFinished() {
+        clearInterval(this.timer.interval);
+        this.timer.isRunning = false;
+        
+        // Play sound if possible
+        try {
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+            audio.play().catch(e => console.log('Audio play prevented', e));
+        } catch (e) {}
+
+        if (this.timer.mode === 'focus') {
+            this.showNotification('Focus session complete! Time for a break.', 'success');
+            this.setTimerMode('break');
+        } else {
+            this.showNotification('Break is over! Time to focus.', 'primary');
+            this.setTimerMode('focus');
+        }
+    }
+
+    updateTimerDisplay() {
+        const display = document.getElementById('study-timer-display');
+        if (!display) return;
+        
+        const minutes = Math.floor(this.timer.timeLeft / 60);
+        const seconds = this.timer.timeLeft % 60;
+        
+        display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Update document title if running
+        if (this.timer.isRunning) {
+            const modeSymbol = this.timer.mode === 'focus' ? '🧠' : '☕';
+            document.title = `${modeSymbol} ${display.textContent} | GMRIT Marks`;
+        } else {
+            document.title = `GMRIT Academic Calculator | AR23`;
+        }
     }
 }
 
