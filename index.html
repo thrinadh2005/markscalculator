@@ -107,6 +107,9 @@
                 <button class="nav-link" onclick="showTab('study-planner')">Study Planner</button>
             </li>
             <li class="nav-item">
+                <button class="nav-link" onclick="showTab('nptel')">NPTEL Calculator</button>
+            </li>
+            <li class="nav-item">
                 <button class="nav-link" onclick="showTab('results')">Results Portal</button>
             </li>
         </ul>
@@ -459,6 +462,70 @@
                                 <i data-lucide="settings" style="width: 14px;" class="me-1"></i> Customize Settings
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NPTEL Calculator -->
+        <div id="nptel-tab" class="tab-content hidden">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-7">
+                    <div class="glass-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0 fw-bold">NPTEL Marks Calculator</h4>
+                            <button class="btn btn-sm btn-light d-flex align-items-center gap-1" onclick="resetNptel()">
+                                <i data-lucide="rotate-ccw" style="width: 14px;"></i> Reset
+                            </button>
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Internal (Out of 25)</label>
+                                <input type="number" id="nptel-internal" class="form-control" min="0" max="25" placeholder="0" oninput="calculateNptel()">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">External (Out of 75)</label>
+                                <input type="number" id="nptel-external" class="form-control" min="0" max="75" placeholder="0" oninput="calculateNptel()">
+                            </div>
+                        </div>
+
+                        <hr class="my-4 border-primary border-opacity-25">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold">Best 8 Assignments Averager</h5>
+                        </div>
+                        <p class="small text-muted mb-3">Enter the marks of your best 8 assignments (each out of 100) to calculate your scaled internal score (out of 25).</p>
+                        
+                        <div class="row g-2 mb-3">
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a1" class="form-control form-control-sm" placeholder="A1" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a2" class="form-control form-control-sm" placeholder="A2" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a3" class="form-control form-control-sm" placeholder="A3" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a4" class="form-control form-control-sm" placeholder="A4" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a5" class="form-control form-control-sm" placeholder="A5" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a6" class="form-control form-control-sm" placeholder="A6" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a7" class="form-control form-control-sm" placeholder="A7" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                            <div class="col-3 col-sm-3"><input type="number" id="nptel-a8" class="form-control form-control-sm" placeholder="A8" min="0" max="100" oninput="calculateNptelAverage()"></div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-sm btn-outline-primary" onclick="useNptelAverage()">Use Average as Internal</button>
+                            <span class="small fw-bold text-primary">Scaled Avg (Out of 25): <span id="nptel-avg-result">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="summary-box mb-4">
+                        <p class="small text-uppercase fw-bold mb-1 opacity-75">Total Scaled Score</p>
+                        <div class="summary-value mb-2" id="nptel-total-result">0</div>
+                        <p class="small fw-bold mb-3">Out of 100</p>
+                        <div class="d-flex justify-content-between small text-muted border-top border-light border-opacity-10 pt-2 mb-3">
+                            <span>Internal (30): <span id="nptel-scaled-internal" class="fw-bold text-white">0.00</span></span>
+                            <span>External (70): <span id="nptel-scaled-external" class="fw-bold text-white">0.00</span></span>
+                        </div>
+                        <button class="btn btn-sm btn-light no-print w-100 fw-bold rounded-3 py-2" onclick="window.print()">
+                            <i data-lucide="printer" style="width: 16px;"></i> Print Report
+                        </button>
                     </div>
                 </div>
             </div>

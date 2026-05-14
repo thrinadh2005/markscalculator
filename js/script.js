@@ -1529,3 +1529,88 @@ function handleIframeError() {
     }
 }
 
+// --- NPTEL Calculator ---
+
+function calculateNptel() {
+    const internalVal = parseFloat(document.getElementById('nptel-internal').value) || 0;
+    const externalVal = parseFloat(document.getElementById('nptel-external').value) || 0;
+
+    // Scale up and down
+    // Internal: intake out of 25 scaled to 30 => (internal / 25) * 30
+    let scaledInternal = (internalVal / 25) * 30;
+    if (scaledInternal > 30) scaledInternal = 30;
+    if (scaledInternal < 0) scaledInternal = 0;
+    
+    // External: intake out of 75 scaled to 70 => (external / 75) * 70
+    let scaledExternal = (externalVal / 75) * 70;
+    if (scaledExternal > 70) scaledExternal = 70;
+    if (scaledExternal < 0) scaledExternal = 0;
+
+    const total = Math.round(scaledInternal) + Math.round(scaledExternal);
+
+    document.getElementById('nptel-scaled-internal').innerText = scaledInternal.toFixed(2);
+    document.getElementById('nptel-scaled-external').innerText = scaledExternal.toFixed(2);
+    document.getElementById('nptel-total-result').innerText = total;
+}
+
+function calculateNptelAverage() {
+    let sum = 0;
+    let count = 0;
+    let scores = [];
+
+    // Collect all assignment scores
+    for (let i = 1; i <= 8; i++) {
+        const valStr = document.getElementById(`nptel-a${i}`).value;
+        if (valStr !== "") {
+            let val = parseFloat(valStr) || 0;
+            if (val > 100) val = 100;
+            if (val < 0) val = 0;
+            scores.push(val);
+        }
+    }
+
+    // Sort scores descending and take top 8 (though there's only 8 inputs anyway)
+    scores.sort((a, b) => b - a);
+    let top8 = scores.slice(0, 8);
+    
+    top8.forEach(v => {
+        sum += v;
+        count++;
+    });
+
+    if (count > 0) {
+        // Average is out of 100
+        const average = sum / count;
+        // Scale average to 25 marks
+        const scaledAvg = (average / 100) * 25;
+        document.getElementById('nptel-avg-result').innerText = scaledAvg.toFixed(2);
+    } else {
+        document.getElementById('nptel-avg-result').innerText = "0.00";
+    }
+}
+
+function useNptelAverage() {
+    const avgStr = document.getElementById('nptel-avg-result').innerText;
+    const avgVal = parseFloat(avgStr) || 0;
+    const internalInput = document.getElementById('nptel-internal');
+    internalInput.value = avgVal.toFixed(2);
+    calculateNptel();
+    
+    // Flash green for feedback
+    internalInput.style.backgroundColor = 'var(--success-bg, #d1e7dd)';
+    internalInput.style.borderColor = 'var(--success, #198754)';
+    setTimeout(() => {
+        internalInput.style.backgroundColor = '';
+        internalInput.style.borderColor = '';
+    }, 1500);
+}
+
+function resetNptel() {
+    document.getElementById('nptel-internal').value = '';
+    document.getElementById('nptel-external').value = '';
+    for (let i = 1; i <= 8; i++) {
+        document.getElementById(`nptel-a${i}`).value = '';
+    }
+    calculateNptel();
+    calculateNptelAverage();
+}
