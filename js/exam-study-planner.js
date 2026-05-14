@@ -1484,6 +1484,20 @@ class ExamStudyPlanner {
         const startText = document.getElementById('timer-start-text');
         const btn = document.getElementById('timer-start-btn');
         
+        // Highlight active mode button
+        ['focus', 'break', 'stopwatch'].forEach(m => {
+            const el = document.getElementById(`btn-mode-${m}`);
+            if (el) {
+                if (m === mode) {
+                    el.classList.remove('btn-light');
+                    el.classList.add('btn-primary');
+                } else {
+                    el.classList.remove('btn-primary');
+                    el.classList.add('btn-light');
+                }
+            }
+        });
+        
         if (mode === 'focus') {
             this.timer.timeLeft = this.settings.studySessionDuration * 60;
             if (badge) {
@@ -1491,13 +1505,20 @@ class ExamStudyPlanner {
                 badge.className = 'badge bg-primary';
             }
             if (status) status.textContent = 'Ready to focus';
-        } else {
+        } else if (mode === 'break') {
             this.timer.timeLeft = this.settings.breakDuration * 60;
             if (badge) {
                 badge.textContent = 'Break';
-                badge.className = 'badge bg-success';
+                badge.className = 'badge bg-success text-white';
             }
             if (status) status.textContent = 'Ready for a break';
+        } else if (mode === 'stopwatch') {
+            this.timer.timeLeft = 0; // stopwatch counts up
+            if (badge) {
+                badge.textContent = 'Stopwatch';
+                badge.className = 'badge bg-info text-dark';
+            }
+            if (status) status.textContent = 'Ready to track time';
         }
         
         if (playIcon) playIcon.setAttribute('data-lucide', 'play');
@@ -1527,16 +1548,27 @@ class ExamStudyPlanner {
             this.timer.isRunning = true;
             if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
             if (startText) startText.textContent = 'Pause';
-            if (status) status.textContent = this.timer.mode === 'focus' ? 'Focusing...' : 'Taking a break...';
+            
+            if (this.timer.mode === 'focus') {
+                if (status) status.textContent = 'Focusing...';
+            } else if (this.timer.mode === 'break') {
+                if (status) status.textContent = 'Taking a break...';
+            } else {
+                if (status) status.textContent = 'Tracking time...';
+            }
+            
             if (btn) btn.className = 'btn btn-warning d-flex align-items-center gap-2 text-dark fw-bold';
             
             this.timer.interval = setInterval(() => {
-                this.timer.timeLeft--;
-                this.updateTimerDisplay();
-                
-                if (this.timer.timeLeft <= 0) {
-                    this.timerFinished();
+                if (this.timer.mode === 'stopwatch') {
+                    this.timer.timeLeft++;
+                } else {
+                    this.timer.timeLeft--;
+                    if (this.timer.timeLeft <= 0) {
+                        this.timerFinished();
+                    }
                 }
+                this.updateTimerDisplay();
             }, 1000);
         }
         lucide.createIcons();
@@ -1569,15 +1601,23 @@ class ExamStudyPlanner {
         const display = document.getElementById('study-timer-display');
         if (!display) return;
         
-        const minutes = Math.floor(this.timer.timeLeft / 60);
+        const hours = Math.floor(this.timer.timeLeft / 3600);
+        const minutes = Math.floor((this.timer.timeLeft % 3600) / 60);
         const seconds = this.timer.timeLeft % 60;
         
-        display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        let text = '';
+        if (hours > 0 || (this.timer.mode === 'stopwatch' && this.timer.timeLeft >= 3600)) {
+            text = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        display.textContent = text;
         
         // Update document title if running
         if (this.timer.isRunning) {
-            const modeSymbol = this.timer.mode === 'focus' ? '🧠' : '☕';
-            document.title = `${modeSymbol} ${display.textContent} | GMRIT Marks`;
+            const modeSymbol = this.timer.mode === 'focus' ? '🧠' : (this.timer.mode === 'break' ? '☕' : '⏱️');
+            document.title = `${modeSymbol} ${text} | GMRIT Marks`;
         } else {
             document.title = `GMRIT Academic Calculator | AR23`;
         }

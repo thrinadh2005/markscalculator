@@ -386,7 +386,12 @@
                 
                 <div class="col-lg-4">
                     <div class="glass-card p-4 mb-4">
-                        <h5 class="mb-4 fw-bold">Exam Dashboard</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0 fw-bold">Exam Dashboard</h5>
+                            <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" onclick="examStudyPlanner.showSettingsModal()">
+                                <i data-lucide="settings" style="width: 14px;"></i> Settings
+                            </button>
+                        </div>
                         
                         <div class="row g-3 mb-4">
                             <div class="col-6">
@@ -401,13 +406,10 @@
                                     <div class="small text-muted">Upcoming</div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="row g-3 mb-4">
                             <div class="col-6">
                                 <div class="text-center p-3 rounded" style="background: var(--hover-bg);">
                                     <div class="fw-bold text-info" id="total-sessions">0</div>
-                                    <div class="small text-muted">Study Sessions</div>
+                                    <div class="small text-muted">Sessions</div>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -418,7 +420,7 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-1">
                             <h6 class="fw-bold mb-2">Next Exam</h6>
                             <div id="next-exam" class="text-muted small">
                                 No upcoming exams
@@ -427,46 +429,8 @@
                     </div>
                     
                     <div class="glass-card p-4">
-                        <h5 class="mb-3 fw-bold">Study Settings</h5>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small">Daily Study Hours</span>
-                                <span class="small fw-bold text-primary">6h</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small">Session Duration</span>
-                                <span class="small fw-bold text-success">45min</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small">Break Duration</span>
-                                <span class="small fw-bold text-warning">15min</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="small">Preparation Days</span>
-                                <span class="small fw-bold text-info">14 days</span>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center mt-4">
-                            <button class="btn btn-sm btn-outline-primary w-100" onclick="examStudyPlanner.showSettingsModal()">
-                                <i data-lucide="settings" style="width: 14px;" class="me-1"></i> Customize Settings
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="glass-card p-4 mt-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 fw-bold">Study Timer</h5>
+                            <h5 class="mb-0 fw-bold">Study Tracker</h5>
                             <span class="badge bg-primary" id="timer-mode-badge">Focus</span>
                         </div>
                         
@@ -475,20 +439,21 @@
                             <div class="text-muted small" id="study-timer-status">Ready to focus</div>
                         </div>
                         
-                        <div class="d-flex justify-content-center gap-2 mb-3">
+                        <div class="d-flex justify-content-center gap-2 mb-4">
                             <button class="btn btn-primary d-flex align-items-center gap-2" id="timer-start-btn" onclick="examStudyPlanner.toggleTimer()">
                                 <i data-lucide="play" id="timer-play-icon" style="width: 18px;"></i>
                                 <span id="timer-start-text">Start</span>
                             </button>
                             <button class="btn btn-outline-danger d-flex align-items-center gap-2" onclick="examStudyPlanner.resetTimer()">
-                                <i data-lucide="square" style="width: 18px;"></i>
-                                Stop
+                                <i data-lucide="rotate-ccw" style="width: 18px;"></i>
+                                Reset
                             </button>
                         </div>
                         
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-sm btn-light" onclick="examStudyPlanner.setTimerMode('focus')">Focus</button>
-                            <button class="btn btn-sm btn-light" onclick="examStudyPlanner.setTimerMode('break')">Break</button>
+                        <div class="d-flex justify-content-center gap-2 bg-light bg-opacity-10 p-1 rounded-pill">
+                            <button class="btn btn-sm btn-primary rounded-pill flex-fill" id="btn-mode-focus" onclick="examStudyPlanner.setTimerMode('focus')">Focus</button>
+                            <button class="btn btn-sm btn-light rounded-pill border-0 flex-fill" id="btn-mode-break" onclick="examStudyPlanner.setTimerMode('break')">Break</button>
+                            <button class="btn btn-sm btn-light rounded-pill border-0 flex-fill" id="btn-mode-stopwatch" onclick="examStudyPlanner.setTimerMode('stopwatch')">Stopwatch</button>
                         </div>
                     </div>
                 </div>
