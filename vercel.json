@@ -11,6 +11,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/reviews.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "**/*",
       "use": "@vercel/static"
     }
@@ -23,6 +27,10 @@
     {
       "src": "/api/visitors",
       "dest": "/api/visitors.js"
+    },
+    {
+      "src": "/api/reviews",
+      "dest": "/api/reviews.js"
     },
     {
       "handle": "filesystem"

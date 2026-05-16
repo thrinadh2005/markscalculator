@@ -1666,6 +1666,11 @@ async function submitReview() {
         return;
     }
     
+    if (rating === '0' || !rating) {
+        alert('Please select a star rating.');
+        return;
+    }
+    
     const btn = document.getElementById('submit-review-btn');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Submitting...';
