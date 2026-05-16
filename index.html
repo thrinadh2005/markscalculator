@@ -59,14 +59,18 @@
         </div>
     </div>
 
-    <!-- Visitor List Modal -->
+    <!-- Admin Dashboard Modal -->
     <div id="visitor-list-overlay" class="login-overlay hidden">
-        <div class="glass-card p-4 login-modal" style="max-width: 500px; width: 95%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0">Visitor Log</h5>
+        <div class="glass-card p-4 login-modal" style="max-width: 600px; width: 95%; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Admin Dashboard</h5>
                 <button class="btn btn-sm btn-light" onclick="closeVisitorList()">
                     <i data-lucide="x" style="width: 16px;"></i>
                 </button>
+            </div>
+            <div class="nav nav-pills nav-fill gap-2 mb-3">
+                <button class="nav-link active py-1" id="admin-visitors-btn" onclick="showAdminTab('visitors')">Visitors</button>
+                <button class="nav-link py-1" id="admin-reviews-btn" onclick="showAdminTab('reviews')">Reviews</button>
             </div>
             <div id="visitor-list-content" class="overflow-auto pe-2" style="flex: 1;">
                 <div class="text-center py-5">
@@ -75,6 +79,43 @@
                     </div>
                 </div>
             </div>
+            <div id="review-list-content" class="overflow-auto pe-2 hidden" style="flex: 1;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading reviews...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="review-overlay" class="login-overlay hidden">
+        <div class="glass-card p-4 login-modal" style="max-width: 450px; width: 95%;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i data-lucide="star" style="color: #f59e0b; fill: #f59e0b;"></i> Leave a Review
+                </h5>
+                <button class="btn btn-sm btn-light" onclick="closeReviewModal()">
+                    <i data-lucide="x" style="width: 16px;"></i>
+                </button>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Your Rating</label>
+                <div class="d-flex gap-2 justify-content-center mb-2" id="star-rating-container" style="cursor: pointer;">
+                    <i data-lucide="star" class="star-rating" data-value="1" onclick="setRating(1)" style="color: #f59e0b; fill: #f59e0b;"></i>
+                    <i data-lucide="star" class="star-rating" data-value="2" onclick="setRating(2)" style="color: #f59e0b; fill: #f59e0b;"></i>
+                    <i data-lucide="star" class="star-rating" data-value="3" onclick="setRating(3)" style="color: #f59e0b; fill: #f59e0b;"></i>
+                    <i data-lucide="star" class="star-rating" data-value="4" onclick="setRating(4)" style="color: #f59e0b; fill: #f59e0b;"></i>
+                    <i data-lucide="star" class="star-rating" data-value="5" onclick="setRating(5)" style="color: #f59e0b; fill: #f59e0b;"></i>
+                </div>
+                <input type="hidden" id="review-rating" value="5">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Your Review</label>
+                <textarea id="review-text" class="form-control" rows="3" placeholder="Tell us what you think..." required></textarea>
+            </div>
+            <button class="btn btn-primary w-100 fw-bold py-2" id="submit-review-btn" onclick="submitReview()">Submit Review</button>
         </div>
     </div>
 
@@ -621,6 +662,14 @@
     </div>
 
     <!-- Footer Ad Space Removed -->
+
+    <!-- Review Button -->
+    <button class="btn btn-primary shadow-lg d-flex align-items-center justify-content-center no-print" 
+            onclick="openReviewModal()"
+            title="Leave a Review"
+            style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; padding: 0;">
+        <i data-lucide="message-square" style="width: 24px; height: 24px;"></i>
+    </button>
 
     <!-- Footer -->
     <footer class="footer no-print mt-5 pb-4">

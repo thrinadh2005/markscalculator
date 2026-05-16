@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const countHandler = require('./api/count.js');
+const visitorsHandler = require('./api/visitors.js');
+const reviewsHandler = require('./api/reviews.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,7 +14,9 @@ app.use(express.json());
 app.use(express.static('.'));
 
 // API endpoint for visitor count using the stats collection
-app.get('/api/count', countHandler);
+app.all('/api/count', countHandler);
+app.all('/api/visitors', visitorsHandler);
+app.all('/api/reviews', reviewsHandler);
 
 // Serve the main application
 app.get('/', (req, res) => {

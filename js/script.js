@@ -569,6 +569,13 @@ function init() {
     if (window.examStudyPlanner) {
         examStudyPlanner.init().catch(err => console.warn('Study Planner init failed:', err));
     }
+    
+    // Auto prompt for review after 10 seconds if not already submitted or dismissed
+    setTimeout(() => {
+        if (!localStorage.getItem('review_submitted') && !localStorage.getItem('review_dismissed')) {
+            openReviewModal();
+        }
+    }, 10000);
 }
 
 function checkAdmin() {
@@ -579,8 +586,9 @@ function checkAdmin() {
     
     if (adminClickCount >= 5) {
         adminClickCount = 0;
-        const pass = prompt("Enter Admin Password to view Visitor List:");
+        const pass = prompt("Enter Admin Password to view Admin Dashboard:");
         if (pass === "thrinadh2005") {
+            showAdminTab('visitors');
             showVisitorList();
         } else if (pass !== null) {
             alert("Incorrect Password!");
@@ -1613,4 +1621,149 @@ function resetNptel() {
     }
     calculateNptel();
     calculateNptelAverage();
+}
+
+// --- Review System Logic ---
+
+function openReviewModal() {
+    const overlay = document.getElementById('review-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.style.opacity = '1', 10);
+    }
+}
+
+function closeReviewModal() {
+    const overlay = document.getElementById('review-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.classList.add('hidden'), 500);
+        localStorage.setItem('review_dismissed', 'true');
+    }
+}
+
+function setRating(rating) {
+    document.getElementById('review-rating').value = rating;
+    const stars = document.querySelectorAll('.star-rating');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.style.fill = '#f59e0b';
+            star.style.color = '#f59e0b';
+        } else {
+            star.style.fill = 'none';
+            star.style.color = '#6c757d'; // muted color
+        }
+    });
+}
+
+async function submitReview() {
+    const text = document.getElementById('review-text').value.trim();
+    const rating = document.getElementById('review-rating').value;
+    const name = localStorage.getItem('calculator_user_name') || 'Anonymous';
+    
+    if (!text) {
+        alert('Please enter a review text.');
+        return;
+    }
+    
+    const btn = document.getElementById('submit-review-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Submitting...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, rating, text })
+        });
+
+        if (!response.ok) throw new Error('Submission failed');
+        
+        alert('Thank you for your review!');
+        document.getElementById('review-text').value = '';
+        localStorage.setItem('review_submitted', 'true');
+        closeReviewModal();
+    } catch (e) {
+        console.error('Review submission error:', e);
+        alert('Failed to submit review. Please try again later.');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// --- Admin Dashboard Additions ---
+
+function showAdminTab(tabName) {
+    document.getElementById('admin-visitors-btn').classList.remove('active');
+    document.getElementById('admin-reviews-btn').classList.remove('active');
+    
+    document.getElementById(`admin-${tabName}-btn`).classList.add('active');
+    
+    document.getElementById('visitor-list-content').classList.add('hidden');
+    document.getElementById('review-list-content').classList.add('hidden');
+    
+    if (tabName === 'visitors') {
+        document.getElementById('visitor-list-content').classList.remove('hidden');
+    } else if (tabName === 'reviews') {
+        document.getElementById('review-list-content').classList.remove('hidden');
+        loadReviews();
+    }
+}
+
+async function loadReviews() {
+    const content = document.getElementById('review-list-content');
+    content.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Fetching reviews...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch('/api/reviews');
+        if (!response.ok) throw new Error('Failed to fetch reviews');
+        
+        const reviews = await response.json();
+        
+        if (reviews.length === 0) {
+            content.innerHTML = '<p class="text-center text-muted py-5">No reviews yet.</p>';
+            return;
+        }
+
+        let html = '<div class="list-group list-group-flush mb-4">';
+        reviews.forEach(review => {
+            let starsHtml = '';
+            for(let i=0; i<5; i++) {
+                if(i < review.rating) {
+                    starsHtml += '<i data-lucide="star" style="width: 14px; color: #f59e0b; fill: #f59e0b;"></i>';
+                } else {
+                    starsHtml += '<i data-lucide="star" style="width: 14px; color: #6c757d;"></i>';
+                }
+            }
+            
+            html += `
+                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="fw-bold text-white">${review.name || 'Anonymous'}</div>
+                        <div class="text-muted small" style="font-size: 0.65rem;">${new Date(review.timestamp).toLocaleString()}</div>
+                    </div>
+                    <div class="mb-2">${starsHtml}</div>
+                    <p class="mb-0 text-muted small" style="word-break: break-word;">${review.text}</p>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        content.innerHTML = html;
+        lucide.createIcons();
+    } catch (e) {
+        console.error("Reviews fetch failed:", e);
+        content.innerHTML = `
+            <div class="alert alert-warning">
+                Unable to load reviews. Please try again.
+            </div>
+        `;
+    }
 }
