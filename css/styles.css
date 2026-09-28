@@ -1232,30 +1232,128 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(255, 255, 255, 0.04);
 }
 
-/* Button Refinements */
-.btn-light {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
+/* ========================================================
+   UNIFIED BUTTON STYLES & CONTRAST (LIGHT & DARK THEMES)
+   ======================================================== */
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* Primary Buttons */
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #ffffff !important;
     font-weight: 700;
-    transition: all 0.3s;
-    color: var(--text);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+}
+
+[data-theme="dark"] .btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #0a0e1a !important; /* High contrast dark text on cyan/sky blue */
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
+}
+
+[data-theme="dark"] .btn-primary:hover {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary-light) !important;
+    color: #0a0e1a !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+}
+
+/* Light / Secondary Neutral Buttons */
+.btn-light {
+    background: var(--glass) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text) !important;
+    font-weight: 600;
 }
 
 .btn-light:hover {
-    background: var(--primary);
-    color: #ffffff;
-    border-color: var(--primary);
-    transform: translateY(-2px);
+    background: var(--hover-bg) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .btn-light {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: var(--text) !important;
 }
 
 [data-theme="dark"] .btn-light:hover {
-    background: var(--primary-light);
-    border-color: var(--primary-light);
+    background: rgba(56, 189, 248, 0.16) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    transform: translateY(-1px);
 }
 
-[data-theme="light"] .btn-light:hover {
-    background: #4f46e5;
-    color: white;
+/* Outline Primary Buttons */
+.btn-outline-primary {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    background: transparent !important;
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary) !important;
+    color: #ffffff !important;
+    border-color: var(--primary) !important;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .btn-outline-primary {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+    background-color: var(--primary) !important;
+    color: #0a0e1a !important;
+    border-color: var(--primary) !important;
+}
+
+/* Outline Secondary Buttons */
+.btn-outline-secondary {
+    color: var(--text-muted) !important;
+    border-color: var(--glass-border) !important;
+    background: transparent !important;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--hover-bg) !important;
+    color: var(--text) !important;
+    border-color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-muted) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Enhanced Scrollbar */
@@ -2613,21 +2711,55 @@ code, pre {
 }
 
 #pwa-install-btn {
-    background-color: white !important;
-    border-color: white !important;
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
     color: var(--primary) !important;
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.35rem 0.9rem;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] #pwa-install-btn {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #0a0e1a !important;
 }
 
 #pwa-install-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Sub-mode switcher (Internal Calculator vs Mid-2 Target Reversal) */
+.btn-group .btn {
+    border: none !important;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-group .btn.active {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+    font-weight: 700 !important;
+}
+
+[data-theme="dark"] .btn-group .btn {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .btn-group .btn.active {
+    background: var(--primary) !important;
+    color: #0a0e1a !important;
+    box-shadow: 0 3px 12px rgba(56, 189, 248, 0.3);
+    font-weight: 700 !important;
 }
 
 /* ========================================================
-   CGPA PREDICTOR STYLES
+   CGPA PREDICTOR & GRADE BADGE STYLES
    ======================================================== */
 .preset-chip {
     background: rgba(56, 189, 248, 0.08);
@@ -2637,6 +2769,7 @@ code, pre {
     font-size: 0.72rem;
     font-weight: 600;
     transition: all 0.2s ease;
+    padding: 0.25rem 0.75rem;
 }
 
 .preset-chip:hover {
@@ -2649,24 +2782,99 @@ code, pre {
     background: var(--primary) !important;
     border-color: var(--primary) !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
 }
 
 [data-theme="dark"] .preset-chip {
-    background: rgba(56, 189, 248, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .preset-chip:hover {
-    background: rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.2);
     color: #ffffff;
+    border-color: var(--primary);
 }
 
 [data-theme="dark"] .preset-chip.active {
     background: var(--primary) !important;
+    border-color: var(--primary) !important;
     color: #0a0e1a !important;
     font-weight: 700;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+/* Grade Pills on Semester Cards */
+.pred-sem-grade-badge {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.grade-pill-s {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #047857 !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+.grade-pill-a {
+    background: rgba(2, 132, 199, 0.12) !important;
+    color: #0369a1 !important;
+    border: 1px solid rgba(2, 132, 199, 0.3) !important;
+}
+.grade-pill-b {
+    background: rgba(124, 58, 237, 0.12) !important;
+    color: #6d28d9 !important;
+    border: 1px solid rgba(124, 58, 237, 0.3) !important;
+}
+.grade-pill-c {
+    background: rgba(6, 182, 212, 0.12) !important;
+    color: #0e7490 !important;
+    border: 1px solid rgba(6, 182, 212, 0.3) !important;
+}
+.grade-pill-d {
+    background: rgba(245, 158, 11, 0.12) !important;
+    color: #b45309 !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+.grade-pill-e {
+    background: rgba(239, 68, 68, 0.12) !important;
+    color: #b91c1c !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+[data-theme="dark"] .grade-pill-s {
+    background: rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.45) !important;
+}
+[data-theme="dark"] .grade-pill-a {
+    background: rgba(56, 189, 248, 0.2) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
+}
+[data-theme="dark"] .grade-pill-b {
+    background: rgba(168, 85, 247, 0.2) !important;
+    color: #c084fc !important;
+    border: 1px solid rgba(168, 85, 247, 0.45) !important;
+}
+[data-theme="dark"] .grade-pill-c {
+    background: rgba(34, 211, 238, 0.2) !important;
+    color: #22d3ee !important;
+    border: 1px solid rgba(34, 211, 238, 0.45) !important;
+}
+[data-theme="dark"] .grade-pill-d {
+    background: rgba(245, 158, 11, 0.2) !important;
+    color: #fbbf24 !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+}
+[data-theme="dark"] .grade-pill-e {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(239, 68, 68, 0.45) !important;
 }
 
 /* Predictor Hero Card - Harmonized with Glassmorphic Design */

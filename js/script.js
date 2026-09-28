@@ -551,6 +551,14 @@ let adminClickTimer = null;
 let lastClickTime = 0;
 
 function init() {
+    // Theme persistence
+    const savedTheme = localStorage.getItem('gmrit_theme') || 'dark';
+    document.body.setAttribute('data-theme', savedTheme);
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+    if (themeIcon) themeIcon.setAttribute('data-lucide', savedTheme === 'dark' ? 'sun' : 'moon');
+    if (themeText) themeText.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
     lucide.createIcons();
     checkUserSession();
     
@@ -949,12 +957,18 @@ function setupInputValidation() {
 function toggleTheme() {
     const body = document.body;
     const icon = document.getElementById('theme-icon');
-    if (body.getAttribute('data-theme') === 'dark') {
+    const text = document.getElementById('theme-text');
+    const isDark = body.getAttribute('data-theme') === 'dark';
+    if (isDark) {
         body.setAttribute('data-theme', 'light');
-        icon.setAttribute('data-lucide', 'moon');
+        if (icon) icon.setAttribute('data-lucide', 'moon');
+        if (text) text.textContent = 'Dark Mode';
+        localStorage.setItem('gmrit_theme', 'light');
     } else {
         body.setAttribute('data-theme', 'dark');
-        icon.setAttribute('data-lucide', 'sun');
+        if (icon) icon.setAttribute('data-lucide', 'sun');
+        if (text) text.textContent = 'Light Mode';
+        localStorage.setItem('gmrit_theme', 'dark');
     }
     lucide.createIcons();
 }
@@ -1901,30 +1915,25 @@ function calculateUnifiedCgpa() {
             }
             if (gradeBadge) {
                 gradeBadge.style.display = 'inline-block';
+                gradeBadge.className = 'pred-sem-grade-badge';
                 if (sgpa >= 9.0) {
                     gradeBadge.textContent = 'Outstanding (S)';
-                    gradeBadge.style.background = '#dcfce7';
-                    gradeBadge.style.color = '#16a34a';
+                    gradeBadge.classList.add('grade-pill-s');
                 } else if (sgpa >= 8.0) {
                     gradeBadge.textContent = 'Excellent (A)';
-                    gradeBadge.style.background = '#dbeafe';
-                    gradeBadge.style.color = '#2563eb';
+                    gradeBadge.classList.add('grade-pill-a');
                 } else if (sgpa >= 7.0) {
                     gradeBadge.textContent = 'Very Good (B)';
-                    gradeBadge.style.background = '#e9d5ff';
-                    gradeBadge.style.color = '#7c3aed';
+                    gradeBadge.classList.add('grade-pill-b');
                 } else if (sgpa >= 6.0) {
                     gradeBadge.textContent = 'Good (C)';
-                    gradeBadge.style.background = '#cffafe';
-                    gradeBadge.style.color = '#0891b2';
+                    gradeBadge.classList.add('grade-pill-c');
                 } else if (sgpa >= 5.0) {
                     gradeBadge.textContent = 'Average (D)';
-                    gradeBadge.style.background = '#fef3c7';
-                    gradeBadge.style.color = '#d97706';
+                    gradeBadge.classList.add('grade-pill-d');
                 } else {
                     gradeBadge.textContent = 'Pass (E)';
-                    gradeBadge.style.background = '#fee2e2';
-                    gradeBadge.style.color = '#dc2626';
+                    gradeBadge.classList.add('grade-pill-e');
                 }
             }
         } else {
