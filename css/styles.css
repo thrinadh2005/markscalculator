@@ -2991,12 +2991,14 @@ code, pre {
     #cgpa-result-val,
     #cgpa-req-sgpa-val,
     #internal-result,
+    #rev-required-score,
     #sgpa-result,
     .pred-req-value,
     [data-theme="dark"] .summary-value,
     [data-theme="dark"] #cgpa-result-val,
     [data-theme="dark"] #cgpa-req-sgpa-val,
     [data-theme="dark"] #internal-result,
+    [data-theme="dark"] #rev-required-score,
     [data-theme="dark"] #sgpa-result,
     [data-theme="dark"] .pred-req-value {
         color: #1d4ed8 !important;

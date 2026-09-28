@@ -1019,6 +1019,368 @@ function toggleInternalFields() {
     calculateInternal();
 }
 
+// Sub-mode switch for Internal tab
+function setInternalSubMode(mode) {
+    const calcBtn = document.getElementById('btn-internal-sub-calc');
+    const revBtn = document.getElementById('btn-internal-sub-reversal');
+    const calcView = document.getElementById('internal-calc-view');
+    const revView = document.getElementById('internal-reversal-view');
+
+    if (!calcBtn || !revBtn || !calcView || !revView) return;
+
+    if (mode === 'calc') {
+        calcBtn.classList.add('active');
+        revBtn.classList.remove('active');
+        calcView.classList.remove('hidden');
+        revView.classList.add('hidden');
+    } else {
+        calcBtn.classList.remove('active');
+        revBtn.classList.add('active');
+        calcView.classList.add('hidden');
+        revView.classList.remove('hidden');
+        
+        // Auto-sync Mid-1 and Assignment if entered in calc view
+        const m1Calc = document.getElementById('mid1');
+        const revM1 = document.getElementById('rev-mid1');
+        if (m1Calc && revM1 && m1Calc.value && !revM1.value) {
+            revM1.value = m1Calc.value;
+        }
+        const assCalc = document.getElementById('assignment');
+        const revAss = document.getElementById('rev-assignment');
+        if (assCalc && revAss && assCalc.value && (!revAss.value || revAss.value === '30')) {
+            revAss.value = assCalc.value;
+        }
+        calculateMid2Reversal();
+    }
+    lucide.createIcons();
+}
+
+function toggleReversalCourseType() {
+    const typeSelect = document.getElementById('rev-course-type');
+    const type = typeSelect ? typeSelect.value : 'theory';
+    const theoryAssGroup = document.getElementById('rev-theory-assignment-group');
+    const intLabGroup = document.getElementById('rev-integrated-lab-group');
+    const targetBadge = document.getElementById('rev-target-max-badge');
+    const targetInput = document.getElementById('rev-target-internal');
+    const presetsContainer = document.getElementById('rev-presets-container');
+    const formulaExplanation = document.getElementById('rev-formula-explanation');
+
+    if (type === 'theory') {
+        if (theoryAssGroup) theoryAssGroup.classList.remove('hidden');
+        if (intLabGroup) intLabGroup.classList.add('hidden');
+        if (targetBadge) targetBadge.textContent = '/ 30M';
+        if (targetInput) {
+            targetInput.max = "30";
+            if (parseFloat(targetInput.value) > 30 || parseFloat(targetInput.value) === 40) {
+                targetInput.value = "30";
+            }
+        }
+        if (presetsContainer) {
+            presetsContainer.innerHTML = `
+                <span class="text-muted fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">QUICK TARGETS:</span>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(25)">25 / 30</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(27)">27 / 30</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(28)">28 / 30</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(29)">29 / 30</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip active" onclick="setRevTargetPreset(30)">30 / 30 (Full Marks)</button>
+            `;
+        }
+        if (formulaExplanation) {
+            formulaExplanation.innerHTML = `Internal = [ (0.8 × Best + 0.2 × Other) / 40 × 20 ] + [ Assignment / 3 ]<br>
+            Solving for minimum Mid-2 score: <code>Mid-2 = (Needed_Mid_Part - 0.1 × Mid1) / 0.4</code>`;
+        }
+    } else {
+        // Integrated (40M)
+        if (theoryAssGroup) theoryAssGroup.classList.add('hidden');
+        if (intLabGroup) intLabGroup.classList.remove('hidden');
+        if (targetBadge) targetBadge.textContent = '/ 40M';
+        if (targetInput) {
+            targetInput.max = "40";
+            if (parseFloat(targetInput.value) <= 30) {
+                targetInput.value = "40";
+            }
+        }
+        if (presetsContainer) {
+            presetsContainer.innerHTML = `
+                <span class="text-muted fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">QUICK TARGETS:</span>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(32)">32 / 40</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(35)">35 / 40</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(37)">37 / 40</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setRevTargetPreset(39)">39 / 40</button>
+                <button type="button" class="btn btn-sm py-0 px-2 preset-chip active" onclick="setRevTargetPreset(40)">40 / 40 (Full Marks)</button>
+            `;
+        }
+        if (formulaExplanation) {
+            formulaExplanation.innerHTML = `Internal = [ Theory: (0.8 × Best + 0.2 × Other) / 40 × 30 ] + [ Lab: Record(5) + Test(5) ]<br>
+            Solving for minimum Mid-2 score: <code>Mid-2 = (Needed_Theory_Part - 0.15 × Mid1) / 0.6</code>`;
+        }
+    }
+    calculateMid2Reversal();
+}
+
+function setRevTargetPreset(targetVal) {
+    const targetInput = document.getElementById('rev-target-internal');
+    if (targetInput) {
+        targetInput.value = targetVal;
+    }
+    const chips = document.querySelectorAll('#rev-presets-container .preset-chip');
+    chips.forEach(chip => {
+        if (chip.textContent.includes(String(targetVal))) {
+            chip.classList.add('active');
+        } else {
+            chip.classList.remove('active');
+        }
+    });
+    calculateMid2Reversal();
+}
+
+function resetMid2Reversal() {
+    const mid1 = document.getElementById('rev-mid1');
+    const ass = document.getElementById('rev-assignment');
+    const rec = document.getElementById('rev-lab-record');
+    const test = document.getElementById('rev-lab-test');
+    if (mid1) mid1.value = '';
+    if (ass) ass.value = '30';
+    if (rec) rec.value = '5';
+    if (test) test.value = '5';
+    calculateMid2Reversal();
+}
+
+function solveRequiredMid2(targetT, mid1, nonMidScore, bestFactor, otherFactor, maxInternal) {
+    // In GMRIT autonomous system, Math.ceil(total) is applied to final internals.
+    // For integer target T (e.g. 30), reaching raw total >= (T - 0.999) ceils to T.
+    const rawTargetNeeded = targetT <= 1 ? targetT : (targetT - 0.999);
+    const neededMidPart = rawTargetNeeded - nonMidScore;
+
+    if (neededMidPart <= 0) {
+        return { mid2: 0, status: 'secured', exact: 0, rawNeeded: neededMidPart };
+    }
+
+    const maxPossibleMidPart = (bestFactor * 40) + (otherFactor * mid1);
+    const maxPossibleRawTotal = maxPossibleMidPart + nonMidScore;
+    const maxAchievableCeil = Math.min(maxInternal, Math.ceil(maxPossibleRawTotal));
+    
+    if (targetT > maxAchievableCeil) {
+        return { 
+            mid2: null, 
+            status: 'impossible', 
+            maxAchievable: maxAchievableCeil,
+            rawMax: maxPossibleRawTotal
+        };
+    }
+
+    // Case 1: Mid-1 is Best (Mid-2 <= Mid-1)
+    const mid2IfMid1Best = (neededMidPart - bestFactor * mid1) / otherFactor;
+
+    if (mid2IfMid1Best <= 0) {
+        return { mid2: 0, status: 'secured', exact: 0 };
+    }
+
+    if (mid2IfMid1Best <= mid1) {
+        return { mid2: Math.max(0, mid2IfMid1Best), status: 'valid', exact: mid2IfMid1Best };
+    }
+
+    // Case 2: Mid-2 is Best (Mid-2 > Mid-1)
+    const mid2IfMid2Best = (neededMidPart - otherFactor * mid1) / bestFactor;
+
+    if (mid2IfMid2Best <= 40) {
+        return { mid2: Math.max(0, mid2IfMid2Best), status: 'valid', exact: mid2IfMid2Best };
+    }
+
+    return { 
+        mid2: null, 
+        status: 'impossible', 
+        maxAchievable: maxAchievableCeil,
+        rawMax: maxPossibleRawTotal
+    };
+}
+
+function calculateMid2Reversal() {
+    const courseType = document.getElementById('rev-course-type') ? document.getElementById('rev-course-type').value : 'theory';
+    const targetInput = document.getElementById('rev-target-internal');
+    const mid1Input = document.getElementById('rev-mid1');
+    const maxInternal = (courseType === 'integrated') ? 40 : 30;
+    const bestFactor = (courseType === 'integrated') ? 0.6 : 0.4;
+    const otherFactor = (courseType === 'integrated') ? 0.15 : 0.10;
+
+    let targetInternal = parseFloat(targetInput ? targetInput.value : maxInternal);
+    if (isNaN(targetInternal)) targetInternal = maxInternal;
+    if (targetInternal > maxInternal) { targetInternal = maxInternal; if (targetInput) targetInput.value = maxInternal; }
+    if (targetInternal < 1) { targetInternal = 1; if (targetInput) targetInput.value = 1; }
+
+    let mid1 = parseFloat(mid1Input ? mid1Input.value : 0);
+    if (isNaN(mid1)) mid1 = 0;
+    if (mid1 > 40) { mid1 = 40; if (mid1Input) mid1Input.value = 40; }
+    if (mid1 < 0) { mid1 = 0; if (mid1Input) mid1Input.value = 0; }
+
+    let nonMidScore = 0;
+    if (courseType === 'theory') {
+        const assInput = document.getElementById('rev-assignment');
+        let ass = parseFloat(assInput ? assInput.value : 30);
+        if (isNaN(ass)) ass = 0;
+        if (ass > 30) { ass = 30; if (assInput) assInput.value = 30; }
+        if (ass < 0) { ass = 0; if (assInput) assInput.value = 0; }
+        nonMidScore = (ass / 30) * 10;
+    } else {
+        const recInput = document.getElementById('rev-lab-record');
+        const testInput = document.getElementById('rev-lab-test');
+        let rec = parseFloat(recInput ? recInput.value : 5);
+        let test = parseFloat(testInput ? testInput.value : 5);
+        if (isNaN(rec)) rec = 0; if (rec > 5) { rec = 5; if (recInput) recInput.value = 5; } if (rec < 0) { rec = 0; if (recInput) recInput.value = 0; }
+        if (isNaN(test)) test = 0; if (test > 5) { test = 5; if (testInput) testInput.value = 5; } if (test < 0) { test = 0; if (testInput) testInput.value = 0; }
+        nonMidScore = rec + test;
+    }
+
+    const result = solveRequiredMid2(targetInternal, mid1, nonMidScore, bestFactor, otherFactor, maxInternal);
+
+    const reqScoreEl = document.getElementById('rev-required-score');
+    const sublabelEl = document.getElementById('rev-score-sublabel');
+    const badgeEl = document.getElementById('rev-feasibility-badge');
+    const statusPill = document.getElementById('rev-target-status-pill');
+    const maxAchievableEl = document.getElementById('rev-max-achievable-internal');
+    const mid1BaselineEl = document.getElementById('rev-mid1-baseline');
+    const adviceEl = document.getElementById('rev-strategy-advice');
+
+    const maxMidPart = (bestFactor * 40) + (otherFactor * mid1);
+    const maxTotalRaw = maxMidPart + nonMidScore;
+    const maxTotalCeil = Math.min(maxInternal, Math.ceil(maxTotalRaw));
+
+    if (statusPill) statusPill.textContent = `Target: ${targetInternal} / ${maxInternal}`;
+    if (maxAchievableEl) maxAchievableEl.textContent = `${maxTotalCeil} / ${maxInternal} (${maxTotalRaw.toFixed(1)} raw)`;
+    if (mid1BaselineEl) mid1BaselineEl.textContent = `${mid1.toFixed(1)} / 40 (${courseType === 'theory' ? ((mid1/40)*20).toFixed(1) : ((mid1/40)*30).toFixed(1)}M equiv)`;
+
+    if (result.status === 'impossible') {
+        if (reqScoreEl) reqScoreEl.innerHTML = `<span class="text-danger">&gt; 40.0</span>`;
+        if (sublabelEl) sublabelEl.innerHTML = `<span class="text-danger fw-bold">Out of Reach in Mid-2</span>`;
+        if (badgeEl) {
+            badgeEl.style.background = '#fee2e2';
+            badgeEl.style.color = '#dc2626';
+            badgeEl.textContent = `🔴 Max achievable is ${maxTotalCeil}/${maxInternal}`;
+        }
+        if (adviceEl) {
+            adviceEl.innerHTML = `
+                <div class="text-danger fw-bold mb-1"><i data-lucide="alert-circle" style="width: 14px;"></i> Target Exceeds Mathematical Ceiling</div>
+                <div>Even with a perfect <strong>40.0/40</strong> in Mid-2, the maximum internal marks achievable is <strong>${maxTotalCeil}/${maxInternal}</strong> (Raw: ${maxTotalRaw.toFixed(1)}). Consider targeting <strong>${maxTotalCeil}/${maxInternal}</strong> instead!</div>
+            `;
+        }
+    } else if (result.status === 'secured' || result.mid2 === 0) {
+        if (reqScoreEl) reqScoreEl.innerHTML = `<span class="text-success">0.0 <span style="font-size: 1.1rem;" class="fw-normal">/ 40</span></span>`;
+        if (sublabelEl) sublabelEl.textContent = `Marks out of 40 in Mid-2`;
+        if (badgeEl) {
+            badgeEl.style.background = '#dcfce7';
+            badgeEl.style.color = '#16a34a';
+            badgeEl.textContent = `🏆 Target Already Secured!`;
+        }
+        if (adviceEl) {
+            adviceEl.innerHTML = `
+                <div class="text-success fw-bold mb-1"><i data-lucide="check-circle-2" style="width: 14px;"></i> Congratulations! Target Locked In</div>
+                <div>Your Mid-1 score (${mid1}) and assignment component guarantee <strong>${targetInternal}/${maxInternal}</strong> internal marks even with 0 in Mid-2! Any extra marks in Mid-2 will boost your confidence.</div>
+            `;
+        }
+    } else {
+        const requiredScore = Math.ceil(result.mid2 * 10) / 10;
+        if (reqScoreEl) reqScoreEl.innerHTML = `<span>${requiredScore.toFixed(1)} <span style="font-size: 1.1rem;" class="fw-normal text-muted">/ 40</span></span>`;
+        if (sublabelEl) sublabelEl.textContent = `Minimum marks out of 40 in Mid-2`;
+
+        if (requiredScore <= 20.0) {
+            if (badgeEl) {
+                badgeEl.style.background = '#dcfce7';
+                badgeEl.style.color = '#16a34a';
+                badgeEl.textContent = `🟢 Easily Achievable (≤ 20/40)`;
+            }
+            if (adviceEl) {
+                adviceEl.innerHTML = `
+                    <div class="text-success fw-bold mb-1"><i data-lucide="sparkles" style="width: 14px;"></i> Comfortable Path Ahead</div>
+                    <div>Scoring at least <strong>${requiredScore.toFixed(1)}/40</strong> in Mid-2 secures your target of <strong>${targetInternal}/${maxInternal}</strong> internals. Cover the essential units to easily surpass this!</div>
+                `;
+            }
+        } else if (requiredScore <= 30.0) {
+            if (badgeEl) {
+                badgeEl.style.background = '#dbeafe';
+                badgeEl.style.color = '#2563eb';
+                badgeEl.textContent = `🔵 Moderate Effort (21 - 30/40)`;
+            }
+            if (adviceEl) {
+                adviceEl.innerHTML = `
+                    <div class="text-primary fw-bold mb-1"><i data-lucide="trending-up" style="width: 14px;"></i> Realistic &amp; Achievable</div>
+                    <div>Aim for <strong>${requiredScore.toFixed(1)}/40</strong> in Mid-2. Prepare 2 full units thoroughly (including all short questions and derivation/problem questions) to hit this target.</div>
+                `;
+            }
+        } else if (requiredScore <= 36.0) {
+            if (badgeEl) {
+                badgeEl.style.background = '#fef3c7';
+                badgeEl.style.color = '#d97706';
+                badgeEl.textContent = `🟡 High Focus Required (31 - 36/40)`;
+            }
+            if (adviceEl) {
+                adviceEl.innerHTML = `
+                    <div class="text-warning fw-bold mb-1"><i data-lucide="alert-triangle" style="width: 14px;"></i> Focused Preparation Needed</div>
+                    <div>You need a high score of <strong>${requiredScore.toFixed(1)}/40</strong> in Mid-2. Focus on high-weightage topics, practice previous mid question papers, and ensure full assignment submissions.</div>
+                `;
+            }
+        } else {
+            if (badgeEl) {
+                badgeEl.style.background = '#ffedd5';
+                badgeEl.style.color = '#c2410c';
+                badgeEl.textContent = `🟠 Maximum Push Needed (37 - 40/40)`;
+            }
+            if (adviceEl) {
+                adviceEl.innerHTML = `
+                    <div class="text-warning fw-bold mb-1"><i data-lucide="zap" style="width: 14px;"></i> Near Perfect Mid-2 Required</div>
+                    <div>Hitting <strong>${targetInternal}/${maxInternal}</strong> requires a near-flawless score of <strong>${requiredScore.toFixed(1)}/40</strong> in Mid-2. Master every topic across Mid-2 syllabus units!</div>
+                `;
+            }
+        }
+    }
+
+    // Populate All-Targets Breakdown Matrix Table
+    const tbody = document.getElementById('rev-targets-table-body');
+    if (tbody) {
+        tbody.innerHTML = '';
+        const targetsList = (courseType === 'theory') 
+            ? [20, 22, 24, 26, 28, 29, 30] 
+            : [28, 30, 32, 34, 36, 38, 40];
+
+        targetsList.forEach(t => {
+            const tRes = solveRequiredMid2(t, mid1, nonMidScore, bestFactor, otherFactor, maxInternal);
+            const isCurrentTarget = (t === targetInternal);
+            const tr = document.createElement('tr');
+            if (isCurrentTarget) {
+                tr.style.background = 'rgba(56, 189, 248, 0.1)';
+                tr.style.fontWeight = 'bold';
+            }
+
+            let mid2Display = '';
+            let statusDisplay = '';
+
+            if (tRes.status === 'impossible') {
+                mid2Display = `<span class="text-danger fw-bold">&gt; 40.0</span>`;
+                statusDisplay = `<span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.65rem;">Out of Reach</span>`;
+            } else if (tRes.status === 'secured' || tRes.mid2 === 0) {
+                mid2Display = `<span class="text-success fw-bold">0.0</span>`;
+                statusDisplay = `<span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.65rem;">Secured (0/40)</span>`;
+            } else {
+                const reqVal = Math.ceil(tRes.mid2 * 10) / 10;
+                let colorClass = reqVal <= 25 ? 'text-success' : (reqVal <= 34 ? 'text-primary' : 'text-warning');
+                mid2Display = `<span class="fw-bold ${colorClass}">${reqVal.toFixed(1)} / 40</span>`;
+                statusDisplay = `<span class="badge ${reqVal <= 25 ? 'bg-success' : (reqVal <= 34 ? 'bg-primary' : 'bg-warning')} bg-opacity-10 ${reqVal <= 25 ? 'text-success' : (reqVal <= 34 ? 'text-primary' : 'text-dark')}" style="font-size: 0.65rem;">${reqVal <= 25 ? 'Easy' : (reqVal <= 34 ? 'Moderate' : 'Challenging')}</span>`;
+            }
+
+            tr.innerHTML = `
+                <td>
+                    <span class="${isCurrentTarget ? 'text-primary' : ''}">${t} / ${maxInternal}</span>
+                    ${isCurrentTarget ? '<span class="badge bg-primary ms-1" style="font-size: 0.55rem;">TARGET</span>' : ''}
+                </td>
+                <td class="text-center">${mid2Display}</td>
+                <td class="text-end">${statusDisplay}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    lucide.createIcons();
+}
+
 // Internal Marks Calculation
 function calculateInternal() {
     const type = document.getElementById('course-type').value;
@@ -1294,6 +1656,7 @@ function resetInternal() {
     const inputs = document.querySelectorAll('#internal-inputs input');
     inputs.forEach(input => input.value = '');
     calculateInternal();
+    resetMid2Reversal();
 }
 
 function updateSgpa() {
@@ -1486,8 +1849,14 @@ function calculateUnifiedCgpa() {
 
     const targetInput = document.getElementById('cgpa-target-input');
     let targetCgpa = parseFloat(targetInput ? targetInput.value : 8.50) || 8.50;
-    if (targetCgpa > 10.0) targetCgpa = 10.0;
-    if (targetCgpa < 0.0) targetCgpa = 0.0;
+    if (targetCgpa > 10.0) {
+        targetCgpa = 10.0;
+        if (targetInput) targetInput.value = "10.00";
+    }
+    if (targetCgpa < 0.0) {
+        targetCgpa = 0.0;
+        if (targetInput) targetInput.value = "0.00";
+    }
 
     let totalDegreeCredits = 0;
     let completedCredits = 0;
@@ -1511,10 +1880,14 @@ function calculateUnifiedCgpa() {
         savedSgpas.push(valStr);
 
         if (!isNaN(sgpa) && sgpa > 0) {
-            // Clamp if entered > 10
+            // Strictly clamp if entered > 10 or < 0
             if (sgpa > 10) {
                 sgpa = 10;
-                input.value = "10.00";
+                if (input) input.value = "10.00";
+            }
+            if (sgpa < 0) {
+                sgpa = 0;
+                if (input) input.value = "0.00";
             }
             completedCount++;
             completedCredits += credits;
@@ -1567,8 +1940,8 @@ function calculateUnifiedCgpa() {
         }
     }
 
-    // Current CGPA
-    const currentCgpa = completedCredits > 0 ? (completedQualityPoints / completedCredits) : 0.0;
+    // Current CGPA (strictly capped at 10.00)
+    const currentCgpa = completedCredits > 0 ? Math.min(10.0, Math.max(0.0, completedQualityPoints / completedCredits)) : 0.0;
     const currentCgpaEl = document.getElementById('cgpa-result-val');
     if (currentCgpaEl) {
         currentCgpaEl.textContent = completedCredits > 0 ? currentCgpa.toFixed(2) : "0.00";
@@ -1615,12 +1988,12 @@ function calculateUnifiedCgpa() {
     const remainingCredits = totalDegreeCredits - completedCredits;
     if (remCreditsVal) remCreditsVal.textContent = `${remainingCredits.toFixed(1)} Cr`;
 
-    // Max & Min achievable CGPA
+    // Max & Min achievable CGPA (strictly capped at 10.00 max)
     const maxPossibleCgpa = totalDegreeCredits > 0 
-        ? ((completedQualityPoints + (10.0 * remainingCredits)) / totalDegreeCredits) 
+        ? Math.min(10.0, Math.max(0.0, (completedQualityPoints + (10.0 * remainingCredits)) / totalDegreeCredits)) 
         : 10.0;
     const minPassCgpa = totalDegreeCredits > 0 
-        ? ((completedQualityPoints + (5.0 * remainingCredits)) / totalDegreeCredits) 
+        ? Math.min(10.0, Math.max(0.0, (completedQualityPoints + (5.0 * remainingCredits)) / totalDegreeCredits)) 
         : 5.0;
 
     const maxCgpaEl = document.getElementById('cgpa-max-cgpa-val');
@@ -1639,7 +2012,7 @@ function calculateUnifiedCgpa() {
 
     remainingSems.forEach(r => {
         if (whatIfOverrides[r.sem] !== undefined && whatIfOverrides[r.sem] !== null) {
-            const ovVal = parseFloat(whatIfOverrides[r.sem]);
+            const ovVal = Math.min(10.0, Math.max(0.0, parseFloat(whatIfOverrides[r.sem])));
             overrideQualityPoints += (ovVal * r.credits);
             overrideCredits += r.credits;
             overriddenCount++;
@@ -1656,7 +2029,7 @@ function calculateUnifiedCgpa() {
         } else {
             // All remaining semesters have custom what-if overrides!
             const simulatedFinalCgpa = (completedQualityPoints + overrideQualityPoints) / totalDegreeCredits;
-            requiredSgpa = simulatedFinalCgpa;
+            requiredSgpa = Math.min(10.0, simulatedFinalCgpa);
         }
     }
 
@@ -1665,7 +2038,9 @@ function calculateUnifiedCgpa() {
         if (remainingSems.length === 0) {
             reqSgpaValEl.textContent = currentCgpa.toFixed(2);
         } else if (requiredSgpa <= 0) {
-            reqSgpaValEl.textContent = "0.00";
+            reqSgpaValEl.innerHTML = `<span class="text-success fw-bold">0.00 <span class="badge bg-success text-white fs-6 align-middle ms-1">Secured</span></span>`;
+        } else if (requiredSgpa > 10.0) {
+            reqSgpaValEl.innerHTML = `<span class="text-danger fw-bold" style="font-size: 1.7rem;" title="Target is out of reach because max SGPA is 10.0">&gt; 10.0 <span class="badge bg-danger text-white fs-6 align-middle ms-1">Out of Reach</span></span>`;
         } else {
             reqSgpaValEl.textContent = requiredSgpa.toFixed(2);
         }
@@ -1929,27 +2304,6 @@ function renderUnifiedGradeAdvice(requiredSgpa, remainingCount, targetCgpa, maxP
     }
 }
 
-function loadUnifiedCgpaDemo() {
-    const branchSelect = document.getElementById('cgpa-branch-select');
-    if (branchSelect) branchSelect.value = 'CSE';
-    
-    const targetInput = document.getElementById('cgpa-target-input');
-    if (targetInput) targetInput.value = '8.75';
-
-    renderUnifiedCgpaSemesterCards();
-
-    // Fill Sem 1-4 demo values
-    const demoValues = { 1: "8.20", 2: "8.45", 3: "8.60", 4: "8.70" };
-    for (let i = 1; i <= 8; i++) {
-        const inp = document.getElementById(`sem-sgpa-input-${i}`);
-        if (inp) {
-            inp.value = demoValues[i] || '';
-        }
-    }
-
-    whatIfOverrides = {};
-    calculateUnifiedCgpa();
-}
 
 function resetUnifiedCgpa() {
     for (let i = 1; i <= 8; i++) {
