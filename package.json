@@ -4,15 +4,21 @@
   "description": "Academic calculator for GMRIT students with MongoDB visitor tracking",
   "main": "index.html",
   "dependencies": {
-    "mongodb": "^6.3.0"
+    "mongodb": "^6.3.0",
+    "web-push": "^3.6.7"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "serve .",
     "dev": "serve .",
     "build": "echo 'Build complete - static site ready'"
   },
-  "keywords": ["calculator", "academic", "mongodb", "visitor-tracking", "gmrit"],
+  "keywords": [
+    "calculator",
+    "academic",
+    "mongodb",
+    "visitor-tracking",
+    "gmrit"
+  ],
   "author": "Thrinadh",
   "license": "MIT"
 }

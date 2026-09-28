@@ -15,6 +15,18 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/subscribe.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/send-notification.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/vapid-public-key.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "**/*",
       "use": "@vercel/static"
     }
@@ -31,6 +43,18 @@
     {
       "src": "/api/reviews",
       "dest": "/api/reviews.js"
+    },
+    {
+      "src": "/api/subscribe",
+      "dest": "/api/subscribe.js"
+    },
+    {
+      "src": "/api/send-notification",
+      "dest": "/api/send-notification.js"
+    },
+    {
+      "src": "/api/vapid-public-key",
+      "dest": "/api/vapid-public-key.js"
     },
     {
       "handle": "filesystem"

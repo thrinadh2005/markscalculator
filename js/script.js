@@ -745,10 +745,168 @@ function renderVisitorList(globalLogs, localLogs) {
 
 function closeVisitorList() {
     const overlay = document.getElementById('visitor-list-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 500);
+    }
+}
+
+function showAdminTab(tab) {
+    const visitorsBtn = document.getElementById('admin-visitors-btn');
+    const reviewsBtn = document.getElementById('admin-reviews-btn');
+    const broadcastBtn = document.getElementById('admin-broadcast-btn');
+    const visitorsContent = document.getElementById('visitor-list-content');
+    const reviewsContent = document.getElementById('review-list-content');
+    const broadcastContent = document.getElementById('broadcast-list-content');
+
+    [visitorsBtn, reviewsBtn, broadcastBtn].forEach(b => b?.classList.remove('active'));
+    [visitorsContent, reviewsContent, broadcastContent].forEach(c => c?.classList.add('hidden'));
+
+    if (tab === 'visitors') {
+        visitorsBtn?.classList.add('active');
+        visitorsContent?.classList.remove('hidden');
+        showVisitorList();
+    } else if (tab === 'reviews') {
+        reviewsBtn?.classList.add('active');
+        reviewsContent?.classList.remove('hidden');
+        loadReviewsList();
+    } else if (tab === 'broadcast') {
+        broadcastBtn?.classList.add('active');
+        broadcastContent?.classList.remove('hidden');
+        if (window.PushManagerHelper) {
+            PushManagerHelper.loadSubscriberStats();
+        }
+    }
+    lucide.createIcons();
+}
+
+async function loadReviewsList() {
+    const content = document.getElementById('review-list-content');
+    if (!content) return;
+
+    content.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading reviews...</span>
+            </div>
+            <p class="mt-2 text-muted">Fetching reviews...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch('/api/reviews');
+        if (!response.ok) throw new Error('Failed to load reviews');
+        const reviews = await response.json();
+
+        if (!reviews || reviews.length === 0) {
+            content.innerHTML = '<p class="text-center text-muted py-5">No reviews yet.</p>';
+            return;
+        }
+
+        let html = `
+            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
+                Student Reviews (${reviews.length})
+            </div>
+            <div class="list-group list-group-flush">
+        `;
+
+        reviews.forEach(r => {
+            const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+            html += `
+                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="fw-bold" style="color: var(--text);">${r.userName || r.name || 'Student'}</div>
+                        <div class="text-warning small">${stars}</div>
+                    </div>
+                    <div class="small text-muted mb-1">${r.review || r.text || ''}</div>
+                    <div class="text-muted extra-small" style="font-size: 0.65rem;">${r.date || new Date(r.timestamp).toLocaleDateString()}</div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        content.innerHTML = html;
+    } catch (e) {
+        content.innerHTML = '<div class="alert alert-warning">Unable to load reviews.</div>';
+    }
+}
+
+function openReviewModal() {
+    const overlay = document.getElementById('review-overlay');
+    if (!overlay) return;
+    overlay.classList.remove('hidden');
+    setTimeout(() => overlay.style.opacity = '1', 10);
+    setRating(5);
+    lucide.createIcons();
+}
+
+function closeReviewModal() {
+    const overlay = document.getElementById('review-overlay');
+    if (!overlay) return;
     overlay.style.opacity = '0';
     setTimeout(() => {
         overlay.classList.add('hidden');
-    }, 500);
+    }, 400);
+    localStorage.setItem('review_dismissed', 'true');
+}
+
+function setRating(rating) {
+    const ratingInput = document.getElementById('review-rating');
+    if (ratingInput) ratingInput.value = rating;
+    const stars = document.querySelectorAll('#star-rating-container .star-rating');
+    stars.forEach((star, idx) => {
+        if (idx < rating) {
+            star.style.color = '#f59e0b';
+            star.style.fill = '#f59e0b';
+        } else {
+            star.style.color = '#6c757d';
+            star.style.fill = 'transparent';
+        }
+    });
+}
+
+async function submitReview() {
+    const ratingInput = document.getElementById('review-rating');
+    const textInput = document.getElementById('review-text');
+    const submitBtn = document.getElementById('submit-review-btn');
+    const rating = parseInt(ratingInput?.value || '5');
+    const text = textInput?.value.trim();
+
+    if (!text) {
+        textInput?.focus();
+        return;
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+    }
+
+    try {
+        const userName = localStorage.getItem('calculator_user_name') || 'Student';
+        await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: userName,
+                rating: rating,
+                text: text,
+                date: new Date().toLocaleString()
+            })
+        });
+        localStorage.setItem('review_submitted', 'true');
+        alert('Thank you for your feedback! ⭐');
+        closeReviewModal();
+    } catch (e) {
+        alert('Could not submit review right now. Saved locally.');
+        closeReviewModal();
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Review';
+        }
+    }
 }
 
 function checkUserSession() {
