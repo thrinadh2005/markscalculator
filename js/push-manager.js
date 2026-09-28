@@ -1,6 +1,6 @@
 /**
  * GMRIT Academic Calculator - Web Push Notification Manager
- * Handles client subscriptions, VAPID registration, and Admin Broadcasts
+ * Handles client subscriptions, VAPID registration, pop-up modal, and Admin Broadcasts
  */
 
 const PushManagerHelper = {
@@ -38,17 +38,73 @@ const PushManagerHelper = {
 
         this.updateUiState();
 
-        // If permission is already granted, ensure subscription is synced
+        // If permission is already granted, ensure subscription is synced with MongoDB
         if (Notification.permission === 'granted') {
             this.ensureSubscribed();
         } else if (Notification.permission === 'default') {
-            // Show subtle notification prompt after 5 seconds if not yet prompted
+            // Show the pop-up modal after 2.5 seconds if not previously dismissed
             setTimeout(() => {
-                const hasPrompted = localStorage.getItem('gmrit_notif_prompted');
-                if (!hasPrompted) {
-                    this.showNotificationBanner();
+                const isDismissed = sessionStorage.getItem('gmrit_notif_modal_dismissed');
+                if (!isDismissed) {
+                    this.showNotificationModal();
                 }
-            }, 5000);
+            }, 2500);
+        }
+    },
+
+    // Show the interactive pop-up modal
+    showNotificationModal() {
+        const overlay = document.getElementById('notif-permission-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+            }, 10);
+            lucide.createIcons();
+        }
+    },
+
+    // Close the pop-up modal
+    closeNotificationModal() {
+        const overlay = document.getElementById('notif-permission-overlay');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 400);
+        }
+        sessionStorage.setItem('gmrit_notif_modal_dismissed', 'true');
+    },
+
+    // Called when student clicks "Allow & Enable Notifications" from modal
+    async subscribeFromModal() {
+        const modalBtn = document.getElementById('modal-subscribe-btn');
+        if (modalBtn) {
+            modalBtn.disabled = true;
+            modalBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Enabling...`;
+        }
+
+        const success = await this.subscribeUser();
+        
+        if (modalBtn) {
+            modalBtn.disabled = false;
+            modalBtn.innerHTML = `<i data-lucide="bell" style="width: 16px;"></i> Allow &amp; Enable Notifications`;
+            lucide.createIcons();
+        }
+
+        if (success) {
+            this.closeNotificationModal();
+        }
+    },
+
+    // Triggered when user clicks the "Alerts" button in navbar
+    handleNavbarAlertsClick() {
+        if (Notification.permission === 'granted') {
+            alert('🔔 Instant Alerts are ACTIVE on this device!\n\nYou will automatically receive push notifications whenever new exam schedules, internal marks, or results are released.');
+        } else if (Notification.permission === 'denied') {
+            alert('⚠️ Notifications are currently blocked in your browser settings.\n\nPlease tap the lock/tune icon near your browser address bar and switch Notifications to "Allow".');
+        } else {
+            this.showNotificationModal();
         }
     },
 
@@ -74,28 +130,10 @@ const PushManagerHelper = {
         } else {
             notifBtn.setAttribute('title', 'Enable Push Notifications');
             if (notifBadge) {
-                notifBadge.className = 'badge bg-secondary';
+                notifBadge.className = 'badge bg-primary';
                 notifBadge.textContent = 'Enable';
             }
         }
-    },
-
-    // Show friendly opt-in banner
-    showNotificationBanner() {
-        const banner = document.getElementById('notif-optin-banner');
-        if (banner) {
-            banner.classList.remove('hidden');
-            lucide.createIcons();
-        }
-    },
-
-    // Dismiss banner
-    dismissNotificationBanner() {
-        const banner = document.getElementById('notif-optin-banner');
-        if (banner) {
-            banner.classList.add('hidden');
-        }
-        localStorage.setItem('gmrit_notif_prompted', 'true');
     },
 
     // Request permission and subscribe
@@ -112,7 +150,7 @@ const PushManagerHelper = {
             if (permission !== 'granted') {
                 console.log('[Push] Notification permission was:', permission);
                 if (permission === 'denied') {
-                    alert('Notifications are blocked in your browser settings. Please unblock notifications in site settings to receive updates.');
+                    alert('Notifications were blocked. Please enable them in your browser site settings to receive instant alerts.');
                 }
                 return false;
             }
@@ -133,7 +171,7 @@ const PushManagerHelper = {
             }
 
             // Send subscription to backend database
-            const userName = localStorage.getItem('gmrit_user_name') || 'GMRIT Student';
+            const userName = localStorage.getItem('calculator_user_name') || 'GMRIT Student';
             await fetch('/api/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -144,16 +182,8 @@ const PushManagerHelper = {
                 })
             });
 
-            this.dismissNotificationBanner();
             this.updateUiState();
-
-            // Display a success toast
-            if (typeof showToast === 'function') {
-                showToast('🎉 Notifications enabled! You will receive instant exam & result updates.');
-            } else {
-                console.log('Push notifications enabled successfully!');
-            }
-
+            alert('🎉 Alerts Enabled! You will now receive instant push notifications for GMRIT results and exam updates.');
             return true;
         } catch (error) {
             console.error('[Push] Failed to subscribe user:', error);
@@ -168,7 +198,7 @@ const PushManagerHelper = {
             const registration = await navigator.serviceWorker.ready;
             const subscription = await registration.pushManager.getSubscription();
             if (subscription) {
-                const userName = localStorage.getItem('gmrit_user_name') || 'GMRIT Student';
+                const userName = localStorage.getItem('calculator_user_name') || 'GMRIT Student';
                 fetch('/api/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -184,11 +214,62 @@ const PushManagerHelper = {
         }
     },
 
+    // Fast 1-click notification template loader
+    applyTemplate(type) {
+        const titleInput = document.getElementById('broadcast-title');
+        const bodyInput = document.getElementById('broadcast-body');
+        const urlInput = document.getElementById('broadcast-url');
+
+        if (type === 'mid2') {
+            if (titleInput) titleInput.value = '🎯 Mid-2 Results Declared!';
+            if (bodyInput) bodyInput.value = 'Mid-2 examination results are now live. Check your updated internal scores and standing!';
+            if (urlInput) urlInput.value = '/';
+        } else if (type === 'exam') {
+            if (titleInput) titleInput.value = '📅 Semester Exam Timetable Released';
+            if (bodyInput) bodyInput.value = 'The official SEE exam timetable has been announced. Open the Study Planner to prepare your schedule.';
+            if (urlInput) urlInput.value = '/#study-planner';
+        } else if (type === 'sgpa') {
+            if (titleInput) titleInput.value = '📊 Semester SGPA Results Published!';
+            if (bodyInput) bodyInput.value = 'Semester end grade results are available on the results portal. Check your CGPA and grade cards.';
+            if (urlInput) urlInput.value = '/#results';
+        } else if (type === 'welcome') {
+            if (titleInput) titleInput.value = '👋 Welcome to GMRIT Academic Calculator!';
+            if (bodyInput) bodyInput.value = 'You are now set up to receive instant push alerts for all GMRIT examinations and results.';
+            if (urlInput) urlInput.value = '/';
+        }
+        this.updatePreview();
+    },
+
+    // Test notification on this device
+    async sendTestNotificationToSelf() {
+        if (Notification.permission !== 'granted') {
+            const allow = confirm('Notifications are not enabled on this browser yet. Would you like to enable them now to test?');
+            if (allow) {
+                await this.subscribeUser();
+            }
+            return;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            registration.showNotification('🧪 Test Push Notification', {
+                body: 'Push notifications are working perfectly on this device! 🚀',
+                icon: '/icons/icon-512.png',
+                badge: '/icons/icon-512.png',
+                vibrate: [200, 100, 200],
+                data: { url: '/' }
+            });
+        } catch (e) {
+            alert('Could not show test notification: ' + e.message);
+        }
+    },
+
     // --- ADMIN BROADCAST FUNCTIONS ---
     async loadSubscriberStats() {
         try {
             const countEl = document.getElementById('admin-subscriber-count');
-            if (countEl) countEl.textContent = 'Loading...';
+            const listEl = document.getElementById('broadcast-subscribers-list');
+            if (countEl) countEl.textContent = '...';
 
             const res = await fetch('/api/subscribe');
             if (!res.ok) throw new Error('Failed to load stats');
@@ -197,11 +278,50 @@ const PushManagerHelper = {
             if (countEl) {
                 countEl.textContent = data.totalSubscribers || 0;
             }
+
+            if (listEl) {
+                if (!data.recentSubscribers || data.recentSubscribers.length === 0) {
+                    listEl.innerHTML = '<p class="text-center text-muted small py-3">No registered devices yet. Tap "Enable Alerts" on your phone to register your first device!</p>';
+                } else {
+                    let html = '<div class="list-group list-group-flush">';
+                    data.recentSubscribers.forEach(sub => {
+                        const isMobile = (sub.device || '').toLowerCase().includes('mobile') || (sub.device || '').toLowerCase().includes('android') || (sub.device || '').toLowerCase().includes('iphone');
+                        const iconName = isMobile ? 'smartphone' : 'laptop';
+                        const dateStr = sub.updatedAt ? new Date(sub.updatedAt).toLocaleString() : 'Recently';
+                        const devName = isMobile ? 'Mobile Device' : 'Desktop / Laptop';
+                        
+                        html += `
+                            <div class="list-group-item bg-transparent border-primary border-opacity-10 py-2 px-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="pwa-icon" style="width: 28px; height: 28px; background: rgba(56, 189, 248, 0.12); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                            <i data-lucide="${iconName}" style="width: 14px; color: var(--primary);"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold small" style="color: var(--text);">${sub.userName || 'Student'}</div>
+                                            <div class="text-muted extra-small" style="font-size: 0.65rem;">${devName} &bull; ${sub.ip || 'Local'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success bg-opacity-20 text-success" style="font-size: 0.6rem;">Active</span>
+                                        <div class="text-muted extra-small" style="font-size: 0.62rem;">${dateStr}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    listEl.innerHTML = html;
+                    lucide.createIcons();
+                }
+            }
             return data;
         } catch (e) {
             console.error('[Push Admin] Error loading subscriber stats:', e);
             const countEl = document.getElementById('admin-subscriber-count');
-            if (countEl) countEl.textContent = 'Error';
+            const listEl = document.getElementById('broadcast-subscribers-list');
+            if (countEl) countEl.textContent = '0';
+            if (listEl) listEl.innerHTML = '<p class="text-center text-muted small py-2">Tap "Refresh" to load device logs.</p>';
         }
     },
 
@@ -226,11 +346,11 @@ const PushManagerHelper = {
 
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Broadcasting...`;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Broadcasting to all devices...`;
         }
         if (resultDiv) {
             resultDiv.className = 'alert alert-info py-2 px-3 small';
-            resultDiv.textContent = 'Sending notification to devices across India...';
+            resultDiv.textContent = 'Broadcasting notification to devices...';
             resultDiv.classList.remove('hidden');
         }
 
@@ -251,7 +371,7 @@ const PushManagerHelper = {
             if (res.ok && data.success) {
                 if (resultDiv) {
                     resultDiv.className = 'alert alert-success py-2 px-3 small';
-                    resultDiv.innerHTML = `<strong>✅ Success!</strong> Delivered to <b>${data.sent}</b> device(s). (Failed/Expired: ${data.failed})`;
+                    resultDiv.innerHTML = `<strong>✅ Broadcast Sent!</strong> Delivered to <b>${data.sent}</b> device(s). (Failed/Expired: ${data.failed})`;
                 }
                 titleInput.value = '';
                 bodyInput.value = '';

@@ -44,22 +44,41 @@
         </div>
     </div>
 
-    <!-- Push Notification Opt-in Banner -->
-    <div id="notif-optin-banner" class="pwa-banner hidden no-print" style="background: linear-gradient(135deg, #0284c7, #4f46e5); border-bottom: 2px solid rgba(255,255,255,0.15);">
-        <div class="container d-flex align-items-center justify-content-between py-2 px-3">
-            <div class="d-flex align-items-center gap-2">
-                <div class="pwa-icon" style="background: rgba(255, 255, 255, 0.2);">
-                    <i data-lucide="bell" style="width: 18px; color: white;"></i>
-                </div>
-                <div class="small">
-                    <div class="fw-bold text-white">Get Instant Exam &amp; Result Alerts</div>
-                    <div class="text-white-50" style="font-size: 0.65rem;">Receive push notifications for GMRIT schedules, internal marks &amp; results</div>
+    <!-- Notification Permission Pop-up Modal -->
+    <div id="notif-permission-overlay" class="login-overlay hidden">
+        <div class="glass-card p-4 text-center login-modal" style="max-width: 440px; width: 92%;">
+            <div class="mb-3 position-relative d-inline-block">
+                <div style="width: 64px; height: 64px; background: rgba(56, 189, 248, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 2px solid var(--primary);">
+                    <i data-lucide="bell-ring" style="width: 32px; height: 32px; color: var(--primary);"></i>
                 </div>
             </div>
-            <div class="d-flex gap-2 align-items-center">
-                <button id="notif-enable-btn" class="btn btn-sm btn-light px-3 fw-bold shadow-sm" style="font-size: 0.75rem;" onclick="PushManagerHelper.subscribeUser()">Enable Alerts</button>
-                <button id="notif-close-btn" class="btn btn-sm btn-link text-white-50 p-0" onclick="PushManagerHelper.dismissNotificationBanner()">
-                    <i data-lucide="x" style="width: 18px;"></i>
+            
+            <h4 class="fw-bold mb-2">Enable Instant Alerts 🔔</h4>
+            <p class="text-muted small mb-3">
+                Never miss critical GMRIT academic updates! Get instant push notifications on your phone for:
+            </p>
+            
+            <div class="text-start mb-4 p-3 rounded-3" style="background: rgba(56, 189, 248, 0.05); border: 1px solid var(--glass-border); font-size: 0.78rem;">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i data-lucide="check-circle-2" style="width: 15px; color: #10b981; flex-shrink: 0;"></i>
+                    <span><b>Mid-1 &amp; Mid-2 Results</b> declared alerts</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i data-lucide="check-circle-2" style="width: 15px; color: #10b981; flex-shrink: 0;"></i>
+                    <span><b>Semester SGPA &amp; SEE Exam Timetables</b></span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <i data-lucide="check-circle-2" style="width: 15px; color: #10b981; flex-shrink: 0;"></i>
+                    <span><b>Lab Internals &amp; Autonomous Notifications</b></span>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+                <button class="btn btn-primary w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm" id="modal-subscribe-btn" onclick="PushManagerHelper.subscribeFromModal()">
+                    <i data-lucide="bell" style="width: 16px;"></i> Allow &amp; Enable Notifications
+                </button>
+                <button class="btn btn-sm btn-light py-2 text-muted border-0" onclick="PushManagerHelper.closeNotificationModal()">
+                    Maybe Later
                 </button>
             </div>
         </div>
@@ -118,56 +137,91 @@
             </div>
 
             <!-- Tab 3: Broadcast Notifications -->
-            <div id="broadcast-list-content" class="overflow-auto pe-2 hidden" style="flex: 1;">
-                <div class="p-3 rounded-3 mb-3" style="background: rgba(56, 189, 248, 0.08); border: 1px solid var(--glass-border);">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="small fw-bold text-uppercase" style="color: var(--primary);">Connected Subscriber Devices</div>
-                            <div class="text-muted extra-small" style="font-size: 0.72rem;">Students who installed the app &amp; granted push permission</div>
+            <div id="broadcast-list-content" class="overflow-auto pe-2 hidden" style="flex: 1; min-height: 0;">
+                <!-- Status & Device Count Card -->
+                <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center" style="background: rgba(56, 189, 248, 0.08); border: 1px solid var(--glass-border);">
+                    <div>
+                        <div class="small fw-bold text-uppercase d-flex align-items-center gap-2" style="color: var(--primary);">
+                            <i data-lucide="radio" style="width: 16px;"></i> Push Broadcast Center
                         </div>
-                        <div class="text-end">
-                            <div class="fw-bold fs-4" id="admin-subscriber-count" style="color: var(--primary);">...</div>
-                            <div class="extra-small text-muted" style="font-size: 0.65rem;">Active Devices</div>
-                        </div>
+                        <div class="text-muted extra-small" style="font-size: 0.72rem;">Delivers instant background push alerts to installed student devices</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold fs-4 mb-0" id="admin-subscriber-count" style="color: var(--primary);">...</div>
+                        <div class="extra-small text-muted" style="font-size: 0.65rem;">Active Devices</div>
                     </div>
                 </div>
 
                 <div id="broadcast-result" class="alert hidden py-2 px-3 small mb-3"></div>
 
+                <!-- Fast Template Presets -->
                 <div class="mb-3">
-                    <label class="form-label small fw-bold text-uppercase">Notification Title</label>
-                    <input type="text" id="broadcast-title" class="form-control form-control-sm" placeholder="e.g. 🎯 Mid-2 Results Released!" oninput="PushManagerHelper.updatePreview()">
+                    <label class="form-label small fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Quick Message Templates</label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-sm py-1 px-2 preset-chip" onclick="PushManagerHelper.applyTemplate('mid2')">🎯 Mid-2 Results</button>
+                        <button type="button" class="btn btn-sm py-1 px-2 preset-chip" onclick="PushManagerHelper.applyTemplate('exam')">📅 Exam Timetable</button>
+                        <button type="button" class="btn btn-sm py-1 px-2 preset-chip" onclick="PushManagerHelper.applyTemplate('sgpa')">📊 SGPA Update</button>
+                        <button type="button" class="btn btn-sm py-1 px-2 preset-chip" onclick="PushManagerHelper.applyTemplate('welcome')">👋 Welcome Alert</button>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-uppercase mb-1">Notification Title</label>
+                    <input type="text" id="broadcast-title" class="form-control form-control-sm" placeholder="e.g. 🎯 Mid-2 Results Declared!" oninput="PushManagerHelper.updatePreview()">
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-bold text-uppercase">Message Body</label>
-                    <textarea id="broadcast-body" class="form-control form-control-sm" rows="3" placeholder="e.g. Check your updated internal scores and predicted SGPA now." oninput="PushManagerHelper.updatePreview()"></textarea>
+                    <label class="form-label small fw-bold text-uppercase mb-1">Message Body</label>
+                    <textarea id="broadcast-body" class="form-control form-control-sm" rows="3" placeholder="e.g. Check your internal scores and updated SGPA standing now on GMRIT Calculator." oninput="PushManagerHelper.updatePreview()"></textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-bold text-uppercase">Click Action Target URL</label>
+                    <label class="form-label small fw-bold text-uppercase mb-1">Click Action Target URL</label>
                     <input type="text" id="broadcast-url" class="form-control form-control-sm" value="/" placeholder="/">
                     <div class="text-muted extra-small mt-1" style="font-size: 0.68rem;">URL opened when students click the push notification</div>
                 </div>
 
-                <!-- Mock Live Notification Preview -->
-                <div class="mb-3 p-3 rounded-3" style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border);">
-                    <div class="text-muted extra-small text-uppercase fw-bold mb-2">Live Notification Preview:</div>
-                    <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="background: var(--glass); border: 1px solid var(--glass-border);">
-                        <div class="pwa-icon" style="width: 32px; height: 32px; background: var(--primary); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                            <i data-lucide="bell" style="width: 16px; color: white;"></i>
+                <!-- Live Notification Preview -->
+                <div class="mb-3 p-3 rounded-3" style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--glass-border);">
+                    <div class="text-muted extra-small text-uppercase fw-bold mb-2 d-flex justify-content-between">
+                        <span>Live Notification Preview:</span>
+                        <span class="badge bg-primary bg-opacity-20 text-primary" style="font-size: 0.6rem;">Lockscreen / Desktop</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 p-2 rounded-3" style="background: var(--glass); border: 1px solid var(--glass-border);">
+                        <div class="pwa-icon" style="width: 36px; height: 36px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i data-lucide="bell" style="width: 18px; color: white;"></i>
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <div class="fw-bold small text-truncate" id="preview-notif-title">GMRIT Marks Calculator</div>
                             <div class="text-muted extra-small text-truncate" id="preview-notif-body">Notification message preview will appear here...</div>
                         </div>
-                        <span class="badge bg-primary bg-opacity-20 text-primary" style="font-size: 0.6rem;">Just Now</span>
+                        <span class="text-muted extra-small" style="font-size: 0.65rem;">Now</span>
                     </div>
                 </div>
 
-                <button class="btn btn-primary w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2" id="broadcast-submit-btn" onclick="PushManagerHelper.sendBroadcast()">
-                    <i data-lucide="send" style="width: 15px;"></i> Send Broadcast Notification
-                </button>
+                <!-- Actions -->
+                <div class="d-flex gap-2 mb-4">
+                    <button class="btn btn-primary flex-grow-1 fw-bold py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm" id="broadcast-submit-btn" onclick="PushManagerHelper.sendBroadcast()">
+                        <i data-lucide="send" style="width: 15px;"></i> Send Broadcast to ALL Students
+                    </button>
+                    <button class="btn btn-light fw-bold py-2 px-3 d-flex align-items-center justify-content-center gap-1" onclick="PushManagerHelper.sendTestNotificationToSelf()" title="Send test push to this device only">
+                        <i data-lucide="smartphone" style="width: 15px;"></i> Test
+                    </button>
+                </div>
+
+                <!-- Connected Subscriber Devices List -->
+                <div class="pt-3 border-top border-primary border-opacity-10">
+                    <div class="small fw-bold text-uppercase mb-2 d-flex align-items-center justify-content-between" style="letter-spacing: 0.5px; color: var(--primary);">
+                        <span>Registered Devices Log</span>
+                        <button class="btn btn-xs btn-link p-0 text-decoration-none" onclick="PushManagerHelper.loadSubscriberStats()" style="font-size: 0.7rem;">
+                            <i data-lucide="rotate-cw" style="width: 12px;"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="broadcast-subscribers-list">
+                        <p class="text-center text-muted small py-3">Loading registered devices...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -213,7 +267,7 @@
                 <span>GMRIT AR23</span>
             </a>
             <div class="d-flex align-items-center gap-2">
-                <button id="navbar-notif-btn" class="btn btn-sm btn-light rounded-pill px-3 py-1 d-flex align-items-center gap-2 shadow-sm" onclick="PushManagerHelper.subscribeUser()" title="Get Exam &amp; Result Alerts">
+                <button id="navbar-notif-btn" class="btn btn-sm btn-light rounded-pill px-3 py-1 d-flex align-items-center gap-2 shadow-sm" onclick="PushManagerHelper.handleNavbarAlertsClick()" title="Get Exam &amp; Result Alerts">
                     <i data-lucide="bell" style="width: 14px;"></i>
                     <span class="small fw-bold d-none d-sm-inline">Alerts</span>
                     <span class="badge bg-primary" id="notif-status-badge" style="font-size: 0.6rem;">On</span>
