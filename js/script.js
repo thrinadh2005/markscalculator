@@ -700,7 +700,7 @@ function renderVisitorList(globalLogs, localLogs) {
             html += `
                 <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="fw-bold text-white">${name}</div>
+                        <div class="fw-bold" style="color: var(--text);">${name}</div>
                         <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
                     </div>
                 </div>
@@ -711,7 +711,7 @@ function renderVisitorList(globalLogs, localLogs) {
 
     if (localLogs.length > 0) {
         html += `
-            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px;">
+            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
                 Device History
             </div>
             <div class="list-group list-group-flush">
@@ -721,9 +721,9 @@ function renderVisitorList(globalLogs, localLogs) {
             const date = item.date || item.timestamp || 'Unknown';
 
             html += `
-                <div class="list-group-item bg-transparent border-white border-opacity-10 py-3 px-0">
+                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="fw-bold text-muted">${name}</div>
+                        <div class="fw-bold" style="color: var(--text);">${name}</div>
                         <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
                     </div>
                 </div>
@@ -2604,7 +2604,7 @@ async function loadReviews() {
             html += `
                 <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="fw-bold text-white">${review.name || 'Anonymous'}</div>
+                        <div class="fw-bold" style="color: var(--text);">${review.name || 'Anonymous'}</div>
                         <div class="text-muted small" style="font-size: 0.65rem;">${new Date(review.timestamp).toLocaleString()}</div>
                     </div>
                     <div class="mb-2">${starsHtml}</div>

@@ -344,7 +344,7 @@ class ExamStudyPlanner {
                             <div class="small text-muted mb-1">Chapters:</div>
                             <div class="d-flex flex-wrap gap-1">
                                 ${exam.chapters.map(chapter => 
-                                    `<span class="badge bg-light text-dark">${chapter}</span>`
+                                    `<span class="badge bg-secondary bg-opacity-10 text-muted">${chapter}</span>`
                                 ).join('')}
                             </div>
                         </div>
@@ -1181,7 +1181,7 @@ class ExamStudyPlanner {
                         <div class="d-flex align-items-center mb-1">
                             <i data-lucide="coffee" style="width: 16px; height: 16px; color: #6b7280;" class="me-2"></i>
                             <span class="fw-bold">Break Time</span>
-                            <span class="badge bg-light text-dark ms-2">${(session.duration || 0).toFixed(1)}h</span>
+                            <span class="badge bg-secondary bg-opacity-10 text-muted ms-2">${(session.duration || 0).toFixed(1)}h</span>
                         </div>
                         <div class="text-muted small">
                             <i data-lucide="clock" style="width: 14px; height: 14px;" class="me-1"></i>
@@ -1516,7 +1516,7 @@ class ExamStudyPlanner {
             this.timer.timeLeft = 0; // stopwatch counts up
             if (badge) {
                 badge.textContent = 'Stopwatch';
-                badge.className = 'badge bg-info text-dark';
+                badge.className = 'badge bg-info';
             }
             if (status) status.textContent = 'Ready to track time';
         }

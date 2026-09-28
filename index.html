@@ -637,7 +637,7 @@
                             <p class="small text-uppercase fw-bold mb-0 opacity-75 letter-spacing-1" style="color: var(--primary);">Current Cumulative CGPA</p>
                             <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary" id="cgpa-status-pill" style="font-size: 0.65rem;">In Progress</span>
                         </div>
-                        <div class="summary-value mb-1" id="cgpa-result-val" style="color: var(--text);">0.00</div>
+                        <div class="summary-value mb-1" id="cgpa-result-val">0.00</div>
                         <p id="cgpa-class" class="small fw-bold mb-2 text-uppercase" style="color: var(--accent); min-height: 1.2rem;"></p>
                         
                         <!-- Progress towards 8-Sem Degree -->
@@ -655,44 +655,44 @@
                     <!-- Target Prediction Hero Card -->
                     <div class="summary-box mb-4 predictor-hero-card">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <p class="small text-uppercase fw-bold mb-0 opacity-75 letter-spacing-1">Target Required SGPA</p>
-                            <span class="badge rounded-pill" id="cgpa-remaining-count-pill" style="background: rgba(255,255,255,0.2); font-size: 0.65rem;">8 Sems Left</span>
+                            <p class="small text-uppercase fw-bold mb-0 opacity-75 letter-spacing-1" style="color: var(--primary);">Target Required SGPA</p>
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary fw-bold" id="cgpa-remaining-count-pill" style="font-size: 0.68rem;">8 Sems Left</span>
                         </div>
                         
                         <div class="d-flex align-items-baseline justify-content-center gap-1 my-2">
-                            <div class="summary-value" id="cgpa-req-sgpa-val">0.00</div>
-                            <span class="text-white-50 fw-bold" style="font-size: 1.1rem;">/ 10</span>
+                            <div class="summary-value mb-0" id="cgpa-req-sgpa-val">0.00</div>
+                            <span class="text-muted fw-bold" style="font-size: 1.1rem;">/ 10</span>
                         </div>
                         
                         <!-- Dynamic Feasibility Banner -->
                         <div id="cgpa-feasibility-banner" class="feasibility-banner my-3 p-2 rounded-3 text-center">
                             <div class="fw-bold small" id="cgpa-feasibility-title">Enter Your SGPAs</div>
-                            <div class="extra-small opacity-80" id="cgpa-feasibility-desc" style="font-size: 0.7rem;">Fill in your completed semesters on the left</div>
+                            <div class="extra-small" id="cgpa-feasibility-desc" style="font-size: 0.72rem; opacity: 0.9;">Fill in your completed semesters on the left</div>
                         </div>
 
                         <!-- Key Academic Stats Grid -->
-                        <div class="row g-2 text-start pt-2 border-top border-white border-opacity-10 mb-3" style="font-size: 0.75rem;">
+                        <div class="row g-2 text-start pt-2 border-top border-primary border-opacity-10 mb-3" style="font-size: 0.75rem;">
                             <div class="col-6">
-                                <div class="p-2 rounded bg-white bg-opacity-10">
-                                    <div class="text-white-50 extra-small">Credits Earned</div>
-                                    <div class="fw-bold text-white fs-6" id="cgpa-credits-val">0 / 160</div>
+                                <div class="pred-mini-stat">
+                                    <div class="text-muted extra-small mb-1">Credits Earned</div>
+                                    <div class="fw-bold fs-6" id="cgpa-credits-val" style="color: var(--text);">0 / 160</div>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="p-2 rounded bg-white bg-opacity-10">
-                                    <div class="text-white-50 extra-small">Remaining Credits</div>
-                                    <div class="fw-bold text-white fs-6" id="cgpa-rem-credits-val">160</div>
+                                <div class="pred-mini-stat">
+                                    <div class="text-muted extra-small mb-1">Remaining Credits</div>
+                                    <div class="fw-bold fs-6" id="cgpa-rem-credits-val" style="color: var(--text);">160</div>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="p-2 rounded bg-white bg-opacity-10">
-                                    <div class="text-white-50 extra-small">Max Possible CGPA</div>
-                                    <div class="fw-bold text-info fs-6" id="cgpa-max-cgpa-val">10.00</div>
+                                <div class="pred-mini-stat">
+                                    <div class="text-muted extra-small mb-1">Max Possible CGPA</div>
+                                    <div class="fw-bold text-primary fs-6" id="cgpa-max-cgpa-val">10.00</div>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="p-2 rounded bg-white bg-opacity-10">
-                                    <div class="text-white-50 extra-small">Min Pass CGPA</div>
+                                <div class="pred-mini-stat">
+                                    <div class="text-muted extra-small mb-1">Min Pass CGPA</div>
                                     <div class="fw-bold text-warning fs-6" id="cgpa-min-cgpa-val">5.00</div>
                                 </div>
                             </div>
@@ -700,10 +700,10 @@
 
                         <!-- Actions: Print & Copy -->
                         <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-light no-print flex-grow-1 fw-bold rounded-3 py-2 d-flex align-items-center justify-content-center gap-1" onclick="window.print()">
+                            <button class="btn btn-sm btn-primary no-print flex-grow-1 fw-bold rounded-3 py-2 d-flex align-items-center justify-content-center gap-1 shadow-sm" onclick="window.print()">
                                 <i data-lucide="printer" style="width: 14px;"></i> Print Report
                             </button>
-                            <button class="btn btn-sm btn-outline-light no-print fw-bold rounded-3 py-2 px-3 d-flex align-items-center justify-content-center" onclick="copyUnifiedCgpaSummary()" title="Copy prediction report to clipboard">
+                            <button class="btn btn-sm btn-outline-primary no-print fw-bold rounded-3 py-2 px-3 d-flex align-items-center justify-content-center" onclick="copyUnifiedCgpaSummary()" title="Copy prediction report to clipboard">
                                 <i data-lucide="copy" id="cgpa-copy-icon" style="width: 14px;"></i>
                             </button>
                         </div>
