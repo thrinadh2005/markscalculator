@@ -561,7 +561,7 @@ function init() {
     if (savedSem) document.getElementById('semester-select').value = savedSem;
     
     loadSemesterSubjects();
-    updateCgpaInputs();
+    initUnifiedCgpa();
     setupInputValidation();
     updateVisitorCount();
     
@@ -974,7 +974,7 @@ function showTab(tabName) {
     
     // Initialize tab-specific functionality
     if (tabName === 'cgpa') {
-        updateCgpaInputs();
+        initUnifiedCgpa();
     }
 
     // Auto-load results iframe when tab opens
@@ -1329,79 +1329,662 @@ function updateSgpa() {
     localStorage.setItem(`grades_${branch}_${sem}`, JSON.stringify(grades));
 }
 
-// CGPA Calculator
-function updateCgpaInputs() {
-    const branchSelect = document.getElementById('cgpa-branch-select');
-    if (!branchSelect) return;
+// ========================================================
+// UNIFIED CGPA CALCULATOR & TARGET PREDICTOR ENGINE
+// ========================================================
+
+let whatIfOverrides = {}; // stores custom simulated values for uncompleted semesters
+
+function getBranchSemesterCredits(branch, sem) {
+    if (branch === 'UNIFORM') return 20.0;
     
-    let branch = branchSelect.value;
-    
-    // Normalize branch name to match syllabus keys
-    if (branch === 'cse') branch = 'CSE';
-    if (branch === 'ece') branch = 'ECE';
-    if (branch === 'eee') branch = 'EEE';
-    if (branch === 'mech') branch = 'MECH';
-    if (branch === 'civil') branch = 'CIVIL';
-    if (branch === 'it') branch = 'IT';
-    if (branch === 'aiml') branch = 'AI&ML';
-    if (branch === 'aids') branch = 'AI&DS';
-    
-    const container = document.getElementById('cgpa-inputs');
-    container.innerHTML = '';
-    
-    for (let i = 1; i <= 8; i++) {
-        let credits = 20; // Default
-        if (syllabus[branch] && syllabus[branch][i]) {
-            credits = syllabus[branch][i].reduce((sum, sub) => sum + (sub.credits || 0), 0);
+    // Normalize branch key
+    let bKey = branch;
+    if (bKey === 'cse') bKey = 'CSE';
+    if (bKey === 'ece') bKey = 'ECE';
+    if (bKey === 'eee') bKey = 'EEE';
+    if (bKey === 'mech') bKey = 'MECH';
+    if (bKey === 'civil') bKey = 'CIVIL';
+    if (bKey === 'it') bKey = 'IT';
+    if (bKey === 'aiml') bKey = 'AI&ML';
+    if (bKey === 'aids') bKey = 'AI&DS';
+
+    if (syllabus[bKey] && syllabus[bKey][sem]) {
+        return syllabus[bKey][sem].reduce((sum, sub) => sum + (sub.credits || 0), 0);
+    }
+    return 20.0; // Standard fallback
+}
+
+function onCgpaBranchChange() {
+    renderUnifiedCgpaSemesterCards();
+    calculateUnifiedCgpa();
+}
+
+function onCompletedCountSelectChange(val) {
+    if (val === 'auto') {
+        calculateUnifiedCgpa();
+        return;
+    }
+    const count = parseInt(val);
+    if (!isNaN(count)) {
+        // Clear semesters beyond count so they become forecasted
+        for (let i = count + 1; i <= 8; i++) {
+            const inp = document.getElementById(`sem-sgpa-input-${i}`);
+            if (inp) inp.value = '';
         }
-        
+        // Focus first empty input among 1..count
+        for (let i = 1; i <= count; i++) {
+            const inp = document.getElementById(`sem-sgpa-input-${i}`);
+            if (inp && (!inp.value || parseFloat(inp.value) === 0)) {
+                inp.focus();
+                break;
+            }
+        }
+    }
+    calculateUnifiedCgpa();
+}
+
+function setUnifiedTargetPreset(targetVal) {
+    const input = document.getElementById('cgpa-target-input');
+    if (input) {
+        input.value = parseFloat(targetVal).toFixed(2);
+    }
+    
+    // Update active state on preset chips
+    const chips = document.querySelectorAll('.preset-chip');
+    chips.forEach(chip => {
+        if (chip.textContent.includes(targetVal.toString())) {
+            chip.classList.add('active');
+        } else {
+            chip.classList.remove('active');
+        }
+    });
+    
+    calculateUnifiedCgpa();
+}
+
+function initUnifiedCgpa() {
+    renderUnifiedCgpaSemesterCards();
+    
+    // Try restoring saved state from localStorage
+    const savedState = JSON.parse(localStorage.getItem('gmrit_unified_cgpa_state') || 'null');
+    if (savedState) {
+        if (savedState.branch && document.getElementById('cgpa-branch-select')) {
+            document.getElementById('cgpa-branch-select').value = savedState.branch;
+        }
+        if (savedState.target && document.getElementById('cgpa-target-input')) {
+            document.getElementById('cgpa-target-input').value = savedState.target;
+        }
+        if (savedState.sgpas && Array.isArray(savedState.sgpas)) {
+            savedState.sgpas.forEach((val, index) => {
+                const inp = document.getElementById(`sem-sgpa-input-${index + 1}`);
+                if (inp && val !== null && val !== undefined && val !== '') {
+                    inp.value = val;
+                }
+            });
+        }
+    }
+    
+    calculateUnifiedCgpa();
+}
+
+function renderUnifiedCgpaSemesterCards() {
+    const container = document.getElementById('cgpa-semester-cards');
+    if (!container) return;
+
+    const branchSelect = document.getElementById('cgpa-branch-select');
+    const branch = branchSelect ? branchSelect.value : 'CSE';
+    
+    // Preserve current input values if re-rendering
+    const currentValues = {};
+    for (let i = 1; i <= 8; i++) {
+        const inp = document.getElementById(`sem-sgpa-input-${i}`);
+        if (inp && inp.value !== '') {
+            currentValues[i] = inp.value;
+        }
+    }
+
+    container.innerHTML = '';
+
+    for (let i = 1; i <= 8; i++) {
+        const credits = getBranchSemesterCredits(branch, i);
+        const savedVal = currentValues[i] || '';
+
         const div = document.createElement('div');
         div.className = 'col';
         div.innerHTML = `
-            <div class="p-3 glass-card bg-opacity-10 cgpa-input-card" style="background: rgba(56, 189, 248, 0.05);">
-                <label class="form-label mb-1 fw-bold cgpa-label text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Semester ${i}</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-transparent border-end-0 cgpa-input-label opacity-75" style="font-size: 0.7rem; border-color: var(--glass-border);">SGPA</span>
-                    <input type="number" step="0.01" class="form-control sem-sgpa-input border-start-0 cgpa-input-field" data-credits="${credits}" placeholder="0.00" oninput="updateCgpa()" style="border-color: var(--glass-border);">
+            <div class="p-3 pred-sem-card h-100" id="sem-card-box-${i}">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label mb-0 fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Semester ${i}</label>
+                    <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 0.62rem;">${credits} Cr</span>
                 </div>
-                <div class="mt-2 cgpa-credits fw-bold" style="font-size: 0.65rem; opacity: 0.9; letter-spacing: 0.5px;">CREDITS: ${credits}</div>
+                <div class="input-group input-group-sm my-2">
+                    <span class="input-group-text bg-transparent border-end-0 opacity-75" style="font-size: 0.7rem; border-color: var(--glass-border);">SGPA</span>
+                    <input type="number" step="0.01" min="0" max="10" 
+                           id="sem-sgpa-input-${i}" 
+                           class="form-control fw-bold border-start-0 sem-sgpa-input-unified" 
+                           data-sem="${i}" 
+                           data-credits="${credits}" 
+                           value="${savedVal}" 
+                           placeholder="0.00" 
+                           oninput="calculateUnifiedCgpa()" 
+                           style="border-color: var(--glass-border);">
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                    <span class="text-muted extra-small" style="font-size: 0.65rem;" id="sem-status-text-${i}">Forecasted</span>
+                    <span class="pred-sem-grade-badge" id="sem-grade-badge-${i}"></span>
+                </div>
             </div>
         `;
         container.appendChild(div);
     }
-    
-    // Initialize CGPA calculation
-    updateCgpa();
 }
 
-function loadCgpaInputs() {
-    // This function is now replaced by updateCgpaInputs
-    updateCgpaInputs();
-}
+function calculateUnifiedCgpa() {
+    const branchSelect = document.getElementById('cgpa-branch-select');
+    const branch = branchSelect ? branchSelect.value : 'CSE';
 
-function updateCgpa() {
-    const inputs = document.querySelectorAll('.sem-sgpa-input');
-    let totalCredits = 0;
-    let totalPoints = 0;
+    const targetInput = document.getElementById('cgpa-target-input');
+    let targetCgpa = parseFloat(targetInput ? targetInput.value : 8.50) || 8.50;
+    if (targetCgpa > 10.0) targetCgpa = 10.0;
+    if (targetCgpa < 0.0) targetCgpa = 0.0;
 
-    inputs.forEach(input => {
-        const sgpa = parseFloat(input.value) || 0;
-        const credits = parseFloat(input.dataset.credits);
-        if (sgpa > 0) {
-            totalCredits += credits;
-            totalPoints += (sgpa * credits);
+    let totalDegreeCredits = 0;
+    let completedCredits = 0;
+    let completedQualityPoints = 0;
+    let completedCount = 0;
+    const completedSems = [];
+    const remainingSems = [];
+    const savedSgpas = [];
+
+    for (let i = 1; i <= 8; i++) {
+        const credits = getBranchSemesterCredits(branch, i);
+        totalDegreeCredits += credits;
+
+        const input = document.getElementById(`sem-sgpa-input-${i}`);
+        const statusText = document.getElementById(`sem-status-text-${i}`);
+        const gradeBadge = document.getElementById(`sem-grade-badge-${i}`);
+        const cardBox = document.getElementById(`sem-card-box-${i}`);
+
+        let valStr = input ? input.value.trim() : '';
+        let sgpa = parseFloat(valStr);
+        savedSgpas.push(valStr);
+
+        if (!isNaN(sgpa) && sgpa > 0) {
+            // Clamp if entered > 10
+            if (sgpa > 10) {
+                sgpa = 10;
+                input.value = "10.00";
+            }
+            completedCount++;
+            completedCredits += credits;
+            completedQualityPoints += (sgpa * credits);
+            completedSems.push({ sem: i, sgpa, credits });
+
+            if (statusText) statusText.textContent = "Completed";
+            if (cardBox) {
+                cardBox.style.borderColor = 'var(--primary)';
+                cardBox.style.background = 'rgba(56, 189, 248, 0.06)';
+            }
+            if (gradeBadge) {
+                gradeBadge.style.display = 'inline-block';
+                if (sgpa >= 9.0) {
+                    gradeBadge.textContent = 'Outstanding (S)';
+                    gradeBadge.style.background = '#dcfce7';
+                    gradeBadge.style.color = '#16a34a';
+                } else if (sgpa >= 8.0) {
+                    gradeBadge.textContent = 'Excellent (A)';
+                    gradeBadge.style.background = '#dbeafe';
+                    gradeBadge.style.color = '#2563eb';
+                } else if (sgpa >= 7.0) {
+                    gradeBadge.textContent = 'Very Good (B)';
+                    gradeBadge.style.background = '#e9d5ff';
+                    gradeBadge.style.color = '#7c3aed';
+                } else if (sgpa >= 6.0) {
+                    gradeBadge.textContent = 'Good (C)';
+                    gradeBadge.style.background = '#cffafe';
+                    gradeBadge.style.color = '#0891b2';
+                } else if (sgpa >= 5.0) {
+                    gradeBadge.textContent = 'Average (D)';
+                    gradeBadge.style.background = '#fef3c7';
+                    gradeBadge.style.color = '#d97706';
+                } else {
+                    gradeBadge.textContent = 'Pass (E)';
+                    gradeBadge.style.background = '#fee2e2';
+                    gradeBadge.style.color = '#dc2626';
+                }
+            }
+        } else {
+            remainingSems.push({ sem: i, credits });
+            if (statusText) statusText.textContent = "Forecasted";
+            if (gradeBadge) {
+                gradeBadge.style.display = 'none';
+            }
+            if (cardBox) {
+                cardBox.style.borderColor = 'var(--glass-border)';
+                cardBox.style.background = 'var(--glass)';
+            }
+        }
+    }
+
+    // Current CGPA
+    const currentCgpa = completedCredits > 0 ? (completedQualityPoints / completedCredits) : 0.0;
+    const currentCgpaEl = document.getElementById('cgpa-result-val');
+    if (currentCgpaEl) {
+        currentCgpaEl.textContent = completedCredits > 0 ? currentCgpa.toFixed(2) : "0.00";
+    }
+
+    // Degree classification for current completed CGPA
+    const classLabel = document.getElementById('cgpa-class');
+    if (classLabel) {
+        if (completedCredits === 0) {
+            classLabel.textContent = "Enter SGPAs to calculate";
+        } else if (currentCgpa >= 7.75) {
+            classLabel.textContent = "1st Class with Distinction";
+        } else if (currentCgpa >= 6.75) {
+            classLabel.textContent = "First Class";
+        } else if (currentCgpa >= 5.75) {
+            classLabel.textContent = "Second Class";
+        } else if (currentCgpa >= 4.0) {
+            classLabel.textContent = "Pass Class";
+        } else {
+            classLabel.textContent = "Below Pass Class";
+        }
+    }
+
+    // Degree progress
+    const progressPercent = totalDegreeCredits > 0 ? Math.round((completedCredits / totalDegreeCredits) * 100) : 0;
+    const progressPercentEl = document.getElementById('cgpa-progress-percent');
+    if (progressPercentEl) progressPercentEl.textContent = `${progressPercent}% Completed`;
+    const creditsBar = document.getElementById('cgpa-credits-bar');
+    if (creditsBar) creditsBar.style.width = `${progressPercent}%`;
+
+    // Badges & counts
+    const countBadge = document.getElementById('cgpa-completed-count-badge');
+    if (countBadge) {
+        countBadge.textContent = `${completedCount} of 8 Semesters Completed`;
+    }
+    const remCountPill = document.getElementById('cgpa-remaining-count-pill');
+    if (remCountPill) {
+        remCountPill.textContent = `${remainingSems.length} Sems Remaining`;
+    }
+
+    const creditsVal = document.getElementById('cgpa-credits-val');
+    if (creditsVal) creditsVal.textContent = `${completedCredits.toFixed(1)} / ${totalDegreeCredits.toFixed(1)}`;
+    const remCreditsVal = document.getElementById('cgpa-rem-credits-val');
+    const remainingCredits = totalDegreeCredits - completedCredits;
+    if (remCreditsVal) remCreditsVal.textContent = `${remainingCredits.toFixed(1)} Cr`;
+
+    // Max & Min achievable CGPA
+    const maxPossibleCgpa = totalDegreeCredits > 0 
+        ? ((completedQualityPoints + (10.0 * remainingCredits)) / totalDegreeCredits) 
+        : 10.0;
+    const minPassCgpa = totalDegreeCredits > 0 
+        ? ((completedQualityPoints + (5.0 * remainingCredits)) / totalDegreeCredits) 
+        : 5.0;
+
+    const maxCgpaEl = document.getElementById('cgpa-max-cgpa-val');
+    if (maxCgpaEl) maxCgpaEl.textContent = maxPossibleCgpa.toFixed(2);
+    const minCgpaEl = document.getElementById('cgpa-min-cgpa-val');
+    if (minCgpaEl) minCgpaEl.textContent = minPassCgpa.toFixed(2);
+
+    // Target Prediction Math
+    const totalPointsNeeded = targetCgpa * totalDegreeCredits;
+    const remainingPointsNeeded = totalPointsNeeded - completedQualityPoints;
+
+    // What-if simulation calculations
+    let overrideQualityPoints = 0;
+    let overrideCredits = 0;
+    let overriddenCount = 0;
+
+    remainingSems.forEach(r => {
+        if (whatIfOverrides[r.sem] !== undefined && whatIfOverrides[r.sem] !== null) {
+            const ovVal = parseFloat(whatIfOverrides[r.sem]);
+            overrideQualityPoints += (ovVal * r.credits);
+            overrideCredits += r.credits;
+            overriddenCount++;
         }
     });
 
-    const cgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
-    document.getElementById('cgpa-result-val').textContent = cgpa;
+    const unresolvedCredits = remainingCredits - overrideCredits;
+    const unresolvedPointsNeeded = remainingPointsNeeded - overrideQualityPoints;
 
-    const classLabel = document.getElementById('cgpa-class');
-    if (cgpa >= 7.75) classLabel.textContent = "1st Class with Distinction";
-    else if (cgpa >= 6.75) classLabel.textContent = "First Class";
-    else if (cgpa >= 5.75) classLabel.textContent = "Second Class";
-    else if (cgpa >= 4.0) classLabel.textContent = "Pass Class";
-    else classLabel.textContent = "";
+    let requiredSgpa = 0;
+    if (remainingCredits > 0) {
+        if (unresolvedCredits > 0) {
+            requiredSgpa = unresolvedPointsNeeded / unresolvedCredits;
+        } else {
+            // All remaining semesters have custom what-if overrides!
+            const simulatedFinalCgpa = (completedQualityPoints + overrideQualityPoints) / totalDegreeCredits;
+            requiredSgpa = simulatedFinalCgpa;
+        }
+    }
+
+    const reqSgpaValEl = document.getElementById('cgpa-req-sgpa-val');
+    if (reqSgpaValEl) {
+        if (remainingSems.length === 0) {
+            reqSgpaValEl.textContent = currentCgpa.toFixed(2);
+        } else if (requiredSgpa <= 0) {
+            reqSgpaValEl.textContent = "0.00";
+        } else {
+            reqSgpaValEl.textContent = requiredSgpa.toFixed(2);
+        }
+    }
+
+    // Update Feasibility Banner
+    updateUnifiedFeasibilityBanner(completedCount, remainingSems.length, requiredSgpa, targetCgpa, currentCgpa, maxPossibleCgpa);
+
+    // Render Remaining Roadmap Cards
+    renderUnifiedRemainingCards(remainingSems, requiredSgpa);
+
+    // Render Milestones Table
+    renderUnifiedMilestones(completedQualityPoints, completedCredits, remainingCredits, totalDegreeCredits, maxPossibleCgpa, targetCgpa);
+
+    // Render Grade Advice
+    renderUnifiedGradeAdvice(requiredSgpa, remainingSems.length, targetCgpa, maxPossibleCgpa);
+
+    // Show/hide Reset Custom Sliders button
+    const resetOverridesBtn = document.getElementById('cgpa-reset-overrides-btn');
+    if (resetOverridesBtn) {
+        resetOverridesBtn.style.display = overriddenCount > 0 ? 'inline-flex' : 'none';
+    }
+
+    // Save state to localStorage
+    localStorage.setItem('gmrit_unified_cgpa_state', JSON.stringify({
+        branch,
+        target: targetCgpa,
+        sgpas: savedSgpas
+    }));
+
+    lucide.createIcons();
+}
+
+function updateUnifiedFeasibilityBanner(completedCount, remainingCount, requiredSgpa, targetCgpa, currentCgpa, maxPossibleCgpa) {
+    const banner = document.getElementById('cgpa-feasibility-banner');
+    const titleEl = document.getElementById('cgpa-feasibility-title');
+    const descEl = document.getElementById('cgpa-feasibility-desc');
+    const statusPill = document.getElementById('cgpa-status-pill');
+
+    if (!banner || !titleEl || !descEl) return;
+
+    banner.className = 'feasibility-banner my-3 p-2 rounded-3 text-center';
+
+    if (completedCount === 8) {
+        if (currentCgpa >= targetCgpa) {
+            banner.classList.add('status-secured');
+            titleEl.innerHTML = `🏆 Target Achieved (${currentCgpa.toFixed(2)} CGPA)`;
+            descEl.textContent = `Congratulations! You have completed all 8 semesters achieving your goal!`;
+        } else {
+            banner.classList.add('status-moderate');
+            titleEl.innerHTML = `🎓 8 Semesters Completed (${currentCgpa.toFixed(2)} CGPA)`;
+            descEl.textContent = `All 8 semesters recorded. Final degree CGPA: ${currentCgpa.toFixed(2)}.`;
+        }
+        if (statusPill) statusPill.textContent = "Graduated";
+        return;
+    }
+
+    if (completedCount === 0) {
+        banner.classList.add('status-moderate');
+        titleEl.textContent = `Target: ${targetCgpa.toFixed(2)} Required`;
+        descEl.textContent = `Maintain an average SGPA of ${targetCgpa.toFixed(2)} across all 8 semesters.`;
+        if (statusPill) statusPill.textContent = "Starting Degree";
+        return;
+    }
+
+    if (statusPill) statusPill.textContent = `${completedCount} Sems Done`;
+
+    if (requiredSgpa <= 0) {
+        banner.classList.add('status-secured');
+        titleEl.innerHTML = `🏆 Target Already Guaranteed!`;
+        descEl.textContent = `Your strong standing locks in ${targetCgpa.toFixed(2)} CGPA even with minimum pass marks!`;
+    } else if (requiredSgpa <= 5.0) {
+        banner.classList.add('status-easy');
+        titleEl.innerHTML = `🟢 Target Easily Achievable (${requiredSgpa.toFixed(2)} SGPA)`;
+        descEl.textContent = `You only need a minimum pass SGPA of ${requiredSgpa.toFixed(2)} in remaining semesters.`;
+    } else if (requiredSgpa <= 7.5) {
+        banner.classList.add('status-easy');
+        titleEl.innerHTML = `🟢 Easily Achievable (${requiredSgpa.toFixed(2)} SGPA)`;
+        descEl.textContent = `Maintain steady consistency with ~${requiredSgpa.toFixed(2)} SGPA in upcoming semesters.`;
+    } else if (requiredSgpa <= 8.5) {
+        banner.classList.add('status-moderate');
+        titleEl.innerHTML = `🔵 Moderate Effort Required (${requiredSgpa.toFixed(2)} SGPA)`;
+        descEl.textContent = `Aim for ~${requiredSgpa.toFixed(2)} SGPA by scoring consistent A and B grades in all subjects.`;
+    } else if (requiredSgpa <= 9.5) {
+        banner.classList.add('status-hard');
+        titleEl.innerHTML = `🟡 High Focus Required (${requiredSgpa.toFixed(2)} SGPA)`;
+        descEl.textContent = `Target ~${requiredSgpa.toFixed(2)} SGPA. Requires predominantly S (10) and A (9) grades.`;
+    } else if (requiredSgpa <= 10.0) {
+        banner.classList.add('status-extreme');
+        titleEl.innerHTML = `🟠 Maximum Push Needed (${requiredSgpa.toFixed(2)} SGPA)`;
+        descEl.textContent = `Needs top-tier performance (~${requiredSgpa.toFixed(2)} SGPA) across all remaining subjects.`;
+    } else {
+        banner.classList.add('status-impossible');
+        titleEl.innerHTML = `🔴 Target Out of Reach (Max: ${maxPossibleCgpa.toFixed(2)})`;
+        descEl.textContent = `Even with 10.0 SGPA in remaining sems, highest CGPA is ${maxPossibleCgpa.toFixed(2)}. Adjust target accordingly.`;
+    }
+}
+
+function renderUnifiedRemainingCards(remainingSems, requiredSgpa) {
+    const container = document.getElementById('cgpa-remaining-cards');
+    const forecastSection = document.getElementById('cgpa-remaining-forecast-section');
+
+    if (!container) return;
+
+    if (remainingSems.length === 0) {
+        if (forecastSection) forecastSection.style.display = 'none';
+        container.innerHTML = '';
+        return;
+    }
+
+    if (forecastSection) forecastSection.style.display = 'block';
+    container.innerHTML = '';
+
+    remainingSems.forEach(item => {
+        const isOverridden = whatIfOverrides[item.sem] !== undefined && whatIfOverrides[item.sem] !== null;
+        const currentVal = isOverridden ? parseFloat(whatIfOverrides[item.sem]) : (requiredSgpa > 0 ? (requiredSgpa > 10 ? 10.0 : requiredSgpa) : 0);
+        const displayReq = isOverridden 
+            ? `<span class="badge bg-warning text-dark px-2 py-1">Custom: ${currentVal.toFixed(2)}</span>` 
+            : (requiredSgpa > 10.0 ? `<span class="text-danger fw-bold fs-6">&gt; 10.0 (Unachievable)</span>` : (requiredSgpa <= 0 ? `<span class="text-success fw-bold fs-6">0.00 (Secured)</span>` : `<span class="pred-req-value">${requiredSgpa.toFixed(2)}</span>`));
+
+        const card = document.createElement('div');
+        card.className = 'col';
+        card.innerHTML = `
+            <div class="pred-sem-card remaining ${isOverridden ? 'is-customized' : ''} p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold text-uppercase" style="font-size: 0.78rem;">Semester ${item.sem} <span class="badge bg-secondary bg-opacity-25 text-muted" style="font-size: 0.6rem;">Upcoming</span></span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 0.65rem;">${item.credits} Credits</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-baseline my-2">
+                    <span class="text-muted extra-small">Forecasted SGPA:</span>
+                    <div>${displayReq}</div>
+                </div>
+
+                <!-- What-if slider -->
+                <div class="mt-2 pt-2 border-top border-primary border-opacity-10">
+                    <div class="d-flex justify-content-between extra-small text-muted mb-1" style="font-size: 0.68rem;">
+                        <span><i data-lucide="sliders" style="width: 10px;"></i> What-If Slider:</span>
+                        <span class="fw-bold" id="slider-val-sem-${item.sem}">${currentVal.toFixed(2)} SGPA</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="range" class="form-range what-if-slider flex-grow-1" 
+                               min="4.0" max="10.0" step="0.05" 
+                               value="${currentVal.toFixed(2)}" 
+                               oninput="onWhatIfSliderChange(${item.sem}, this.value)">
+                        ${isOverridden ? `<button class="btn btn-xs btn-outline-warning py-0 px-1" onclick="clearWhatIfOverride(${item.sem})" title="Reset to auto required SGPA"><i data-lucide="x" style="width: 10px;"></i></button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function onWhatIfSliderChange(sem, value) {
+    whatIfOverrides[sem] = parseFloat(value);
+    const label = document.getElementById(`slider-val-sem-${sem}`);
+    if (label) label.textContent = `${parseFloat(value).toFixed(2)} SGPA`;
+    calculateUnifiedCgpa();
+}
+
+function clearWhatIfOverride(sem) {
+    delete whatIfOverrides[sem];
+    calculateUnifiedCgpa();
+}
+
+function resetUnifiedOverrides() {
+    whatIfOverrides = {};
+    calculateUnifiedCgpa();
+}
+
+function renderUnifiedMilestones(completedPoints, completedCredits, remainingCredits, totalCredits, maxPossibleCgpa, targetCgpa) {
+    const tbody = document.getElementById('cgpa-milestones-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    const milestones = [
+        { goal: 5.75, name: "Second Class" },
+        { goal: 6.75, name: "First Class" },
+        { goal: 7.75, name: "Distinction (1st Class)" },
+        { goal: 8.00, name: "8.00 CGPA" },
+        { goal: 8.50, name: "8.50 CGPA" },
+        { goal: 9.00, name: "9.00 CGPA" },
+        { goal: 9.50, name: "9.50 CGPA" }
+    ];
+
+    milestones.forEach(m => {
+        let reqSgpaDisplay = '';
+        if (remainingCredits === 0) {
+            const currentCgpa = completedCredits > 0 ? (completedPoints / completedCredits) : 0;
+            reqSgpaDisplay = currentCgpa >= m.goal 
+                ? `<span class="badge bg-success bg-opacity-10 text-success">Achieved</span>` 
+                : `<span class="text-muted">N/A</span>`;
+        } else {
+            const neededTotalPoints = m.goal * totalCredits;
+            const neededRemPoints = neededTotalPoints - completedPoints;
+            const req = neededRemPoints / remainingCredits;
+
+            if (req <= 5.0) {
+                reqSgpaDisplay = `<span class="badge bg-success bg-opacity-10 text-success">Secured (Pass)</span>`;
+            } else if (req <= 10.0) {
+                reqSgpaDisplay = `<span class="fw-bold ${req > 9.0 ? 'text-warning' : 'text-primary'}">${req.toFixed(2)}</span>`;
+            } else {
+                reqSgpaDisplay = `<span class="text-danger" style="font-size: 0.72rem;">Out of Reach</span>`;
+            }
+        }
+
+        const isTarget = Math.abs(m.goal - targetCgpa) < 0.01;
+        const tr = document.createElement('tr');
+        if (isTarget) tr.className = 'target-row';
+
+        tr.innerHTML = `
+            <td class="fw-bold">${m.goal.toFixed(2)} ${isTarget ? '<span class="badge bg-primary ms-1" style="font-size: 0.55rem;">YOUR TARGET</span>' : ''}</td>
+            <td class="text-muted">${m.name}</td>
+            <td class="text-end">${reqSgpaDisplay}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderUnifiedGradeAdvice(requiredSgpa, remainingCount, targetCgpa, maxPossibleCgpa) {
+    const adviceEl = document.getElementById('cgpa-grade-advice');
+    if (!adviceEl) return;
+
+    if (remainingCount === 0) {
+        adviceEl.innerHTML = `
+            <div class="d-flex align-items-center gap-2 text-success">
+                <i data-lucide="check-circle-2" style="width: 16px;"></i>
+                <span>All 8 semester SGPAs entered. Degree journey complete!</span>
+            </div>
+        `;
+        return;
+    }
+
+    if (requiredSgpa > 10.0) {
+        adviceEl.innerHTML = `
+            <div class="text-danger mb-1 fw-bold"><i data-lucide="alert-triangle" style="width: 14px;"></i> Target Above Maximum Bound</div>
+            <div>The target CGPA of <strong>${targetCgpa.toFixed(2)}</strong> exceeds the maximum achievable CGPA of <strong>${maxPossibleCgpa.toFixed(2)}</strong>. To maximize your outcome, target straight <strong>S Grades (10 points)</strong> in all future subjects!</div>
+        `;
+    } else if (requiredSgpa >= 9.5) {
+        adviceEl.innerHTML = `
+            <div class="text-warning mb-1 fw-bold">🎯 Extreme Focus: Straight S Grades</div>
+            <div>To hit <strong>${requiredSgpa.toFixed(2)} SGPA</strong>, you will need nearly all <strong>S Grades (10.0)</strong> with at most one <strong>A Grade (9.0)</strong> per semester. Aim for 35+ in internals and 65+ in semester end exams (SEE).</div>
+        `;
+    } else if (requiredSgpa >= 8.5) {
+        adviceEl.innerHTML = `
+            <div class="text-info mb-1 fw-bold">🎯 High Performance: S &amp; A Grade Mix</div>
+            <div>To reach <strong>${requiredSgpa.toFixed(2)} SGPA</strong>, aim for a distribution of approx <strong>60% S Grades (10.0)</strong> and <strong>40% A Grades (9.0)</strong> across all major theory and laboratory subjects.</div>
+        `;
+    } else if (requiredSgpa >= 7.5) {
+        adviceEl.innerHTML = `
+            <div class="text-primary mb-1 fw-bold">🎯 Balanced Strategy: A &amp; B Grades</div>
+            <div>To reach <strong>${requiredSgpa.toFixed(2)} SGPA</strong>, target a solid mix of <strong>A Grades (9.0)</strong> and <strong>B Grades (8.0)</strong>. Consistently score 25+ in internals to make semester exams smooth.</div>
+        `;
+    } else {
+        adviceEl.innerHTML = `
+            <div class="text-success mb-1 fw-bold">🎯 Comfortable Target: Consistent Pass &amp; B Grades</div>
+            <div>Maintaining average <strong>B &amp; C grades (7.0 - 8.0)</strong> and clearing all subjects without backlogs will easily secure your target CGPA of <strong>${targetCgpa.toFixed(2)}</strong>!</div>
+        `;
+    }
+}
+
+function loadUnifiedCgpaDemo() {
+    const branchSelect = document.getElementById('cgpa-branch-select');
+    if (branchSelect) branchSelect.value = 'CSE';
+    
+    const targetInput = document.getElementById('cgpa-target-input');
+    if (targetInput) targetInput.value = '8.75';
+
+    renderUnifiedCgpaSemesterCards();
+
+    // Fill Sem 1-4 demo values
+    const demoValues = { 1: "8.20", 2: "8.45", 3: "8.60", 4: "8.70" };
+    for (let i = 1; i <= 8; i++) {
+        const inp = document.getElementById(`sem-sgpa-input-${i}`);
+        if (inp) {
+            inp.value = demoValues[i] || '';
+        }
+    }
+
+    whatIfOverrides = {};
+    calculateUnifiedCgpa();
+}
+
+function resetUnifiedCgpa() {
+    for (let i = 1; i <= 8; i++) {
+        const inp = document.getElementById(`sem-sgpa-input-${i}`);
+        if (inp) inp.value = '';
+    }
+    whatIfOverrides = {};
+    localStorage.removeItem('gmrit_unified_cgpa_state');
+    calculateUnifiedCgpa();
+}
+
+async function copyUnifiedCgpaSummary() {
+    const currentCgpa = document.getElementById('cgpa-result-val') ? document.getElementById('cgpa-result-val').textContent : '0.00';
+    const targetCgpa = document.getElementById('cgpa-target-input') ? document.getElementById('cgpa-target-input').value : '8.50';
+    const reqSgpa = document.getElementById('cgpa-req-sgpa-val') ? document.getElementById('cgpa-req-sgpa-val').textContent : '0.00';
+    const credits = document.getElementById('cgpa-credits-val') ? document.getElementById('cgpa-credits-val').textContent : '0/160';
+    const maxCgpa = document.getElementById('cgpa-max-cgpa-val') ? document.getElementById('cgpa-max-cgpa-val').textContent : '10.00';
+
+    const text = `📊 GMRIT Academic Plan Summary\n• Current CGPA: ${currentCgpa}\n• Credits Completed: ${credits}\n• Desired Target 8-Sem CGPA: ${targetCgpa}\n• Required SGPA for Remaining Sems: ${reqSgpa}\n• Max Possible CGPA: ${maxCgpa}\nGenerated via GMRIT Marks Calculator`;
+
+    try {
+        await navigator.clipboard.writeText(text);
+        const icon = document.getElementById('cgpa-copy-icon');
+        if (icon) {
+            icon.setAttribute('data-lucide', 'check');
+            lucide.createIcons();
+            setTimeout(() => {
+                icon.setAttribute('data-lucide', 'copy');
+                lucide.createIcons();
+            }, 2000);
+        }
+        alert('Academic Prediction Summary copied to clipboard!');
+    } catch (e) {
+        console.error('Clipboard copy failed:', e);
+    }
 }
 
 init();

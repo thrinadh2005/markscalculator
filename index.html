@@ -143,7 +143,11 @@
                 <button class="nav-link" onclick="showTab('sgpa')">SGPA Calculator</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" onclick="showTab('cgpa')">CGPA Calculator</button>
+                <button class="nav-link" onclick="showTab('cgpa')">
+                    <span class="d-flex align-items-center gap-1">
+                        <i data-lucide="calculator" style="width: 14px; height: 14px;"></i> CGPA &amp; Predictor
+                    </span>
+                </button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" onclick="showTab('study-planner')">Study Planner</button>
@@ -329,44 +333,233 @@
             </div>
         </div>
 
-        <!-- CGPA Calculator -->
+        <!-- Unified CGPA Calculator & Target Predictor -->
         <div id="cgpa-tab" class="tab-content hidden">
             <div class="row g-4 justify-content-center">
-                <div class="col-lg-9">
-                    <div class="glass-card p-4">
-                        <h4 class="mb-4 fw-bold">CGPA Calculator</h4>
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Select Branch</label>
-                            <select class="form-select" id="cgpa-branch-select" onchange="updateCgpaInputs()">
-                                <option value="cse">Computer Science Engineering</option>
-                                <option value="ece">Electronics & Communication Engineering</option>
-                                <option value="eee">Electrical & Electronics Engineering</option>
-                                <option value="mech">Mechanical Engineering</option>
-                                <option value="civil">Civil Engineering</option>
-                                <option value="it">Information Technology</option>
-                                <option value="aiml">AI & Machine Learning</option>
-                                <option value="aids">AI & Data Science</option>
-                            </select>
+                <!-- Left: Configuration, 8-Semester Inputs & Remaining Forecast -->
+                <div class="col-lg-8">
+                    <div class="glass-card p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <div>
+                                <h4 class="mb-1 fw-bold d-flex align-items-center gap-2">
+                                    <i data-lucide="calculator" style="color: var(--primary);"></i> CGPA Calculator &amp; Target Predictor
+                                </h4>
+                                <p class="text-muted small mb-0">Enter your completed semester SGPAs to view your current CGPA, and set your target 8-semester CGPA to predict required future SGPAs.</p>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="btn btn-sm btn-light d-flex align-items-center gap-1" onclick="resetUnifiedCgpa()" title="Clear all semester inputs">
+                                    <i data-lucide="rotate-ccw" style="width: 14px;"></i> Clear All
+                                </button>
+                            </div>
                         </div>
-                        <div id="cgpa-inputs" class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3"></div>
+
+                        <!-- Configuration Strip -->
+                        <div class="p-3 rounded-3 mb-4 predictor-config-box" style="background: rgba(56, 189, 248, 0.05); border: 1px solid var(--glass-border);">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">
+                                        <i data-lucide="book-open" style="width: 12px; margin-right: 4px;"></i> Select Branch
+                                    </label>
+                                    <select id="cgpa-branch-select" class="form-select form-select-sm" onchange="onCgpaBranchChange()">
+                                        <option value="CSE">Computer Science (CSE)</option>
+                                        <option value="AI&DS">AI &amp; Data Science (AI&amp;DS)</option>
+                                        <option value="AI&ML">AI &amp; Machine Learning (AI&amp;ML)</option>
+                                        <option value="ECE">Electronics &amp; Communication (ECE)</option>
+                                        <option value="EEE">Electrical &amp; Electronics (EEE)</option>
+                                        <option value="MECH">Mechanical Engineering (MECH)</option>
+                                        <option value="CIVIL">Civil Engineering (CIVIL)</option>
+                                        <option value="IT">Information Technology (IT)</option>
+                                        <option value="UNIFORM">Equal Credits (20 / Sem)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">
+                                        <i data-lucide="check-circle-2" style="width: 12px; margin-right: 4px;"></i> Completed Semesters
+                                    </label>
+                                    <select id="cgpa-completed-count-select" class="form-select form-select-sm" onchange="onCompletedCountSelectChange(this.value)">
+                                        <option value="auto">Auto-Detect from Inputs</option>
+                                        <option value="1">1 Sem Completed (Predict 2-8)</option>
+                                        <option value="2">2 Sems Completed (Predict 3-8)</option>
+                                        <option value="3">3 Sems Completed (Predict 4-8)</option>
+                                        <option value="4">4 Sems Completed (Predict 5-8)</option>
+                                        <option value="5">5 Sems Completed (Predict 6-8)</option>
+                                        <option value="6">6 Sems Completed (Predict 7-8)</option>
+                                        <option value="7">7 Sems Completed (Predict 8)</option>
+                                        <option value="8">All 8 Semesters Completed</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">
+                                        <i data-lucide="award" style="width: 12px; margin-right: 4px;"></i> Target 8-Sem CGPA
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border);"><i data-lucide="flag" style="width: 12px;"></i></span>
+                                        <input type="number" id="cgpa-target-input" class="form-control fw-bold border-start-0" step="0.05" min="4.00" max="10.00" value="8.50" placeholder="8.50" oninput="calculateUnifiedCgpa()" style="border-color: var(--glass-border);">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fast Target Preset Chips -->
+                            <div class="mt-3 pt-2 border-top border-primary border-opacity-10 d-flex align-items-center gap-2 flex-wrap">
+                                <span class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">TARGET PRESETS:</span>
+                                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setUnifiedTargetPreset(7.75)">7.75 (Distinction)</button>
+                                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setUnifiedTargetPreset(8.00)">8.00</button>
+                                <button type="button" class="btn btn-sm py-0 px-2 preset-chip active" onclick="setUnifiedTargetPreset(8.50)">8.50</button>
+                                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setUnifiedTargetPreset(9.00)">9.00</button>
+                                <button type="button" class="btn btn-sm py-0 px-2 preset-chip" onclick="setUnifiedTargetPreset(9.50)">9.50</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 1: 8-Semester SGPA Inputs Cards -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 text-uppercase letter-spacing-1 d-flex align-items-center gap-2" style="font-size: 0.82rem; color: var(--primary);">
+                                    <i data-lucide="check-square" style="width: 15px;"></i> Step 1: Enter Completed Semester SGPAs
+                                </h6>
+                                <span class="badge bg-primary bg-opacity-10 text-primary small" id="cgpa-completed-count-badge">0 Semesters Completed</span>
+                            </div>
+                            <p class="text-muted small mb-3" style="font-size: 0.72rem;">Enter your SGPA for completed semesters. Leave future semesters blank or zero — our algorithm will automatically forecast them.</p>
+                            <div id="cgpa-semester-cards" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-4 g-3">
+                                <!-- Dynamically populated for 8 semesters -->
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Forecast Roadmap for Remaining Semesters -->
+                        <div id="cgpa-remaining-forecast-section" class="mt-4 pt-3 border-top border-primary border-opacity-10">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-uppercase letter-spacing-1 d-flex align-items-center gap-2" style="font-size: 0.82rem; color: var(--accent);">
+                                        <i data-lucide="compass" style="width: 15px;"></i> Step 2: Predicted Roadmap for Remaining Semesters
+                                    </h6>
+                                    <p class="text-muted small mb-0" style="font-size: 0.72rem;">Individual semester forecast. Use the What-If simulation slider to experiment with specific semesters!</p>
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" id="cgpa-reset-overrides-btn" onclick="resetUnifiedOverrides()" style="display: none; font-size: 0.72rem;">
+                                    <i data-lucide="refresh-cw" style="width: 12px;"></i> Reset Custom Sliders
+                                </button>
+                            </div>
+                            <div id="cgpa-remaining-cards" class="row row-cols-1 row-cols-md-2 g-3">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                    <div class="summary-box">
-                        <p class="small text-uppercase fw-bold mb-1 opacity-75">Cumulative CGPA</p>
-                        <div class="summary-value mb-1" id="cgpa-result-val">0.00</div>
-                        <p id="cgpa-class" class="small fw-bold mb-3 text-uppercase" style="color: var(--primary);"></p>
 
+                <!-- Right: Analytics, Current Standing & Prediction Hero Card -->
+                <div class="col-lg-4">
+                    <!-- Current CGPA Standing Card -->
+                    <div class="summary-box mb-3" style="background: var(--glass); border: 1px solid var(--glass-border);">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <p class="small text-uppercase fw-bold mb-0 opacity-75 letter-spacing-1" style="color: var(--primary);">Current Cumulative CGPA</p>
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary" id="cgpa-status-pill" style="font-size: 0.65rem;">In Progress</span>
+                        </div>
+                        <div class="summary-value mb-1" id="cgpa-result-val" style="color: var(--text);">0.00</div>
+                        <p id="cgpa-class" class="small fw-bold mb-2 text-uppercase" style="color: var(--accent); min-height: 1.2rem;"></p>
+                        
+                        <!-- Progress towards 8-Sem Degree -->
+                        <div class="px-1 mt-2">
+                            <div class="d-flex justify-content-between text-muted extra-small mb-1" style="font-size: 0.7rem;">
+                                <span>Degree Progress</span>
+                                <span id="cgpa-progress-percent">0% Completed</span>
+                            </div>
+                            <div class="progress" style="height: 6px; background: rgba(56, 189, 248, 0.1); border-radius: 10px;">
+                                <div id="cgpa-credits-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%; border-radius: 10px;"></div>
+                            </div>
+                        </div>
+                    </div>
 
-                        <button class="btn btn-sm btn-light no-print w-100 fw-bold rounded-3 py-2" onclick="window.print()">
-                            <i data-lucide="printer" style="width: 16px;"></i> Print Result
-                        </button>
+                    <!-- Target Prediction Hero Card -->
+                    <div class="summary-box mb-4 predictor-hero-card">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <p class="small text-uppercase fw-bold mb-0 opacity-75 letter-spacing-1">Target Required SGPA</p>
+                            <span class="badge rounded-pill" id="cgpa-remaining-count-pill" style="background: rgba(255,255,255,0.2); font-size: 0.65rem;">8 Sems Left</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-baseline justify-content-center gap-1 my-2">
+                            <div class="summary-value" id="cgpa-req-sgpa-val">0.00</div>
+                            <span class="text-white-50 fw-bold" style="font-size: 1.1rem;">/ 10</span>
+                        </div>
+                        
+                        <!-- Dynamic Feasibility Banner -->
+                        <div id="cgpa-feasibility-banner" class="feasibility-banner my-3 p-2 rounded-3 text-center">
+                            <div class="fw-bold small" id="cgpa-feasibility-title">Enter Your SGPAs</div>
+                            <div class="extra-small opacity-80" id="cgpa-feasibility-desc" style="font-size: 0.7rem;">Fill in your completed semesters on the left</div>
+                        </div>
+
+                        <!-- Key Academic Stats Grid -->
+                        <div class="row g-2 text-start pt-2 border-top border-white border-opacity-10 mb-3" style="font-size: 0.75rem;">
+                            <div class="col-6">
+                                <div class="p-2 rounded bg-white bg-opacity-10">
+                                    <div class="text-white-50 extra-small">Credits Earned</div>
+                                    <div class="fw-bold text-white fs-6" id="cgpa-credits-val">0 / 160</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 rounded bg-white bg-opacity-10">
+                                    <div class="text-white-50 extra-small">Remaining Credits</div>
+                                    <div class="fw-bold text-white fs-6" id="cgpa-rem-credits-val">160</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 rounded bg-white bg-opacity-10">
+                                    <div class="text-white-50 extra-small">Max Possible CGPA</div>
+                                    <div class="fw-bold text-info fs-6" id="cgpa-max-cgpa-val">10.00</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 rounded bg-white bg-opacity-10">
+                                    <div class="text-white-50 extra-small">Min Pass CGPA</div>
+                                    <div class="fw-bold text-warning fs-6" id="cgpa-min-cgpa-val">5.00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions: Print & Copy -->
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-light no-print flex-grow-1 fw-bold rounded-3 py-2 d-flex align-items-center justify-content-center gap-1" onclick="window.print()">
+                                <i data-lucide="printer" style="width: 14px;"></i> Print Report
+                            </button>
+                            <button class="btn btn-sm btn-outline-light no-print fw-bold rounded-3 py-2 px-3 d-flex align-items-center justify-content-center" onclick="copyUnifiedCgpaSummary()" title="Copy prediction report to clipboard">
+                                <i data-lucide="copy" id="cgpa-copy-icon" style="width: 14px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Milestone Goals Matrix -->
+                    <div class="glass-card p-3 mb-4">
+                        <h6 class="fw-bold mb-3 text-uppercase letter-spacing-1 d-flex align-items-center gap-2" style="font-size: 0.8rem; color: var(--primary);">
+                            <i data-lucide="layers" style="width: 14px;"></i> Academic Milestones Matrix
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless align-middle mb-0" style="font-size: 0.78rem;">
+                                <thead>
+                                    <tr class="border-bottom border-primary border-opacity-10 text-muted extra-small">
+                                        <th>GOAL CGPA</th>
+                                        <th>CLASSIFICATION</th>
+                                        <th class="text-end">REQ. SGPA</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cgpa-milestones-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Grade Strategy Recommendation Card -->
+                    <div class="glass-card p-3">
+                        <h6 class="fw-bold mb-2 text-uppercase letter-spacing-1 d-flex align-items-center gap-2" style="font-size: 0.8rem; color: var(--accent);">
+                            <i data-lucide="lightbulb" style="width: 14px;"></i> Grade Strategy Guide
+                        </h6>
+                        <div id="cgpa-grade-advice" class="small text-muted" style="font-size: 0.75rem; line-height: 1.5;">
+                            <!-- Populated dynamically -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        
         <!-- Study Planner -->
         <div id="study-planner-tab" class="tab-content hidden">
             <div class="row g-4 justify-content-center">
