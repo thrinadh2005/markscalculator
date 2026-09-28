@@ -14,7 +14,10 @@ In your Vercel dashboard, set the following environment variables:
 
 #### Required Environment Variables:
 ```
-MONGODB_URI=mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/marks_calculator?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/marks_calculator?retryWrites=true&w=majority
+VAPID_PUBLIC_KEY=your_vapid_public_key
+VAPID_PRIVATE_KEY=your_vapid_private_key
+VAPID_SUBJECT=mailto:your-email@example.com
 ```
 
 ### 📁 Project Structure
@@ -261,7 +264,9 @@ npm install
 vercel --prod
 
 # Set environment variables (in Vercel dashboard)
-MONGODB_URI=mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/marks_calculator?retryWrites=true&w=majority
+# MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/marks_calculator?retryWrites=true&w=majority
+# VAPID_PUBLIC_KEY=...
+# VAPID_PRIVATE_KEY=...
 
 # Test deployment
 curl https://gmritmarks.vercel.app/api/count

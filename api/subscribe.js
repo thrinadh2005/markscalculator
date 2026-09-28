@@ -8,7 +8,7 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL || 'mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks';
+  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL;
   
   if (!mongodbUri) {
     throw new Error('MONGODB_URI environment variable is not defined');

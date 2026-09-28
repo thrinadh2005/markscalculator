@@ -1,12 +1,14 @@
 const webpush = require('web-push');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-// VAPID Configuration
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BIP3cUVnS-KEqF_pw-Ff8LTWLz5LPAYcxVdJnVz9NBu4_fJ_nbHnlyyHYpWhL6F0YRGUqH8HUcvXlomKdmJlkS0';
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || 'uRvRLp1fSRvqPpThmXh8mippFG7oQmg_S3dmXTtgzN0';
+// VAPID Configuration from environment variables
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:adabalavt@gmail.com';
 
-webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+}
 
 let cachedClient = null;
 let cachedDb = null;
@@ -16,7 +18,7 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
-  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL || 'mongodb+srv://venkatathrinadh05_db_user:eny5QSaY52ufes1G@marks.kzmlscn.mongodb.net/?appName=marks';
+  const mongodbUri = process.env.MONGODB_URI || process.env.MONGODB_URL;
   
   if (!mongodbUri) {
     throw new Error('MONGODB_URI environment variable is not defined');
