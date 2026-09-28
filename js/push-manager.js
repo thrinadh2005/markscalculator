@@ -410,6 +410,9 @@ const PushManagerHelper = {
     }
 };
 
+// Expose globally on window for all scripts and inline onclick handlers
+window.PushManagerHelper = PushManagerHelper;
+
 // Initialize push manager on page load
 window.addEventListener('DOMContentLoaded', () => {
     PushManagerHelper.init();

@@ -1494,6 +1494,23 @@ code, pre {
     to { transform: scale(1); }
 }
 
+.preset-chip {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.preset-chip:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .container-fluid {

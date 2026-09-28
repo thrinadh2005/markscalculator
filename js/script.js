@@ -596,8 +596,12 @@ function checkAdmin() {
         adminClickCount = 0;
         const pass = prompt("Enter Admin Password to view Admin Dashboard:");
         if (pass === "thrinadh2005") {
+            const overlay = document.getElementById('visitor-list-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            }
             showAdminTab('visitors');
-            showVisitorList();
         } else if (pass !== null) {
             alert("Incorrect Password!");
         }
@@ -754,6 +758,12 @@ function closeVisitorList() {
 }
 
 function showAdminTab(tab) {
+    const overlay = document.getElementById('visitor-list-overlay');
+    if (overlay && overlay.classList.contains('hidden')) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.style.opacity = '1', 10);
+    }
+
     const visitorsBtn = document.getElementById('admin-visitors-btn');
     const reviewsBtn = document.getElementById('admin-reviews-btn');
     const broadcastBtn = document.getElementById('admin-broadcast-btn');
@@ -776,10 +786,14 @@ function showAdminTab(tab) {
         broadcastBtn?.classList.add('active');
         broadcastContent?.classList.remove('hidden');
         if (window.PushManagerHelper) {
+            window.PushManagerHelper.loadSubscriberStats();
+        } else if (typeof PushManagerHelper !== 'undefined') {
             PushManagerHelper.loadSubscriberStats();
         }
     }
-    lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
 }
 
 async function loadReviewsList() {
@@ -2715,80 +2729,5 @@ async function submitReview() {
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
-    }
-}
-
-// --- Admin Dashboard Additions ---
-
-function showAdminTab(tabName) {
-    document.getElementById('admin-visitors-btn').classList.remove('active');
-    document.getElementById('admin-reviews-btn').classList.remove('active');
-    
-    document.getElementById(`admin-${tabName}-btn`).classList.add('active');
-    
-    document.getElementById('visitor-list-content').classList.add('hidden');
-    document.getElementById('review-list-content').classList.add('hidden');
-    
-    if (tabName === 'visitors') {
-        document.getElementById('visitor-list-content').classList.remove('hidden');
-    } else if (tabName === 'reviews') {
-        document.getElementById('review-list-content').classList.remove('hidden');
-        loadReviews();
-    }
-}
-
-async function loadReviews() {
-    const content = document.getElementById('review-list-content');
-    content.innerHTML = `
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 text-muted">Fetching reviews...</p>
-        </div>
-    `;
-
-    try {
-        const response = await fetch('/api/reviews');
-        if (!response.ok) throw new Error('Failed to fetch reviews');
-        
-        const reviews = await response.json();
-        
-        if (reviews.length === 0) {
-            content.innerHTML = '<p class="text-center text-muted py-5">No reviews yet.</p>';
-            return;
-        }
-
-        let html = '<div class="list-group list-group-flush mb-4">';
-        reviews.forEach(review => {
-            let starsHtml = '';
-            for(let i=0; i<5; i++) {
-                if(i < review.rating) {
-                    starsHtml += '<i data-lucide="star" style="width: 14px; color: #f59e0b; fill: #f59e0b;"></i>';
-                } else {
-                    starsHtml += '<i data-lucide="star" style="width: 14px; color: #6c757d;"></i>';
-                }
-            }
-            
-            html += `
-                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="fw-bold" style="color: var(--text);">${review.name || 'Anonymous'}</div>
-                        <div class="text-muted small" style="font-size: 0.65rem;">${new Date(review.timestamp).toLocaleString()}</div>
-                    </div>
-                    <div class="mb-2">${starsHtml}</div>
-                    <p class="mb-0 text-muted small" style="word-break: break-word;">${review.text}</p>
-                </div>
-            `;
-        });
-        html += '</div>';
-        
-        content.innerHTML = html;
-        lucide.createIcons();
-    } catch (e) {
-        console.error("Reviews fetch failed:", e);
-        content.innerHTML = `
-            <div class="alert alert-warning">
-                Unable to load reviews. Please try again.
-            </div>
-        `;
     }
 }

@@ -1,5 +1,26 @@
-const express = require('express');
+const fs = require('fs');
 const path = require('path');
+
+// Auto-load .env for local development without external dependencies
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf-8');
+    envConfig.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+            const eqIdx = trimmed.indexOf('=');
+            if (eqIdx !== -1) {
+                const key = trimmed.slice(0, eqIdx).trim();
+                const value = trimmed.slice(eqIdx + 1).trim();
+                if (!process.env[key]) {
+                    process.env[key] = value;
+                }
+            }
+        }
+    });
+}
+
+const express = require('express');
 const cors = require('cors');
 const countHandler = require('./api/count.js');
 const visitorsHandler = require('./api/visitors.js');
