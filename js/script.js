@@ -687,33 +687,70 @@ function renderVisitorList(globalLogs, localLogs) {
     const content = document.getElementById('visitor-list-content');
     if (!content) return;
 
-    // Filter out any null or invalid entries from global logs
-    const validGlobalLogs = globalLogs.filter(item => item !== null && typeof item === 'object');
+    // Filter out any null, stats counter, or invalid entries from global logs
+    const validGlobalLogs = globalLogs.filter(item => item !== null && typeof item === 'object' && item.name);
 
     if (validGlobalLogs.length === 0 && localLogs.length === 0) {
         content.innerHTML = '<p class="text-center text-muted py-5">No visitors found yet.</p>';
         return;
     }
 
-    let html = '';
+    const totalCount = validGlobalLogs.length;
+    const installedCount = validGlobalLogs.filter(item => item.is_installed || item.action === 'install').length;
+    const browserCount = Math.max(0, totalCount - installedCount);
+
+    let html = `
+        <!-- Stats Summary Bar -->
+        <div class="row g-2 mb-3">
+            <div class="col-4">
+                <div class="p-2 rounded-3 text-center" style="background: rgba(56, 189, 248, 0.08); border: 1px solid var(--glass-border);">
+                    <div class="fw-bold fs-5" style="color: var(--primary);">${totalCount}</div>
+                    <div class="extra-small text-muted" style="font-size: 0.65rem;">Total Visitors</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-2 rounded-3 text-center" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <div class="fw-bold fs-5 text-success">${installedCount}</div>
+                    <div class="extra-small text-muted" style="font-size: 0.65rem;">App Installs 📲</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-2 rounded-3 text-center" style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.2);">
+                    <div class="fw-bold fs-5" style="color: #a855f7;">${browserCount}</div>
+                    <div class="extra-small text-muted" style="font-size: 0.65rem;">Web Browser 🌐</div>
+                </div>
+            </div>
+        </div>
+    `;
 
     if (validGlobalLogs.length > 0) {
         html += `
-            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
-                Global Log (${validGlobalLogs.length})
+            <div class="small fw-bold text-uppercase mb-2 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
+                Recent Student Visits (${validGlobalLogs.length})
             </div>
             <div class="list-group list-group-flush mb-4">
         `;
         validGlobalLogs.slice(0, 50).forEach(item => {
-            // Support multiple possible name keys for robustness
-            const name = item.name || item.userName || item.user || 'Anonymous';
-            const date = item.date || item.timestamp || 'Unknown';
+            const name = item.name || item.userName || 'Anonymous';
+            const date = item.date || item.timestamp ? new Date(item.timestamp || item.date).toLocaleString() : 'Unknown';
+            const isInst = Boolean(item.is_installed) || item.action === 'install';
+
+            const badgeHtml = isInst 
+                ? `<span class="badge bg-success bg-opacity-20 text-success d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.62rem; border: 1px solid rgba(16, 185, 129, 0.3);">
+                     <i data-lucide="smartphone" style="width: 11px;"></i> Installed App
+                   </span>`
+                : `<span class="badge bg-secondary bg-opacity-20 text-muted d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.62rem; border: 1px solid rgba(148, 163, 184, 0.2);">
+                     <i data-lucide="globe" style="width: 11px;"></i> Browser
+                   </span>`;
             
             html += `
-                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-2 px-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="fw-bold" style="color: var(--text);">${name}</div>
-                        <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
+                        <div>
+                            <div class="fw-bold" style="color: var(--text);">${name}</div>
+                            <div class="text-muted extra-small" style="font-size: 0.65rem;">${date}</div>
+                        </div>
+                        <div>${badgeHtml}</div>
                     </div>
                 </div>
             `;
@@ -723,17 +760,17 @@ function renderVisitorList(globalLogs, localLogs) {
 
     if (localLogs.length > 0) {
         html += `
-            <div class="small fw-bold text-uppercase mb-3 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
-                Device History
+            <div class="small fw-bold text-uppercase mb-2 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
+                This Device History
             </div>
             <div class="list-group list-group-flush">
         `;
         localLogs.slice(0, 10).forEach(item => {
-            const name = item.name || item.userName || item.user || 'Anonymous';
-            const date = item.date || item.timestamp || 'Unknown';
+            const name = item.name || item.userName || 'Anonymous';
+            const date = item.date || 'Unknown';
 
             html += `
-                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-3 px-0">
+                <div class="list-group-item bg-transparent border-primary border-opacity-10 py-2 px-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="fw-bold" style="color: var(--text);">${name}</div>
                         <div class="text-muted small" style="font-size: 0.65rem;">${date}</div>
@@ -745,6 +782,9 @@ function renderVisitorList(globalLogs, localLogs) {
     }
 
     content.innerHTML = html;
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
 }
 
 function closeVisitorList() {
@@ -765,19 +805,25 @@ function showAdminTab(tab) {
     }
 
     const visitorsBtn = document.getElementById('admin-visitors-btn');
+    const installsBtn = document.getElementById('admin-installs-btn');
     const reviewsBtn = document.getElementById('admin-reviews-btn');
     const broadcastBtn = document.getElementById('admin-broadcast-btn');
     const visitorsContent = document.getElementById('visitor-list-content');
+    const installsContent = document.getElementById('installs-list-content');
     const reviewsContent = document.getElementById('review-list-content');
     const broadcastContent = document.getElementById('broadcast-list-content');
 
-    [visitorsBtn, reviewsBtn, broadcastBtn].forEach(b => b?.classList.remove('active'));
-    [visitorsContent, reviewsContent, broadcastContent].forEach(c => c?.classList.add('hidden'));
+    [visitorsBtn, installsBtn, reviewsBtn, broadcastBtn].forEach(b => b?.classList.remove('active'));
+    [visitorsContent, installsContent, reviewsContent, broadcastContent].forEach(c => c?.classList.add('hidden'));
 
     if (tab === 'visitors') {
         visitorsBtn?.classList.add('active');
         visitorsContent?.classList.remove('hidden');
         showVisitorList();
+    } else if (tab === 'installs') {
+        installsBtn?.classList.add('active');
+        installsContent?.classList.remove('hidden');
+        loadInstallsList();
     } else if (tab === 'reviews') {
         reviewsBtn?.classList.add('active');
         reviewsContent?.classList.remove('hidden');
@@ -793,6 +839,103 @@ function showAdminTab(tab) {
     }
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons();
+    }
+}
+
+async function loadInstallsList() {
+    const content = document.getElementById('installs-list-content');
+    if (!content) return;
+
+    content.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading installs...</span>
+            </div>
+            <p class="mt-2 text-muted">Fetching app install records...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch('/api/installs');
+        if (!response.ok) throw new Error('Failed to load installs');
+        const data = await response.json();
+
+        const totalInstalls = data.totalInstalls || (data.recentInstalls ? data.recentInstalls.length : 0);
+        const recentInstalls = data.recentInstalls || [];
+
+        let html = `
+            <!-- Install Metrics Summary Card -->
+            <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2);">
+                <div>
+                    <div class="small fw-bold text-uppercase d-flex align-items-center gap-2 text-success">
+                        <i data-lucide="download-cloud" style="width: 16px;"></i> PWA App Installations
+                    </div>
+                    <div class="text-muted extra-small" style="font-size: 0.72rem;">Students who installed the app on their phone or desktop</div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold fs-4 mb-0 text-success">${totalInstalls}</div>
+                    <div class="extra-small text-muted" style="font-size: 0.65rem;">Total Installs</div>
+                </div>
+            </div>
+        `;
+
+        if (recentInstalls.length === 0) {
+            html += `
+                <div class="text-center text-muted py-4">
+                    <i data-lucide="smartphone" style="width: 32px; height: 32px; opacity: 0.4;" class="mb-2"></i>
+                    <p class="mb-0 small">No app installs recorded yet.</p>
+                    <p class="extra-small text-muted">When students tap "Install" on the top banner or browser menu, they will appear here.</p>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="small fw-bold text-uppercase mb-2 opacity-50" style="letter-spacing: 1px; color: var(--primary);">
+                    Installed Devices Log (${recentInstalls.length})
+                </div>
+                <div class="list-group list-group-flush">
+            `;
+
+            recentInstalls.forEach(inst => {
+                const isMob = Boolean(inst.isMobile) || (inst.device || '').toLowerCase().includes('mobile') || (inst.device || '').toLowerCase().includes('android') || (inst.device || '').toLowerCase().includes('iphone');
+                const iconName = isMob ? 'smartphone' : 'laptop';
+                const devType = isMob ? 'Mobile Phone' : 'Desktop / PC';
+                const dateStr = inst.date || (inst.timestamp ? new Date(inst.timestamp).toLocaleString() : 'Recently');
+
+                html += `
+                    <div class="list-group-item bg-transparent border-primary border-opacity-10 py-2 px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 30px; height: 30px; background: rgba(16, 185, 129, 0.12); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                    <i data-lucide="${iconName}" style="width: 15px; color: #10b981;"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold small" style="color: var(--text);">${inst.name || 'Student'}</div>
+                                    <div class="text-muted extra-small" style="font-size: 0.65rem;">${devType} &bull; ${inst.ip || 'Local'}</div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-success bg-opacity-20 text-success" style="font-size: 0.6rem;">Installed 📲</span>
+                                <div class="text-muted extra-small" style="font-size: 0.62rem;">${dateStr}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+        }
+
+        content.innerHTML = html;
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    } catch (err) {
+        console.error('Error loading installs:', err);
+        content.innerHTML = `
+            <div class="alert alert-warning py-2 small">
+                Could not load install records. Check database connection.
+            </div>
+        `;
     }
 }
 
@@ -2570,10 +2713,27 @@ closeBtn.addEventListener('click', () => {
     localStorage.setItem('pwa_banner_closed', 'true');
 });
 
-// Check if app is already installed
-window.addEventListener('appinstalled', (evt) => {
-    console.log('GMRIT Calculator was installed');
-    pwaBanner.classList.add('hidden');
+// Track PWA app installation event
+window.addEventListener('appinstalled', async (evt) => {
+    console.log('GMRIT Calculator was installed to device');
+    localStorage.setItem('gmrit_pwa_installed', 'true');
+    pwaBanner?.classList.add('hidden');
+
+    try {
+        const studentName = localStorage.getItem('calculator_user_name') || 'Student';
+        await fetch('/api/installs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: studentName,
+                device: navigator.userAgent,
+                date: new Date().toLocaleString()
+            })
+        });
+        console.log('[PWA] Installation synced to database');
+    } catch (err) {
+        console.warn('[PWA] Could not record installation in database:', err);
+    }
 });
 
 // Results Portal

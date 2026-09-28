@@ -15,6 +15,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/installs.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "api/subscribe.js",
       "use": "@vercel/node"
     },
@@ -43,6 +47,10 @@
     {
       "src": "/api/reviews",
       "dest": "/api/reviews.js"
+    },
+    {
+      "src": "/api/installs",
+      "dest": "/api/installs.js"
     },
     {
       "src": "/api/subscribe",

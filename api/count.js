@@ -124,6 +124,7 @@ module.exports = async (req, res) => {
       count: finalCount,
       unique_visitors: visitorData.unique_visitors,
       total_views: visitorData.total_views,
+      total_installs: visitorData.total_installs || 0,
       is_new_visitor: isNewVisitor
     });
 

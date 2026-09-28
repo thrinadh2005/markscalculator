@@ -111,8 +111,15 @@
                 </button>
             </div>
             <div class="nav nav-pills nav-fill gap-2 mb-3">
-                <button class="nav-link active py-1" id="admin-visitors-btn" onclick="showAdminTab('visitors')">Visitors</button>
-                <button class="nav-link py-1" id="admin-reviews-btn" onclick="showAdminTab('reviews')">Reviews</button>
+                <button class="nav-link active py-1" id="admin-visitors-btn" onclick="showAdminTab('visitors')">
+                    <i data-lucide="users" style="width: 13px; margin-right: 4px;"></i> Visitors
+                </button>
+                <button class="nav-link py-1" id="admin-installs-btn" onclick="showAdminTab('installs')">
+                    <i data-lucide="download" style="width: 13px; margin-right: 4px;"></i> Installs
+                </button>
+                <button class="nav-link py-1" id="admin-reviews-btn" onclick="showAdminTab('reviews')">
+                    <i data-lucide="star" style="width: 13px; margin-right: 4px;"></i> Reviews
+                </button>
                 <button class="nav-link py-1" id="admin-broadcast-btn" onclick="showAdminTab('broadcast')">
                     <i data-lucide="send" style="width: 13px; margin-right: 4px;"></i> Broadcast Push
                 </button>
@@ -123,6 +130,15 @@
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: App Installs -->
+            <div id="installs-list-content" class="overflow-auto pe-2 hidden" style="flex: 1;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading installs...</span>
                     </div>
                 </div>
             </div>

@@ -28,6 +28,7 @@ const reviewsHandler = require('./api/reviews.js');
 const subscribeHandler = require('./api/subscribe.js');
 const sendNotificationHandler = require('./api/send-notification.js');
 const vapidPublicKeyHandler = require('./api/vapid-public-key.js');
+const installsHandler = require('./api/installs.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,7 @@ app.use(express.static('.'));
 app.all('/api/count', countHandler);
 app.all('/api/visitors', visitorsHandler);
 app.all('/api/reviews', reviewsHandler);
+app.all('/api/installs', installsHandler);
 app.all('/api/subscribe', subscribeHandler);
 app.all('/api/send-notification', sendNotificationHandler);
 app.all('/api/vapid-public-key', vapidPublicKeyHandler);

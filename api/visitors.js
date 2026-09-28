@@ -55,25 +55,28 @@ module.exports = async (req, res) => {
     if (req.method === 'GET') {
       console.log('Fetching visitor logs...');
       
-      // Get IP address for filtering
-      const ip = req.headers['x-forwarded-for'] || 
-                 req.headers['x-real-ip'] || 
-                 req.connection?.remoteAddress || 
-                 req.socket?.remoteAddress || 
-                 'unknown';
-      
+      const statsDoc = await collection.findOne({ count: { $exists: true } });
+      const totalInstalls = statsDoc?.total_installs || 0;
+      const totalVisitors = statsDoc?.unique_visitors || 0;
+
+      // Only fetch visitor log entries (exclude the counter doc)
       const visitors = await collection
-        .find({})
+        .find({ name: { $exists: true } })
         .sort({ timestamp: -1 })
         .limit(100)
         .toArray();
       
-      console.log(`Found ${visitors.length} visitors`);
+      console.log(`Found ${visitors.length} visitors (Total installs: ${totalInstalls})`);
+
+      // Attach metadata header or return enriched log array
+      res.setHeader('X-Total-Installs', String(totalInstalls));
+      res.setHeader('X-Total-Visitors', String(totalVisitors));
+      
       return res.status(200).json(visitors);
     } 
     
     if (req.method === 'POST') {
-      const { name, date } = req.body;
+      const { name, date, is_installed, action, device } = req.body;
       
       if (!name || name.trim() === '') {
         return res.status(400).json({ error: 'Name is required' });
@@ -86,18 +89,33 @@ module.exports = async (req, res) => {
                  req.socket?.remoteAddress || 
                  'unknown';
       
+      const isInstalled = Boolean(is_installed) || action === 'install';
+
       const newVisitor = {
         name: name.trim(),
         date: date || new Date().toLocaleString(),
         ip: ip,
-        timestamp: new Date(),
-        user_agent: req.headers['user-agent'] || 'unknown'
+        is_installed: isInstalled,
+        action: action || (isInstalled ? 'install' : 'visit'),
+        device: device || req.headers['user-agent'] || 'Unknown Device',
+        timestamp: new Date()
       };
 
-      console.log(`Adding visitor: ${name} from IP: ${ip}`);
+      console.log(`Logging visitor: ${name} [Installed: ${isInstalled}]`);
       
       await collection.insertOne(newVisitor);
-      console.log('Visitor added successfully');
+
+      // If this is an install event, increment total_installs in stats
+      if (isInstalled || action === 'install') {
+        await collection.updateOne(
+          { count: { $exists: true } },
+          { 
+            $inc: { total_installs: 1 },
+            $set: { last_installed: new Date() }
+          },
+          { upsert: false }
+        );
+      }
       
       return res.status(201).json(newVisitor);
     }
