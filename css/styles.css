@@ -2866,32 +2866,208 @@ code, pre {
 }
 
 /* Milestone table styling */
+#cgpa-milestones-body tr,
 #pred-milestones-body tr {
     transition: background-color 0.2s ease;
     border-bottom: 1px solid var(--glass-border);
 }
 
+#cgpa-milestones-body tr:hover,
 #pred-milestones-body tr:hover {
     background-color: var(--hover-bg);
 }
 
+#cgpa-milestones-body tr.target-row,
 #pred-milestones-body tr.target-row {
     background: rgba(56, 189, 248, 0.12);
     font-weight: bold;
 }
 
-/* Print Optimization */
+/* ========================================================
+   COMPREHENSIVE PRINT OPTIMIZATION (THEME-AGNOSTIC)
+   ======================================================== */
 @media print {
-    #cgpa-predictor-tab {
-        display: block !important;
+    /* Hide all non-printable UI chrome */
+    .no-print,
+    .blob,
+    .blob-1,
+    .blob-2,
+    .login-overlay,
+    .pwa-banner,
+    nav.navbar,
+    footer.footer,
+    #pwa-install-banner,
+    button[onclick*="openReviewModal"],
+    .what-if-slider,
+    #cgpa-reset-overrides-btn,
+    .btn,
+    .preset-chip,
+    #star-rating-container {
+        display: none !important;
     }
-    .predictor-hero-card {
+
+    /* Hide any tab that is not active / has hidden class */
+    .tab-content.hidden,
+    .hidden {
+        display: none !important;
+    }
+
+    /* Show only active tab */
+    .tab-content:not(.hidden) {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    /* Reset global page background and colors */
+    *, *::before, *::after {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    html, body, body[data-theme="dark"], body[data-theme="light"] {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #0f172a !important;
+        font-size: 10.5pt !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Typography & Text Contrast */
+    h1, h2, h3, h4, h5, h6,
+    [data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, 
+    [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }
+
+    p, span, div, label,
+    [data-theme="dark"] p, [data-theme="dark"] span, [data-theme="dark"] div, [data-theme="dark"] label {
+        color: #1e293b !important;
+        -webkit-text-fill-color: #1e293b !important;
+    }
+
+    .text-muted, [data-theme="dark"] .text-muted,
+    .text-white-50, [data-theme="dark"] .text-white-50,
+    .extra-small, .small {
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
+    }
+
+    /* Cards and Containers */
+    .glass-card, 
+    .summary-box, 
+    .predictor-config-box,
+    .pred-sem-card,
+    [data-theme="dark"] .glass-card, 
+    [data-theme="dark"] .summary-box, 
+    [data-theme="dark"] .predictor-config-box,
+    [data-theme="dark"] .pred-sem-card {
+        background: #ffffff !important;
+        border: 1px solid #94a3b8 !important;
+        border-radius: 8px !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 0.8rem !important;
+    }
+
+    /* Hero Summary & Predictor Cards */
+    .predictor-hero-card,
+    [data-theme="dark"] .predictor-hero-card {
+        background: #f8fafc !important;
+        border: 2px solid #0284c7 !important;
+        color: #0f172a !important;
+    }
+
+    .predictor-hero-card::before {
+        display: none !important;
+    }
+
+    .summary-value,
+    #cgpa-result-val,
+    #cgpa-req-sgpa-val,
+    #internal-result,
+    #sgpa-result,
+    .pred-req-value,
+    [data-theme="dark"] .summary-value,
+    [data-theme="dark"] #cgpa-result-val,
+    [data-theme="dark"] #cgpa-req-sgpa-val,
+    [data-theme="dark"] #internal-result,
+    [data-theme="dark"] #sgpa-result,
+    [data-theme="dark"] .pred-req-value {
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+        font-weight: 800 !important;
+    }
+
+    /* Form Controls & Inputs */
+    input, select, textarea,
+    .form-control, .form-select, .input-group-text,
+    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea,
+    [data-theme="dark"] .form-control, [data-theme="dark"] .form-select, [data-theme="dark"] .input-group-text {
         background: #f8fafc !important;
         color: #0f172a !important;
-        border: 2px solid #cbd5e1 !important;
-        box-shadow: none !important;
+        -webkit-text-fill-color: #0f172a !important;
+        border: 1px solid #94a3b8 !important;
     }
-    .predictor-hero-card * {
+
+    /* Badges & Grade Chips */
+    .badge, 
+    [data-theme="dark"] .badge,
+    .pred-sem-grade-badge {
+        border: 1px solid #64748b !important;
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }
+
+    /* Feasibility Banners */
+    .feasibility-banner,
+    [data-theme="dark"] .feasibility-banner {
+        background: #f1f5f9 !important;
+        border: 1px solid #475569 !important;
         color: #0f172a !important;
     }
+
+    .feasibility-banner * {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }
+
+    /* Tables */
+    table, .table,
+    [data-theme="dark"] table, [data-theme="dark"] .table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        background: transparent !important;
+        color: #0f172a !important;
+    }
+
+    table th, .table th,
+    table td, .table td,
+    [data-theme="dark"] table th, [data-theme="dark"] .table th,
+    [data-theme="dark"] table td, [data-theme="dark"] .table td {
+        border: 1px solid #cbd5e1 !important;
+        background: transparent !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+        padding: 6px !important;
+    }
+
+    /* Container & Layout */
+    .container, .container-fluid {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
 }
+
